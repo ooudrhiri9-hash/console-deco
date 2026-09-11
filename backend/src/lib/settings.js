@@ -56,8 +56,11 @@ export function normaliseSettings(body = {}, base = DEFAULT_SETTINGS) {
     baseline: localized(m.baseline, { max: 160 }),
     url: link(m.url) || base.url,
     phone: clean(m.phone, 40),
-    // Always derived, never typed: a mismatch here breaks every call button.
-    phoneHref: `+${phoneDigits(m.phoneHref || m.phone)}`,
+    // Always derived from the displayed number, never typed: a mismatch here
+    // breaks every call button. It must read `phone` FIRST — the merge below
+    // carries the stored phoneHref, so preferring it would pin the call link to
+    // the old number for ever and silently ignore a phone change made in /admin.
+    phoneHref: `+${phoneDigits(m.phone || m.phoneHref)}`,
     whatsapp: phoneDigits(m.whatsapp),
     email: clean(m.email, 120),
     address: {
