@@ -20,6 +20,7 @@ import sharp from 'sharp';
 import { requireAdmin } from '../auth.js';
 import { env, ROOT } from '../env.js';
 import { slugify } from '../lib/text.js';
+import { uploadToCloudinary, usingCloudinary } from '../lib/cloudinary.js';
 
 export const uploadRoutes = Router();
 
@@ -53,8 +54,6 @@ uploadRoutes.post('/uploads', requireAdmin, (req, res) => {
     }
 
     try {
-      await fsp.mkdir(UPLOAD_DIR, { recursive: true });
-
       const stem = [
         slugify(req.body?.name || path.parse(req.file.originalname).name) || 'photo',
         Date.now().toString(36),
@@ -63,22 +62,36 @@ uploadRoutes.post('/uploads', requireAdmin, (req, res) => {
       // `cover` crops to the catalogue's portrait frame so cards never letterbox;
       // `withoutEnlargement` keeps a small original from being upscaled into mush.
       const base = sharp(req.file.buffer).rotate();
-      await base
-        .clone()
+      const full = base.clone()
         .resize(WIDTH, HEIGHT, { fit: 'cover', position: 'attention', withoutEnlargement: true })
-        .webp({ quality: 82 })
-        .toFile(path.join(UPLOAD_DIR, `${stem}.webp`));
-      await base
-        .clone()
+        .webp({ quality: 82 });
+      const thumb = base.clone()
         .resize(Math.round(WIDTH / 2), Math.round(HEIGHT / 2), { fit: 'cover', position: 'attention', withoutEnlargement: true })
-        .webp({ quality: 74 })
-        .toFile(path.join(UPLOAD_DIR, `${stem}-thumb.webp`));
+        .webp({ quality: 74 });
+
+      // Cloudinary when it is configured: the photo then survives a deploy on a
+      // host with an ephemeral disk, and is served from a CDN.
+      if (usingCloudinary()) {
+        const [buffer, thumbBuffer] = await Promise.all([full.toBuffer(), thumb.toBuffer()]);
+        const folder = env('CLOUDINARY_FOLDER', 'atelier-omar/produits');
+        const [url, thumbnail] = await Promise.all([
+          uploadToCloudinary(buffer, stem, folder),
+          uploadToCloudinary(thumbBuffer, `${stem}-thumb`, folder),
+        ]);
+        res.status(201).json({ ok: true, url, thumbnail, storage: 'cloudinary' });
+        return;
+      }
+
+      await fsp.mkdir(UPLOAD_DIR, { recursive: true });
+      await full.toFile(path.join(UPLOAD_DIR, `${stem}.webp`));
+      await thumb.toFile(path.join(UPLOAD_DIR, `${stem}-thumb.webp`));
 
       const publicUrl = env('PUBLIC_URL', `http://localhost:${env('PORT', '4400')}`).replace(/\/$/, '');
       res.status(201).json({
         ok: true,
         url: `${publicUrl}/uploads/${stem}.webp`,
         thumbnail: `${publicUrl}/uploads/${stem}-thumb.webp`,
+        storage: 'local',
       });
     } catch (e) {
       console.error('[upload]', e);

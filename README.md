@@ -65,8 +65,9 @@ node scripts/serve-out.mjs 4321   # http://localhost:4321
 
 1. **API d'abord.** Déployer `backend/` sur un hébergement Node. Y définir
    `MONGODB_URI` (le magasin JSON perd tout sur un disque éphémère),
-   `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `PUBLIC_URL` et
-   `ALLOWED_ORIGINS` (le domaine du site, sinon le navigateur bloque tout).
+   `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `PUBLIC_URL`,
+   `CLOUDINARY_URL` (photos) et `ALLOWED_ORIGINS` (le domaine du site, sinon le
+   navigateur bloque tout).
 2. **Site ensuite.** Mettre `NEXT_PUBLIC_API_URL` sur l'API en production, puis
    `npm run build:live` et envoyer `out/` dans `public_html/`.
 
@@ -78,10 +79,10 @@ illisibles par l'extracteur de cPanel). Utiliser `tar.exe -a -c -f site.zip -C o
 
 ## Points d'attention
 
-- **Photos envoyées depuis l'admin** : elles sont écrites dans `backend/uploads/`.
-  Sur un hébergement au disque éphémère (Render, Vercel), elles disparaissent au
-  déploiement suivant. Soit un volume persistant, soit déposer les photos dans
-  `frontend/public/media/products/` et coller le chemin dans la fiche.
+- **Photos envoyées depuis l'admin** : avec `CLOUDINARY_URL` renseigné elles
+  partent chez Cloudinary (dossier `atelier-omar/produits`) et survivent à un
+  déploiement, même sur un hébergeur au disque éphémère. Sans cette variable
+  elles restent dans `backend/uploads/`, ce qui ne convient qu'au développement.
 - **Les adresses des pages ne bougent pas** quand on renomme une pièce : le slug
   est fixé à la création, pour ne casser aucun lien déjà indexé.
 - **`frontend/src/data/products.ts` et `categories.ts`** ne sont plus la source
