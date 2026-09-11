@@ -13,7 +13,11 @@ import mongoose from 'mongoose';
 
 const loose = (extra = {}) => new mongoose.Schema(
   extra,
-  { strict: false, versionKey: false, minimize: false },
+  // `id: false` is essential, not cosmetic: Mongoose adds an `id` virtual (the
+  // string form of _id) to every schema, and that virtual shadows the real
+  // `id` field our categories and messages are keyed on — they would all be
+  // stored as `id: null` and collide on the unique index at the second write.
+  { strict: false, versionKey: false, minimize: false, id: false },
 );
 
 function models(connection) {

@@ -830,7 +830,7 @@
       },
       "slug": "commode-zellige-bleu",
       "createdAt": "2026-09-11T11:25:59.039Z",
-      "updatedAt": "2026-09-11T19:14:30.338Z"
+      "updatedAt": "2026-09-11T19:58:53.167Z"
     },
     {
       "id": "CNS-018",
@@ -1474,6 +1474,6 @@
       "en": ""
     }
   },
-  "generatedAt": "2026-09-11T19:22:45.535Z",
+  "generatedAt": "2026-09-11T19:59:56.922Z",
   "source": "http://localhost:4400"
 }
