@@ -63,11 +63,15 @@ node scripts/serve-out.mjs 4321   # http://localhost:4321
 
 ## Mise en ligne
 
-1. **API d'abord.** Déployer `backend/` sur un hébergement Node. Y définir
-   `MONGODB_URI` (le magasin JSON perd tout sur un disque éphémère),
-   `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `PUBLIC_URL`,
-   `CLOUDINARY_URL` (photos) et `ALLOWED_ORIGINS` (le domaine du site, sinon le
-   navigateur bloque tout).
+1. **API d'abord.** `render.yaml` à la racine décrit le service : sur Render,
+   *New → Blueprint*, choisir ce dépôt, et remplir les variables qu'il réclame —
+   `MONGODB_URI`, `ALLOWED_ORIGINS` (le domaine du site, sinon le navigateur
+   bloque commandes et messages), `PUBLIC_URL`, `CLOUDINARY_URL`. `AUTH_SECRET`
+   est généré par Render. La base contenant déjà le catalogue et le compte
+   administrateur, `npm run seed` n'est pas nécessaire.
+   Sur le plan gratuit le service s'endort après 15 min : la première visite
+   attend ~50 s. La boutique reste lisible pendant ce temps (elle affiche
+   l'instantané du build), mais une commande passée pile à ce moment attend.
 2. **Site ensuite.** Mettre `NEXT_PUBLIC_API_URL` sur l'API en production, puis
    `npm run build:live` et envoyer `out/` dans `public_html/`.
 
