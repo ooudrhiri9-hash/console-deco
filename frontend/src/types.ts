@@ -46,3 +46,11 @@ export interface Product {
   leadTimeDays?: number;
   featured?: boolean;
 }
+
+
+/** Une pièce du classement des ventes, telle que l'API la renvoie. */
+export interface BestSeller {
+  slug: string;
+  /** Quantité vendue sur la fenêtre retenue par l'API. */
+  sold: number;
+}

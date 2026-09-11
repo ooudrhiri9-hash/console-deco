@@ -9,12 +9,13 @@
 import snapshot from '@/data/catalogue.json';
 import { products as fallbackProducts } from '@/data/products';
 import { categories as fallbackCategories } from '@/data/categories';
-import type { Category, Product } from '@/types';
+import type { BestSeller, Category, Product } from '@/types';
 
 type Snapshot = {
   products: Product[];
   categories: Category[];
   settings: unknown;
+  bestSellers?: BestSeller[];
   generatedAt: string | null;
 };
 
@@ -36,6 +37,14 @@ export const categoriesInOrder = [...categories].sort((a, b) => a.order - b.orde
 export const getCategory = (id: string) => categories.find((c) => c.id === id);
 
 export const allProducts = products;
+
+/**
+ * Les pièces les plus commandées au moment du build. Vide tant que l'API n'a
+ * pas assez de commandes pour établir un classement honnête.
+ */
+export const builtBestSellers: BestSeller[] = live && Array.isArray(snap.bestSellers)
+  ? snap.bestSellers
+  : [];
 
 export const productsInCategory = (categoryId: string) =>
   products.filter((p) => p.categoryId === categoryId);

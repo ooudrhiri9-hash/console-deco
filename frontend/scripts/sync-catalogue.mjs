@@ -76,6 +76,8 @@ const snapshot = {
   products,
   categories: [...categories].sort((a, b) => (a.order ?? 99) - (b.order ?? 99)),
   settings: payload.settings ?? null,
+  // Classement des ventes au moment du build ; le navigateur le rafraichit.
+  bestSellers: Array.isArray(payload.bestSellers) ? payload.bestSellers : [],
   generatedAt: payload.generatedAt || new Date().toISOString(),
   source: API,
 };

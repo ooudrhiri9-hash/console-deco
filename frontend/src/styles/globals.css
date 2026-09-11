@@ -583,3 +583,17 @@ p { text-wrap: pretty; }
 @media (prefers-reduced-motion: reduce) {
   .faq__sign::before, .faq__sign::after { transition: none; }
 }
+
+
+/* ============================================================================
+   MEILLEURES VENTES — pastille de rang sur la carte produit
+   ========================================================================== */
+.ranked { position: relative; }
+.ranked__badge {
+  position: absolute; top: 0.75rem; left: 0.75rem; z-index: 2;
+  min-width: 2rem; padding: 0.2rem 0.45rem;
+  font-family: var(--font-display); font-size: 0.9rem; line-height: 1.35;
+  text-align: center; letter-spacing: 0.04em;
+  color: var(--ink); background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+}

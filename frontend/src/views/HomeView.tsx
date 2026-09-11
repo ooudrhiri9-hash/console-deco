@@ -4,6 +4,7 @@ import { getDict } from '@/i18n/dictionaries';
 import { categoriesInOrder, featuredProducts, getCategory } from '@/lib/catalogue';
 import { routes } from '@/lib/routes';
 import { CategoryCard, ProductCard } from '@/components/Cards';
+import BestSellers from '@/components/BestSellers';
 import { faqJsonLd, JsonLd, organizationJsonLd, websiteJsonLd } from '@/lib/seo';
 import { ArrowIcon } from '@/components/Icons';
 
@@ -64,6 +65,11 @@ export default function HomeView({ locale }: { locale: Locale }) {
           ))}
         </div>
       </section>
+
+      {/* ── Meilleures ventes ────────────────────────────────────────────── */}
+      {/* Rendue par le client : le classement vient des commandes et se met à
+          jour sans reconstruction. Absente tant qu'il n'y a rien à classer. */}
+      <BestSellers locale={locale} />
 
       {/* ── Signature: the console + artwork set ─────────────────────────── */}
       <section className="band">

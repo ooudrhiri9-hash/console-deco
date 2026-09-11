@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { store } from '../store/index.js';
 import { publicView } from '../lib/product.js';
 import { readSettings } from '../lib/settings.js';
+import { bestSellers } from '../lib/bestsellers.js';
 
 export const catalogueRoutes = Router();
 
@@ -12,10 +13,11 @@ export const catalogueRoutes = Router();
  */
 catalogueRoutes.get('/catalogue', async (req, res) => {
   try {
-    const [products, categories, settings] = await Promise.all([
+    const [products, categories, settings, orders] = await Promise.all([
       store.products.all(),
       store.categories.all(),
       readSettings(),
+      store.orders.all(),
     ]);
 
     res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=300');
@@ -23,6 +25,9 @@ catalogueRoutes.get('/catalogue', async (req, res) => {
       products: (products || []).filter((p) => p.active !== false).map(publicView),
       categories: (categories || []).sort((a, b) => (a.order ?? 99) - (b.order ?? 99)),
       settings,
+      // Classement calcule sur les commandes reelles. Liste vide tant qu'il n'y
+      // a pas de quoi classer : la boutique masque alors la section.
+      bestSellers: bestSellers(orders, products, 4),
       generatedAt: new Date().toISOString(),
     });
   } catch (e) {
