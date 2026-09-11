@@ -181,6 +181,25 @@ export function itemListJsonLd(products: Product[], locale: Locale) {
   };
 }
 
+/**
+ * FAQ de l'accueil, au format que Google sait lire.
+ *
+ * Les réponses partent en texte brut : toute balise ici ferait rejeter le bloc
+ * entier par le validateur, et la page perdrait aussi ses autres données
+ * structurées.
+ */
+export function faqJsonLd(entries: ReadonlyArray<{ q: string; a: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: entries.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  };
+}
+
 /** Small helper so pages stay readable. */
 export const JsonLd = ({ data }: { data: object }) => (
   <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />

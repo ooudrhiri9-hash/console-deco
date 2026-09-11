@@ -21,6 +21,7 @@ export const dict = {
       heroText:
         'Consoles, tables basses, tables d’appoint et tableaux conçus et fabriqués au Maroc. Chaque pièce est façonnée à la main, en série limitée.',
       heroCta: 'Découvrir la collection',
+      heroImageAlt: 'Console en marqueterie bleue à motifs floraux, dans une entrée claire',
       heroCtaAlt: 'Nous contacter',
       categoriesTitle: 'Nos collections',
       categoriesText: 'Cinq familles de pièces, pensées pour se répondre les unes aux autres.',
@@ -37,6 +38,39 @@ export const dict = {
         { title: 'Pièces en série limitée', text: 'Pas de production de masse. Vous ne croiserez pas votre console chez tout le monde.' },
         { title: 'Sur mesure possible', text: 'Dimensions, teintes, finitions : nous adaptons chaque pièce à votre espace.' },
         { title: 'Livraison partout au Maroc', text: 'Emballage renforcé, livraison et paiement à la réception.' },
+      ],
+      faqTitle: 'Questions fréquentes',
+      faqText: 'Ce qu’on nous demande le plus souvent avant de commander.',
+      faqCta: 'Une autre question ? Écrivez-nous',
+      faq: [
+        {
+          q: 'Pourquoi certains prix ne sont-ils pas affichés ?',
+          a: 'Nos pièces sont fabriquées à la main, souvent adaptées à vos dimensions : le prix dépend du modèle, des finitions et de la taille. Les pièces concernées portent la mention « Prix sur demande ». Envoyez-nous la référence par WhatsApp ou par le formulaire, nous répondons avec un prix ferme.',
+        },
+        {
+          q: 'Combien de temps faut-il pour recevoir une pièce ?',
+          a: 'Une pièce disponible part sous quelques jours. Une pièce fabriquée sur commande demande plus de temps : le délai est indiqué sur la fiche produit et confirmé avec vous avant de lancer la fabrication.',
+        },
+        {
+          q: 'Peut-on adapter les dimensions ou les couleurs ?',
+          a: 'Oui. Largeur, hauteur, profondeur, teintes et finitions s’adaptent à votre mur. Donnez-nous vos mesures et l’ambiance de la pièce, nous revenons vers vous avec une proposition.',
+        },
+        {
+          q: 'Comment se passe le paiement ?',
+          a: 'Le paiement se fait à la livraison, en dirhams. Vous ne payez rien en ligne au moment de la commande. Pour une pièce sur mesure, un acompte peut être convenu avant le lancement de la fabrication.',
+        },
+        {
+          q: 'Livrez-vous partout au Maroc ?',
+          a: 'Oui, dans tout le pays, avec un emballage renforcé pour le transport. Les frais et le délai vous sont confirmés au moment de la commande, selon la ville et le volume de la pièce.',
+        },
+        {
+          q: 'Peut-on voir les pièces avant d’acheter ?',
+          a: 'Nous pouvons vous envoyer des photos et des vidéos supplémentaires de la pièce qui vous intéresse, sous l’angle et dans la lumière que vous voulez. Pour une visite de l’atelier, contactez-nous afin de convenir d’un rendez-vous.',
+        },
+        {
+          q: 'Et si la pièce ne convient pas à mon intérieur ?',
+          a: 'Envoyez-nous une photo de votre mur et vos mesures avant de commander : nous vous dirons franchement si la pièce fonctionne dans votre espace, et nous vous proposerons une alternative si ce n’est pas le cas.',
+        },
       ],
       ctaTitle: 'Un projet, une pièce sur mesure ?',
       ctaText: 'Envoyez-nous les dimensions et l’ambiance de votre pièce, nous vous répondons avec une proposition.',
@@ -135,6 +169,7 @@ export const dict = {
       heroText:
         'Consoles, coffee tables, side tables and wall art designed and made in Morocco. Every piece is handcrafted in limited runs.',
       heroCta: 'Browse the collection',
+      heroImageAlt: 'Blue floral marquetry console in a bright entrance hall',
       heroCtaAlt: 'Get in touch',
       categoriesTitle: 'Our collections',
       categoriesText: 'Five families of pieces, designed to speak to one another.',
@@ -151,6 +186,39 @@ export const dict = {
         { title: 'Limited runs', text: 'No mass production. You will not find your console in every other home.' },
         { title: 'Made to measure', text: 'Dimensions, tones, finishes — we adapt each piece to your space.' },
         { title: 'Delivery across Morocco', text: 'Reinforced packaging, delivery and payment on receipt.' },
+      ],
+      faqTitle: 'Frequently asked questions',
+      faqText: 'What people ask us most before ordering.',
+      faqCta: 'Another question? Write to us',
+      faq: [
+        {
+          q: 'Why are some prices not shown?',
+          a: 'Our pieces are handmade and often adapted to your dimensions, so the price depends on the model, the finishes and the size. Those pieces are marked “Price on request”. Send us the reference by WhatsApp or through the form and we reply with a firm price.',
+        },
+        {
+          q: 'How long does it take to receive a piece?',
+          a: 'A piece in stock ships within a few days. A made-to-order piece takes longer: the lead time is shown on the product page and confirmed with you before we start.',
+        },
+        {
+          q: 'Can dimensions or colours be adapted?',
+          a: 'Yes. Width, height, depth, tones and finishes can all be adapted to your wall. Send us your measurements and the feel of the room, and we come back with a proposal.',
+        },
+        {
+          q: 'How does payment work?',
+          a: 'You pay on delivery, in dirhams. Nothing is paid online when you order. For a bespoke piece, a deposit may be agreed before production starts.',
+        },
+        {
+          q: 'Do you deliver everywhere in Morocco?',
+          a: 'Yes, across the country, with reinforced packaging for transport. Cost and timing are confirmed when you order, depending on the city and the size of the piece.',
+        },
+        {
+          q: 'Can we see the pieces before buying?',
+          a: 'We can send extra photos and videos of the piece you are interested in, from the angle and in the light you want. To visit the workshop, contact us and we will arrange a time.',
+        },
+        {
+          q: 'What if the piece does not suit my interior?',
+          a: 'Send us a photo of your wall and your measurements before ordering. We will tell you honestly whether the piece works in your space, and suggest an alternative if it does not.',
+        },
       ],
       ctaTitle: 'A project, or a bespoke piece?',
       ctaText: 'Send us the dimensions and the mood of your room and we will come back with a proposal.',

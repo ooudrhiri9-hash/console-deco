@@ -734,7 +734,7 @@
       },
       "slug": "console-arcades-bleu-et-craie",
       "createdAt": "2026-09-11T11:25:59.039Z",
-      "updatedAt": "2026-09-11T11:25:59.039Z"
+      "updatedAt": "2026-09-11T20:49:20.962Z"
     },
     {
       "id": "CNS-016",
@@ -1474,6 +1474,6 @@
       "en": ""
     }
   },
-  "generatedAt": "2026-09-11T20:46:10.886Z",
+  "generatedAt": "2026-09-11T21:08:22.178Z",
   "source": "https://atelier-omar-api.onrender.com"
 }

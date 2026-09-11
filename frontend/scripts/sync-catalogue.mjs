@@ -52,7 +52,10 @@ let payload;
 try {
   const res = await fetch(`${API}/api/catalogue`, {
     headers: { Accept: 'application/json' },
-    signal: AbortSignal.timeout(15_000),
+    // Un service endormi (Render, plan gratuit) met ~50 s a repondre a la
+    // premiere requete : 15 s suffisaient en local et faisaient echouer
+    // `build:live` en production pour une simple mise en veille.
+    signal: AbortSignal.timeout(90_000),
   });
   if (!res.ok) bail(`${API}/api/catalogue a répondu ${res.status}.`);
   payload = await res.json();

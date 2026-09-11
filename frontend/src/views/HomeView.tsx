@@ -4,7 +4,7 @@ import { getDict } from '@/i18n/dictionaries';
 import { categoriesInOrder, featuredProducts, getCategory } from '@/lib/catalogue';
 import { routes } from '@/lib/routes';
 import { CategoryCard, ProductCard } from '@/components/Cards';
-import { JsonLd, organizationJsonLd, websiteJsonLd } from '@/lib/seo';
+import { faqJsonLd, JsonLd, organizationJsonLd, websiteJsonLd } from '@/lib/seo';
 import { ArrowIcon } from '@/components/Icons';
 
 export default function HomeView({ locale }: { locale: Locale }) {
@@ -16,24 +16,38 @@ export default function HomeView({ locale }: { locale: Locale }) {
     <>
       <JsonLd data={organizationJsonLd(locale)} />
       <JsonLd data={websiteJsonLd()} />
+      <JsonLd data={faqJsonLd(t.home.faq)} />
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="hero">
-        <div className="container hero__grid">
-          <div>
-            <span className="eyebrow">{t.home.heroEyebrow}</span>
-            <h1 className="h-hero hero__title">{t.home.heroTitle}</h1>
-            <p className="lede">{t.home.heroText}</p>
-            <div className="hero__actions">
-              <Link href={routes.products(locale)} className="btn btn--primary">
-                {t.home.heroCta}
-              </Link>
-              <Link href={routes.contact(locale)} className="btn btn--outline">
-                {t.home.heroCtaAlt}
-              </Link>
-            </div>
+        {/* Vraie balise <img> plutôt qu'un fond CSS : c'est la plus grande image
+            de la page, donc celle que mesure le LCP. En <img> le navigateur la
+            découvre dans le HTML et la charge sans attendre la feuille de style,
+            et `sizes` lui évite de télécharger la version 1600 px sur mobile. */}
+        <img
+          className="hero__photo"
+          src="/media/hero/hero-1600.webp"
+          srcSet="/media/hero/hero-760.webp 760w, /media/hero/hero-1100.webp 1100w, /media/hero/hero-1600.webp 1600w"
+          sizes="100vw"
+          width={1600}
+          height={700}
+          alt={t.home.heroImageAlt}
+          fetchPriority="high"
+          decoding="async"
+        />
+        <div className="hero__veil" aria-hidden="true" />
+        <div className="container hero__inner">
+          <span className="eyebrow eyebrow--light">{t.home.heroEyebrow}</span>
+          <h1 className="h-hero hero__title">{t.home.heroTitle}</h1>
+          <p className="lede hero__lede">{t.home.heroText}</p>
+          <div className="hero__actions">
+            <Link href={routes.products(locale)} className="btn btn--paper">
+              {t.home.heroCta}
+            </Link>
+            <Link href={routes.contact(locale)} className="btn btn--light">
+              {t.home.heroCtaAlt}
+            </Link>
           </div>
-          <div className="hero__art" aria-hidden="true" />
         </div>
       </section>
 
@@ -107,6 +121,37 @@ export default function HomeView({ locale }: { locale: Locale }) {
               <p>{v.text}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── FAQ ──────────────────────────────────────────────────────────── */}
+      <section className="section--tight container">
+        <div className="section-head">
+          <span className="eyebrow">FAQ</span>
+          <h2 className="h-1">{t.home.faqTitle}</h2>
+          <p>{t.home.faqText}</p>
+        </div>
+
+        {/* <details> natif : la réponse est dans le HTML même sans JavaScript,
+            donc lisible par un lecteur d'écran et par un robot d'indexation. */}
+        <div className="faq">
+          {t.home.faq.map((item, i) => (
+            <details className="faq__item" key={item.q} name="faq" open={i === 0}>
+              <summary className="faq__q">
+                <span>{item.q}</span>
+                <span className="faq__sign" aria-hidden="true" />
+              </summary>
+              <div className="faq__a">
+                <p>{item.a}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+
+        <div className="mt-3">
+          <Link href={routes.contact(locale)} className="link-underline">
+            {t.home.faqCta} <ArrowIcon />
+          </Link>
         </div>
       </section>
 
