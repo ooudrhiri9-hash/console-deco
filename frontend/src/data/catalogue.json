@@ -830,7 +830,7 @@
       },
       "slug": "commode-zellige-bleu",
       "createdAt": "2026-09-11T11:25:59.039Z",
-      "updatedAt": "2026-09-11T19:58:53.167Z"
+      "updatedAt": "2026-09-11T20:34:50.706Z"
     },
     {
       "id": "CNS-018",
@@ -1474,6 +1474,6 @@
       "en": ""
     }
   },
-  "generatedAt": "2026-09-11T20:34:12.656Z",
+  "generatedAt": "2026-09-11T20:46:10.886Z",
   "source": "https://atelier-omar-api.onrender.com"
 }
