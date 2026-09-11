@@ -1,0 +1,598 @@
+'use client';
+
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
+import AdminShell from '@/admin/AdminShell';
+import { api, ApiError, uploadPhoto } from '@/admin/client';
+import { dh } from '@/admin/format';
+import type { AdminCategory, AdminProduct } from '@/admin/types';
+
+export default function ProductsPage() {
+  return (
+    <AdminShell title="Pièces">
+      <ProductsView />
+    </AdminShell>
+  );
+}
+
+type Draft = AdminProduct & { colorsFr: string; colorsEn: string };
+
+/** An empty sheet. Everything the API requires is either filled or defaulted. */
+const blankDraft = (categoryId: string): Draft => ({
+  id: '',
+  slug: '',
+  categoryId,
+  name: { fr: '', en: '' },
+  shortDescription: { fr: '', en: '' },
+  description: { fr: '', en: '' },
+  price: 0,
+  images: [],
+  materials: { fr: '', en: '' },
+  colors: [],
+  colorsFr: '',
+  colorsEn: '',
+  inStock: true,
+  madeToOrder: false,
+  featured: false,
+  active: true,
+});
+
+const toDraft = (p: AdminProduct): Draft => ({
+  ...p,
+  colorsFr: (p.colors || []).map((c) => c.fr).join(', '),
+  colorsEn: (p.colors || []).map((c) => c.en).join(', '),
+});
+
+/**
+ * Two comma-separated lists back into [{ fr, en }]. The French list drives the
+ * length: an English list that is shorter simply repeats the French label,
+ * which is what the API would do anyway.
+ */
+function zipColors(fr: string, en: string) {
+  const left = fr.split(',').map((s) => s.trim()).filter(Boolean);
+  const right = en.split(',').map((s) => s.trim());
+  return left.map((label, i) => ({ fr: label, en: right[i]?.trim() || label }));
+}
+
+function ProductsView() {
+  const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [family, setFamily] = useState('');
+  const [draft, setDraft] = useState<Draft | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [p, c] = await Promise.all([
+        api<{ products: AdminProduct[] }>('/api/admin/products'),
+        api<{ categories: AdminCategory[] }>('/api/admin/categories'),
+      ]);
+      setProducts(p.products);
+      setCategories(c.categories);
+      setError('');
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Chargement impossible.');
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const categoryName = useCallback(
+    (id: string) => categories.find((c) => c.id === id)?.name.fr || id,
+    [categories],
+  );
+
+  const rows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return products
+      .filter((p) => (family ? p.categoryId === family : true))
+      .filter((p) => (q
+        ? [p.name.fr, p.id, p.slug].some((v) => String(v).toLowerCase().includes(q))
+        : true))
+      .sort((a, b) => a.categoryId.localeCompare(b.categoryId) || a.name.fr.localeCompare(b.name.fr));
+  }, [products, search, family]);
+
+  /** Optimistic switch: the row flips at once, and reverts if the API refuses. */
+  async function toggle(p: AdminProduct, key: 'active' | 'featured' | 'inStock') {
+    const next = !(p[key] ?? true);
+    setProducts((list) => list.map((x) => (x.slug === p.slug ? { ...x, [key]: next } : x)));
+    try {
+      await api(`/api/admin/products/${p.slug}`, { method: 'PATCH', body: { [key]: next } });
+    } catch (e) {
+      setProducts((list) => list.map((x) => (x.slug === p.slug ? { ...x, [key]: !next } : x)));
+      setError(e instanceof ApiError ? e.message : 'Modification refusée.');
+    }
+  }
+
+  async function remove(p: AdminProduct) {
+    if (!window.confirm(`Supprimer « ${p.name.fr} » ? Cette action est définitive.`)) return;
+    try {
+      await api(`/api/admin/products/${p.slug}`, { method: 'DELETE' });
+      setProducts((list) => list.filter((x) => x.slug !== p.slug));
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Suppression impossible.');
+    }
+  }
+
+  if (loading) return <p className="adm-muted">Chargement…</p>;
+
+  return (
+    <div className="adm-stack">
+      {error && <p className="adm-alert adm-alert--err">{error}</p>}
+
+      <div className="adm-card">
+        <div className="adm-row">
+          <label className="adm-field" style={{ flex: '1 1 220px' }}>
+            <span>Rechercher</span>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Nom, référence, adresse…"
+            />
+          </label>
+          <label className="adm-field" style={{ flex: '0 1 240px' }}>
+            <span>Famille</span>
+            <select value={family} onChange={(e) => setFamily(e.target.value)}>
+              <option value="">Toutes</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name.fr}</option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="adm-btn adm-btn--primary"
+            style={{ marginLeft: 'auto' }}
+            onClick={() => setDraft(blankDraft(categories[0]?.id || ''))}
+            disabled={!categories.length}
+          >
+            Ajouter une pièce
+          </button>
+        </div>
+        <p className="adm-hint" style={{ marginTop: '.6rem' }}>
+          {rows.length} pièce(s) affichée(s) sur {products.length}. Prix, stock, textes,
+          photos et nouvelles pièces apparaissent sur le site dès le rechargement de la page
+          par le visiteur. Seules les adresses des nouvelles pages et le référencement
+          demandent une reconstruction du site.
+        </p>
+      </div>
+
+      <div className="adm-card">
+        <div className="adm-tablewrap">
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Pièce</th>
+                <th>Famille</th>
+                <th className="adm-num">Prix</th>
+                <th>En ligne</th>
+                <th>Vedette</th>
+                <th>Stock</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((p) => (
+                <tr key={p.slug}>
+                  <td>
+                    {p.images?.[0]
+                      ? <img className="adm-thumb" src={p.images[0]} alt="" loading="lazy" />
+                      : <div className="adm-thumb" />}
+                  </td>
+                  <td>
+                    <strong>{p.name.fr}</strong>
+                    <div className="adm-small adm-muted">
+                      {p.id} · /{p.slug}
+                    </div>
+                  </td>
+                  <td className="adm-small">{categoryName(p.categoryId)}</td>
+                  <td className="adm-num">{dh(p.price)}</td>
+                  <td>
+                    <Switch on={p.active !== false} onClick={() => toggle(p, 'active')} labels={['En ligne', 'Masquée']} />
+                  </td>
+                  <td>
+                    <Switch on={!!p.featured} onClick={() => toggle(p, 'featured')} labels={['Oui', 'Non']} />
+                  </td>
+                  <td>
+                    <Switch on={p.inStock !== false} onClick={() => toggle(p, 'inStock')} labels={['Dispo', 'Épuisée']} />
+                  </td>
+                  <td className="adm-num">
+                    <div className="adm-row" style={{ justifyContent: 'flex-end', gap: '.4rem' }}>
+                      <button type="button" className="adm-btn adm-btn--sm" onClick={() => setDraft(toDraft(p))}>
+                        Modifier
+                      </button>
+                      <button type="button" className="adm-btn adm-btn--sm adm-btn--danger" onClick={() => remove(p)}>
+                        Supprimer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {!rows.length && (
+                <tr>
+                  <td colSpan={8} className="adm-muted">Aucune pièce ne correspond.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {draft && (
+        <ProductSheet
+          draft={draft}
+          categories={categories}
+          onClose={() => setDraft(null)}
+          onSaved={() => {
+            setDraft(null);
+            load();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function Switch({ on, onClick, labels }: { on: boolean; onClick: () => void; labels: [string, string] }) {
+  return (
+    <button
+      type="button"
+      className={`adm-badge ${on ? 'adm-badge--on' : 'adm-badge--off'}`}
+      onClick={onClick}
+      style={{ cursor: 'pointer' }}
+    >
+      {on ? labels[0] : labels[1]}
+    </button>
+  );
+}
+
+function ProductSheet({
+  draft,
+  categories,
+  onClose,
+  onSaved,
+}: {
+  draft: Draft;
+  categories: AdminCategory[];
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [form, setForm] = useState<Draft>(draft);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const isNew = !draft.slug;
+
+  const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
+    setForm((f) => ({ ...f, [key]: value }));
+
+  const setLoc = (key: 'name' | 'shortDescription' | 'description' | 'materials' | 'finish', lang: 'fr' | 'en', value: string) =>
+    setForm((f) => ({
+      ...f,
+      [key]: { fr: '', en: '', ...(f[key] as { fr: string; en: string } | undefined), [lang]: value },
+    }));
+
+  const setDim = (key: 'width' | 'depth' | 'height', value: string) =>
+    setForm((f) => ({
+      ...f,
+      dimensions: { ...(f.dimensions || {}), unit: 'cm', [key]: value === '' ? undefined : Number(value) },
+    }));
+
+  async function addFiles(files: FileList | null) {
+    if (!files?.length) return;
+    setUploading(true);
+    setError('');
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        // Sequential on purpose: sharp re-encodes each photo, and a shared
+        // host handles one at a time far better than five at once.
+        urls.push(await uploadPhoto(file, form.name.fr));
+      }
+      setForm((f) => ({ ...f, images: [...(f.images || []), ...urls].slice(0, 10) }));
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Envoi de la photo impossible.');
+    }
+    setUploading(false);
+  }
+
+  const moveImage = (from: number, to: number) =>
+    setForm((f) => {
+      const next = [...f.images];
+      if (to < 0 || to >= next.length) return f;
+      const [it] = next.splice(from, 1);
+      next.splice(to, 0, it);
+      return { ...f, images: next };
+    });
+
+  async function save(e: FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError('');
+
+    const body = {
+      ...form,
+      colors: zipColors(form.colorsFr, form.colorsEn),
+      price: Number(form.price) || 0,
+      compareAtPrice: Number(form.compareAtPrice) || 0,
+      leadTimeDays: Number(form.leadTimeDays) || 0,
+    };
+    delete (body as Partial<Draft>).colorsFr;
+    delete (body as Partial<Draft>).colorsEn;
+
+    try {
+      if (isNew) {
+        await api('/api/admin/products', { method: 'POST', body });
+      } else {
+        await api(`/api/admin/products/${draft.slug}`, { method: 'PATCH', body });
+      }
+      onSaved();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Enregistrement impossible.');
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      className="adm-drawer"
+      role="dialog"
+      aria-modal="true"
+      onMouseDown={(e) => {
+        // Only a click on the backdrop itself closes: a drag that ends outside
+        // a text field should never throw away a half-written sheet.
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <form className="adm-drawer__panel" onSubmit={save}>
+        <div className="adm-drawer__head">
+          <h2>{isNew ? 'Nouvelle pièce' : form.name.fr}</h2>
+          <button type="button" className="adm-btn adm-btn--sm" style={{ marginLeft: 'auto' }} onClick={onClose}>
+            Fermer
+          </button>
+        </div>
+
+        {error && <p className="adm-alert adm-alert--err">{error}</p>}
+
+        <section>
+          <h3 className="adm-legend">Identité</h3>
+          <div className="adm-fields">
+            <label className="adm-field">
+              <span>Nom (FR) *</span>
+              <input required value={form.name.fr} onChange={(e) => setLoc('name', 'fr', e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>Nom (EN)</span>
+              <input value={form.name.en} onChange={(e) => setLoc('name', 'en', e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>Référence (SKU)</span>
+              <input
+                value={form.id}
+                onChange={(e) => set('id', e.target.value.toUpperCase())}
+                placeholder="CNS-030"
+              />
+            </label>
+            <label className="adm-field">
+              <span>Famille *</span>
+              <select required value={form.categoryId} onChange={(e) => set('categoryId', e.target.value)}>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name.fr}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <p className="adm-hint" style={{ marginTop: '.5rem' }}>
+            {isNew
+              ? "L'adresse de la page est créée à partir du nom français."
+              : `Adresse de la page : /produits/…/${form.slug} — elle ne change pas quand vous renommez la pièce, pour ne casser aucun lien.`}
+          </p>
+        </section>
+
+        <section>
+          <h3 className="adm-legend">Textes</h3>
+          <div className="adm-fields">
+            <label className="adm-field">
+              <span>Accroche (FR)</span>
+              <input
+                value={form.shortDescription.fr}
+                onChange={(e) => setLoc('shortDescription', 'fr', e.target.value)}
+                maxLength={220}
+              />
+            </label>
+            <label className="adm-field">
+              <span>Accroche (EN)</span>
+              <input
+                value={form.shortDescription.en}
+                onChange={(e) => setLoc('shortDescription', 'en', e.target.value)}
+                maxLength={220}
+              />
+            </label>
+          </div>
+          <div className="adm-fields" style={{ marginTop: '.9rem' }}>
+            <label className="adm-field">
+              <span>Description (FR)</span>
+              <textarea
+                value={form.description.fr}
+                onChange={(e) => setLoc('description', 'fr', e.target.value)}
+              />
+            </label>
+            <label className="adm-field">
+              <span>Description (EN)</span>
+              <textarea
+                value={form.description.en}
+                onChange={(e) => setLoc('description', 'en', e.target.value)}
+              />
+            </label>
+          </div>
+          <p className="adm-hint">Une ligne vide sépare deux paragraphes sur la fiche produit.</p>
+        </section>
+
+        <section>
+          <h3 className="adm-legend">Photos</h3>
+          <div className="adm-photos">
+            {form.images.map((src, i) => (
+              <div className="adm-photo" key={`${src}-${i}`}>
+                <img src={src} alt="" />
+                <button
+                  type="button"
+                  className="adm-photo__x"
+                  title="Retirer"
+                  onClick={() => set('images', form.images.filter((_, j) => j !== i))}
+                >
+                  ×
+                </button>
+                <div className="adm-row" style={{ gap: '.2rem', marginTop: '.25rem' }}>
+                  <button type="button" className="adm-btn adm-btn--sm" onClick={() => moveImage(i, i - 1)} disabled={i === 0}>←</button>
+                  <button type="button" className="adm-btn adm-btn--sm" onClick={() => moveImage(i, i + 1)} disabled={i === form.images.length - 1}>→</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="adm-row" style={{ marginTop: '.8rem' }}>
+            <label className="adm-btn">
+              {uploading ? 'Envoi…' : 'Ajouter des photos'}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={(e) => {
+                  addFiles(e.target.files);
+                  e.target.value = '';
+                }}
+              />
+            </label>
+            <span className="adm-hint">
+              La première photo est celle qui s’affiche partout. JPEG/PNG/WebP, 12 Mo maximum,
+              recadrée en 800×1000.
+            </span>
+          </div>
+        </section>
+
+        <section>
+          <h3 className="adm-legend">Prix &amp; disponibilité</h3>
+          <div className="adm-fields">
+            <label className="adm-field">
+              <span>Prix (DH)</span>
+              <input
+                type="number"
+                min={0}
+                value={form.price || ''}
+                onChange={(e) => set('price', Number(e.target.value))}
+                placeholder="0 = sur demande"
+              />
+            </label>
+            <label className="adm-field">
+              <span>Prix barré (DH)</span>
+              <input
+                type="number"
+                min={0}
+                value={form.compareAtPrice || ''}
+                onChange={(e) => set('compareAtPrice', Number(e.target.value))}
+              />
+            </label>
+            <label className="adm-field">
+              <span>Délai de fabrication (jours)</span>
+              <input
+                type="number"
+                min={0}
+                max={365}
+                value={form.leadTimeDays || ''}
+                onChange={(e) => set('leadTimeDays', Number(e.target.value))}
+                disabled={!form.madeToOrder}
+              />
+            </label>
+          </div>
+          <div className="adm-row" style={{ marginTop: '.9rem' }}>
+            <label className="adm-check">
+              <input type="checkbox" checked={form.active !== false} onChange={(e) => set('active', e.target.checked)} />
+              Visible sur le site
+            </label>
+            <label className="adm-check">
+              <input type="checkbox" checked={!!form.featured} onChange={(e) => set('featured', e.target.checked)} />
+              Mise en avant sur l’accueil
+            </label>
+            <label className="adm-check">
+              <input type="checkbox" checked={form.inStock !== false} onChange={(e) => set('inStock', e.target.checked)} />
+              En stock
+            </label>
+            <label className="adm-check">
+              <input type="checkbox" checked={!!form.madeToOrder} onChange={(e) => set('madeToOrder', e.target.checked)} />
+              Sur commande
+            </label>
+          </div>
+          <p className="adm-hint">Un prix à 0 affiche « Sur demande » et bascule la commande en devis.</p>
+        </section>
+
+        <section>
+          <h3 className="adm-legend">Matières &amp; dimensions</h3>
+          <div className="adm-fields">
+            <label className="adm-field">
+              <span>Matières (FR)</span>
+              <input value={form.materials.fr} onChange={(e) => setLoc('materials', 'fr', e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>Matières (EN)</span>
+              <input value={form.materials.en} onChange={(e) => setLoc('materials', 'en', e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>Finition (FR)</span>
+              <input value={form.finish?.fr || ''} onChange={(e) => setLoc('finish', 'fr', e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>Finition (EN)</span>
+              <input value={form.finish?.en || ''} onChange={(e) => setLoc('finish', 'en', e.target.value)} />
+            </label>
+          </div>
+          <div className="adm-fields" style={{ marginTop: '.9rem' }}>
+            <label className="adm-field">
+              <span>Largeur (cm)</span>
+              <input type="number" min={0} value={form.dimensions?.width ?? ''} onChange={(e) => setDim('width', e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>Profondeur (cm)</span>
+              <input type="number" min={0} value={form.dimensions?.depth ?? ''} onChange={(e) => setDim('depth', e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>Hauteur (cm)</span>
+              <input type="number" min={0} value={form.dimensions?.height ?? ''} onChange={(e) => setDim('height', e.target.value)} />
+            </label>
+          </div>
+          <div className="adm-fields" style={{ marginTop: '.9rem' }}>
+            <label className="adm-field">
+              <span>Couleurs (FR)</span>
+              <input
+                value={form.colorsFr}
+                onChange={(e) => set('colorsFr', e.target.value)}
+                placeholder="Terre brûlée, Sauge, Sable"
+              />
+            </label>
+            <label className="adm-field">
+              <span>Couleurs (EN)</span>
+              <input
+                value={form.colorsEn}
+                onChange={(e) => set('colorsEn', e.target.value)}
+                placeholder="Burnt earth, Sage, Sand"
+              />
+            </label>
+          </div>
+          <p className="adm-hint">Séparez les couleurs par une virgule, dans le même ordre dans les deux langues.</p>
+        </section>
+
+        <div className="adm-row adm-row--end">
+          <button type="button" className="adm-btn" onClick={onClose}>Annuler</button>
+          <button type="submit" className="adm-btn adm-btn--primary" disabled={busy || uploading}>
+            {busy ? 'Enregistrement…' : 'Enregistrer'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

@@ -1,0 +1,178 @@
+/* ============================================================================
+   BACK OFFICE
+   Deliberately plain next to the shop: dense, high-contrast, no animation.
+   It reuses the design tokens from globals.css so a palette change follows,
+   but nothing here leaks into a public page - every class is prefixed .adm.
+   ========================================================================== */
+
+.adm-boot {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100dvh; color: var(--ink-soft); font-family: var(--font-sans);
+}
+
+/* --- Login ---------------------------------------------------------------- */
+.adm-login {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100dvh; padding: 1.5rem; background: var(--surface-alt);
+}
+.adm-login__box { width: min(420px, 100%); display: grid; gap: 1rem; padding: 2rem; }
+.adm-login__title { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: .04em; }
+.adm-login__api { font-size: .75rem; color: var(--ink-faint); word-break: break-all; }
+
+/* --- Frame ---------------------------------------------------------------- */
+.adm { min-height: 100dvh; background: var(--surface-alt); font-family: var(--font-sans); }
+
+.adm-top {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+  padding: .75rem clamp(1rem, 3vw, 2rem);
+  background: var(--ink); color: #fff;
+}
+.adm-top__brand { display: flex; align-items: baseline; gap: .5rem; }
+.adm-top__brand strong { font-family: var(--font-display); letter-spacing: .08em; }
+.adm-top__tag { font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; color: #b9b3a8; }
+.adm-top__right { margin-left: auto; display: flex; align-items: center; gap: .75rem; }
+.adm-who { font-size: .8rem; color: #b9b3a8; }
+
+.adm-nav { display: flex; gap: .25rem; flex-wrap: wrap; }
+.adm-nav a {
+  padding: .4rem .7rem; border-radius: var(--radius);
+  color: #ded9d0; text-decoration: none; font-size: .88rem;
+}
+.adm-nav a:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.adm-nav a.is-active { background: var(--brass); color: #14120f; }
+
+.adm-main { padding: clamp(1rem, 3vw, 2rem); max-width: 1400px; margin-inline: auto; }
+.adm-h1 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 1.25rem; }
+
+/* --- Blocks --------------------------------------------------------------- */
+.adm-card {
+  background: var(--white); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+}
+.adm-grid { display: grid; gap: 1rem; }
+/* Grid and flex children default to min-width:auto, which lets a wide table
+   push the whole page sideways instead of scrolling inside .adm-tablewrap. */
+.adm-stack > *, .adm-grid > * { min-width: 0; }
+.adm-grid--stats { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.adm-grid--2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.adm-row { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+.adm-row--end { justify-content: flex-end; }
+.adm-stack { display: grid; gap: 1rem; }
+
+.adm-stat__k { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-faint); }
+.adm-stat__v { font-family: var(--font-display); font-size: 1.9rem; line-height: 1.1; margin-top: .35rem; }
+.adm-stat__n { font-size: .78rem; color: var(--ink-soft); margin-top: .25rem; }
+
+.adm-muted { color: var(--ink-soft); font-size: .88rem; }
+.adm-small { font-size: .78rem; }
+
+/* --- Tables --------------------------------------------------------------- */
+.adm-tablewrap { overflow-x: auto; }
+.adm-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.adm-table th, .adm-table td { padding: .6rem .7rem; text-align: left; vertical-align: middle; }
+.adm-table th {
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--ink-faint); border-bottom: 1px solid var(--line-strong); white-space: nowrap;
+}
+.adm-table td { border-bottom: 1px solid var(--line); }
+.adm-table tbody tr:hover { background: var(--surface-alt); }
+.adm-table .adm-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.adm-thumb {
+  width: 44px; height: 56px; object-fit: cover; display: block;
+  background: var(--surface-deep); border: 1px solid var(--line); border-radius: var(--radius);
+}
+
+/* --- Badges --------------------------------------------------------------- */
+.adm-badge {
+  display: inline-block; padding: .15rem .5rem; border-radius: 999px;
+  font-size: .72rem; letter-spacing: .04em; border: 1px solid var(--line-strong);
+  color: var(--ink-soft); background: var(--white); white-space: nowrap;
+}
+.adm-badge--on { color: #245c33; border-color: #b7d8c0; background: #eef7f1; }
+.adm-badge--off { color: var(--ink-faint); background: var(--surface-alt); }
+.adm-badge--warn { color: #8a5a12; border-color: #e6cfa4; background: #fbf3e3; }
+.adm-badge--danger { color: var(--danger); border-color: #e7b9b2; background: #fbeeec; }
+
+/* --- Buttons -------------------------------------------------------------- */
+.adm-btn {
+  font: inherit; font-size: .85rem; cursor: pointer;
+  padding: .45rem .85rem; border-radius: var(--radius);
+  border: 1px solid var(--line-strong); background: var(--white); color: var(--ink);
+}
+.adm-btn:hover { border-color: var(--ink); }
+.adm-btn:disabled { opacity: .55; cursor: not-allowed; }
+.adm-btn--primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.adm-btn--primary:hover { background: #000; }
+.adm-btn--danger { color: var(--danger); border-color: #e7b9b2; }
+.adm-btn--danger:hover { background: #fbeeec; border-color: var(--danger); }
+.adm-btn--ghost { background: transparent; border-color: rgba(255, 255, 255, .35); color: #fff; }
+.adm-btn--ghost:hover { background: rgba(255, 255, 255, .12); border-color: #fff; }
+.adm-btn--sm { padding: .25rem .55rem; font-size: .78rem; }
+
+/* --- Forms ---------------------------------------------------------------- */
+.adm-field { display: grid; gap: .3rem; }
+.adm-field > span {
+  font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-faint);
+}
+.adm-field input, .adm-field select, .adm-field textarea {
+  font: inherit; font-size: .9rem; width: 100%;
+  padding: .5rem .6rem; border: 1px solid var(--line-strong);
+  border-radius: var(--radius); background: var(--white); color: var(--ink);
+}
+.adm-field textarea { min-height: 7rem; resize: vertical; line-height: 1.5; }
+.adm-field input:focus-visible, .adm-field select:focus-visible, .adm-field textarea:focus-visible {
+  outline: 2px solid var(--brass); outline-offset: 1px;
+}
+.adm-fields { display: grid; gap: .9rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.adm-check { display: flex; align-items: center; gap: .5rem; font-size: .88rem; }
+.adm-check input { width: 1rem; height: 1rem; accent-color: var(--brass); }
+.adm-hint { font-size: .75rem; color: var(--ink-faint); }
+
+.adm-alert { padding: .6rem .8rem; border-radius: var(--radius); font-size: .85rem; }
+.adm-alert--err { background: #fbeeec; border: 1px solid #e7b9b2; color: #7d2c20; }
+.adm-alert--ok { background: #eef7f1; border: 1px solid #b7d8c0; color: #245c33; }
+
+.adm-legend {
+  font-family: var(--font-display); font-size: 1.05rem;
+  padding-bottom: .4rem; margin-bottom: .9rem; border-bottom: 1px solid var(--line);
+}
+
+/* --- Photos --------------------------------------------------------------- */
+.adm-photos { display: flex; gap: .6rem; flex-wrap: wrap; }
+.adm-photo { position: relative; width: 88px; }
+.adm-photo img {
+  width: 88px; height: 110px; object-fit: cover; display: block;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-deep);
+}
+.adm-photo__x {
+  position: absolute; top: -8px; right: -8px; width: 22px; height: 22px;
+  border-radius: 999px; border: 1px solid var(--line-strong); background: #fff;
+  cursor: pointer; line-height: 1; font-size: .8rem;
+}
+
+/* --- Chart (14-day bars) -------------------------------------------------- */
+.adm-chart { display: flex; align-items: flex-end; gap: .35rem; height: 140px; }
+.adm-chart__col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.adm-chart__bar { background: var(--brass); border-radius: 2px 2px 0 0; min-height: 2px; }
+.adm-chart__day { font-size: .62rem; color: var(--ink-faint); text-align: center; margin-top: .3rem; }
+
+/* --- Drawer (product sheet) ----------------------------------------------- */
+.adm-drawer {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(20, 18, 15, .45);
+  display: flex; justify-content: flex-end;
+}
+.adm-drawer__panel {
+  width: min(860px, 100%); height: 100%; overflow-y: auto;
+  background: var(--white); padding: clamp(1rem, 3vw, 2rem);
+  display: grid; gap: 1.25rem; align-content: start;
+}
+.adm-drawer__head { display: flex; align-items: center; gap: 1rem; }
+.adm-drawer__head h2 { font-family: var(--font-display); font-size: 1.25rem; }
+
+@media (max-width: 720px) {
+  .adm-top { gap: .6rem; }
+  .adm-top__right { width: 100%; justify-content: space-between; }
+}
