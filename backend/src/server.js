@@ -62,9 +62,24 @@ app.use('/uploads', express.static(UPLOAD_DIR, {
   fallthrough: true,
 }));
 
-/** Health probe for the host. Deliberately does not touch the database. */
+/**
+ * Health probe for the host. Deliberately does not touch the database.
+ *
+ * It also answers the one question that costs the most time when the shop goes
+ * live: is the caller's domain in ALLOWED_ORIGINS? A missing entry there fails
+ * as a bare 403 with no explanation in the browser console, so the count and a
+ * verdict on the calling origin are reported here. The list itself is never
+ * returned — knowing how many there are is enough to spot an empty variable.
+ */
 app.get('/health', (req, res) => {
-  res.json({ ok: true, service: 'atelier-omar-api', time: new Date().toISOString() });
+  const origin = (req.get('origin') || '').replace(/\/$/, '');
+  res.json({
+    ok: true,
+    service: 'atelier-omar-api',
+    time: new Date().toISOString(),
+    origins: allowed.length,
+    originAllowed: origin ? allowed.includes(origin) : null,
+  });
 });
 
 app.use('/api/admin', authRoutes);
