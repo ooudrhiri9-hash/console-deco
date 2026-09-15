@@ -447,6 +447,27 @@ p { text-wrap: pretty; }
 }
 .chip:hover { border-color: var(--ink); color: var(--ink); }
 .chip[aria-current='true'], .chip.is-active { background: var(--ink); border-color: var(--ink); color: var(--white); }
+
+/* ============================================================================
+   CHOIX D'UNE PIÈCE — cadre, dimensions
+   Des boutons radio déguisés en puces : l'apparence vient du <label>, le
+   comportement (clavier, lecteur d'écran, groupe) reste celui du radio natif,
+   qu'on cache sans le retirer de l'ordre de tabulation.
+   ========================================================================== */
+.options { display: grid; gap: 1.1rem; margin-block: 1.4rem; }
+.option { border: 0; padding: 0; margin: 0; min-width: 0; }
+.option__name {
+  padding: 0; margin-bottom: 0.55rem;
+  font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft);
+}
+.option__values { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip--pick { cursor: pointer; display: inline-flex; align-items: baseline; gap: 0.4rem; }
+/* Hors écran plutôt que display:none : un radio masqué ainsi reste focusable
+   et le groupe garde sa navigation aux flèches. */
+.chip--pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip--pick:has(input:focus-visible) { outline: 2px solid var(--brass); outline-offset: 2px; }
+.option__extra { font-style: normal; font-size: 0.78rem; opacity: 0.75; }
+.summary__opt { display: block; font-style: normal; font-size: 0.76rem; color: var(--ink-faint); }
 .filters__spacer { margin-left: auto; }
 .filters select {
   padding: 0.5rem 0.75rem; border: 1px solid var(--line-strong); border-radius: var(--radius);
@@ -468,6 +489,10 @@ p { text-wrap: pretty; }
 .split { display: grid; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
 @media (min-width: 900px) { .split { grid-template-columns: 1fr 1fr; } }
 .split__art { aspect-ratio: 4 / 3; background: linear-gradient(140deg, #24211d, #3d3831); border-radius: var(--radius-lg); }
+.split__photo {
+  width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover;
+  border-radius: var(--radius-lg); display: block;
+}
 
 /* ============================================================================
    FORMS
@@ -500,6 +525,8 @@ p { text-wrap: pretty; }
 .cart-line__media img, .cart-line__media svg { width: 100%; height: 100%; object-fit: cover; }
 .cart-line__name { font-family: var(--font-display); font-size: 1.1rem; }
 .cart-line__ref { font-size: 0.76rem; color: var(--ink-faint); }
+.cart-line__opt { font-size: 0.8rem; color: var(--ink-soft); margin-top: 0.25rem; }
+.cart-line__opt strong { font-weight: 500; color: var(--ink); }
 .cart-line__right { text-align: right; display: flex; flex-direction: column; gap: 0.6rem; align-items: flex-end; }
 .cart-line__remove { font-size: 0.76rem; color: var(--ink-faint); text-decoration: underline; }
 .cart-line__remove:hover { color: var(--danger); }
@@ -529,14 +556,21 @@ p { text-wrap: pretty; }
 .socials a:hover { border-color: var(--brass); color: var(--brass); }
 
 /* Floating WhatsApp */
-.wa-float {
+/* Un seul bloc fixe porte les boutons de contact : la distance au bord se
+   décide ici, une fois, et ajouter un canal demain ne demande pas de recalculer
+   le décalage de chacun. */
+.floats {
   position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 90;
-  width: 54px; height: 54px; border-radius: 50%; background: var(--whatsapp); color: #fff;
+  display: grid; gap: 0.7rem; justify-items: center;
+}
+.wa-float, .phone-float {
+  width: 54px; height: 54px; border-radius: 50%; color: #fff;
   display: grid; place-items: center;
-  box-shadow: 0 12px 30px -10px rgba(31,168,85,0.7);
   transition: transform var(--fast) var(--ease);
 }
-.wa-float:hover { transform: scale(1.07); }
+.wa-float { background: var(--whatsapp); box-shadow: 0 12px 30px -10px rgba(31,168,85,0.7); }
+.phone-float { background: var(--brass-deep); box-shadow: 0 12px 30px -10px rgba(138,103,48,0.75); }
+.wa-float:hover, .phone-float:hover { transform: scale(1.07); }
 
 /* ============================================================================
    MISC

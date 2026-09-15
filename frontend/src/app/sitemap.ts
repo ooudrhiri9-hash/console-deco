@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { site } from '@/config/site';
 import { locales } from '@/i18n/config';
-import { categories, allProducts } from '@/lib/catalogue';
+import { listedCategories, allProducts } from '@/lib/catalogue';
 import { alternates, routes } from '@/lib/routes';
 
 /** Required by `output: export` — the file is written once at build time. */
@@ -38,7 +38,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   push('about', 0.5, 'monthly');
   push('contact', 0.6, 'monthly');
 
-  for (const c of categories) {
+  // Seulement les familles que la boutique propose : une famille cachée n'a ni
+  // pièce ni photo, et l'annoncer ici enverrait un robot sur une page vide. Sa
+  // page continue de répondre pour les liens déjà partagés.
+  for (const c of listedCategories) {
     const alt = alternates('fr', 'category', c);
     for (const l of locales) {
       entries.push({

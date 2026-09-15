@@ -78,6 +78,8 @@ const snapshot = {
   settings: payload.settings ?? null,
   // Classement des ventes au moment du build ; le navigateur le rafraichit.
   bestSellers: Array.isArray(payload.bestSellers) ? payload.bestSellers : [],
+  // 'orders' = compte sur les commandes, 'manual' = selection faite dans /admin.
+  bestSellersSource: payload.bestSellersSource === 'orders' ? 'orders' : 'manual',
   generatedAt: payload.generatedAt || new Date().toISOString(),
   source: API,
 };

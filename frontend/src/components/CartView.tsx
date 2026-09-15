@@ -6,6 +6,7 @@ import { getDict } from '@/i18n/dictionaries';
 import { site } from '@/config/site';
 import { routes } from '@/lib/routes';
 import { formatPrice } from '@/lib/format';
+import { choiceLabels } from '@/lib/options';
 import { useCart } from './CartProvider';
 import ProductImage from './ProductImage';
 
@@ -35,8 +36,8 @@ export default function CartView({ locale }: { locale: Locale }) {
   return (
     <div className="cart-layout">
       <div>
-        {lines.map(({ product, qty }) => (
-          <div className="cart-line" key={product.id}>
+        {lines.map(({ product, qty, choice, key, price }) => (
+          <div className="cart-line" key={key}>
             <Link href={routes.product(locale, product)} className="cart-line__media">
               <ProductImage src={product.images[0]} alt={product.name[locale]} seed={product.slug} />
             </Link>
@@ -48,20 +49,28 @@ export default function CartView({ locale }: { locale: Locale }) {
               <div className="cart-line__ref">
                 {t.common.reference} {product.id}
               </div>
+              {/* Le cadre et la taille font la ligne : deux fois la même toile
+                  avec deux cadres différents, ce sont deux lignes, et rien ne
+                  les distinguerait sans ces libellés. */}
+              {choiceLabels(product, choice, locale).map((o) => (
+                <div className="cart-line__opt" key={o.name}>
+                  {o.name} : <strong>{o.label}</strong>
+                </div>
+              ))}
               <div className="qty" style={{ marginTop: '.75rem' }}>
-                <button onClick={() => setQty(product.id, qty - 1)} aria-label="-">
+                <button onClick={() => setQty(key, qty - 1)} aria-label="-">
                   −
                 </button>
                 <span>{qty}</span>
-                <button onClick={() => setQty(product.id, qty + 1)} aria-label="+">
+                <button onClick={() => setQty(key, qty + 1)} aria-label="+">
                   +
                 </button>
               </div>
             </div>
 
             <div className="cart-line__right">
-              <strong>{formatPrice(product.price * qty, locale)}</strong>
-              <button className="cart-line__remove" onClick={() => remove(product.id)}>
+              <strong>{formatPrice(price * qty, locale)}</strong>
+              <button className="cart-line__remove" onClick={() => remove(key)}>
                 {t.cart.remove}
               </button>
             </div>

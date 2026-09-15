@@ -8,6 +8,7 @@ import { site } from '@/config/site';
 import { apiUrl } from '@/config/api';
 import { routes } from '@/lib/routes';
 import { formatPrice } from '@/lib/format';
+import { choiceLabels } from '@/lib/options';
 import { orderMessage, waLink, type OrderCustomer } from '@/lib/whatsapp';
 import { useCart } from './CartProvider';
 import { WhatsappIcon } from './Icons';
@@ -31,7 +32,11 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
     id: l.product.id,
     name: l.product.name[locale],
     qty: l.qty,
-    price: l.product.price,
+    price: l.price,
+    // L'API ne reçoit que des identifiants et relit le supplément dans la fiche ;
+    // les libellés ne servent qu'au message WhatsApp, côté navigateur.
+    options: l.choice,
+    picked: choiceLabels(l.product, l.choice, locale),
   }));
 
   const wa = waLink(orderMessage(orderLines, customer, subtotal, locale));
@@ -48,7 +53,9 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
           customer,
           // Prices are recomputed from the catalogue server-side; what we send
           // is only what the customer was shown, kept for support calls.
-          items: orderLines,
+          // `picked` ne part pas : ce sont les libellés affichés, que l'API
+          // relit elle-même depuis la fiche à partir des identifiants.
+          items: orderLines.map(({ picked, ...line }) => line),
           payment: 'cod',
         }),
       });
@@ -165,12 +172,17 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
         <h2 className="h-3" style={{ marginBottom: '1rem' }}>
           {t.checkout.summary}
         </h2>
-        {lines.map(({ product, qty }) => (
-          <div className="summary__row" key={product.id}>
+        {lines.map(({ product, qty, choice, key, price }) => (
+          <div className="summary__row" key={key}>
             <span>
               {product.name[locale]} × {qty}
+              {choiceLabels(product, choice, locale).map((o) => (
+                <em className="summary__opt" key={o.name}>
+                  {o.name} : {o.label}
+                </em>
+              ))}
             </span>
-            <span>{formatPrice(product.price * qty, locale)}</span>
+            <span>{formatPrice(price * qty, locale)}</span>
           </div>
         ))}
         <div className="summary__row summary__row--total">

@@ -1,7 +1,7 @@
 import Link from '@/components/Link';
 import type { Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
-import { categoriesInOrder, featuredProducts, getCategory } from '@/lib/catalogue';
+import { listedCategories, featuredProducts, getCategory } from '@/lib/catalogue';
 import { routes } from '@/lib/routes';
 import { CategoryCard, ProductCard } from '@/components/Cards';
 import BestSellers from '@/components/BestSellers';
@@ -60,7 +60,7 @@ export default function HomeView({ locale }: { locale: Locale }) {
           <p>{t.home.categoriesText}</p>
         </div>
         <div className="grid grid--3">
-          {categoriesInOrder.map((c) => (
+          {listedCategories.map((c) => (
             <CategoryCard key={c.id} category={c} locale={locale} />
           ))}
         </div>
@@ -90,7 +90,22 @@ export default function HomeView({ locale }: { locale: Locale }) {
               </Link>
             )}
           </div>
-          <div className="split__art" aria-hidden="true" />
+          {/* La photo dit ce que le paragraphe décrit : deux tableaux et la
+              console dessous, accordés. Chargée paresseusement — la section est
+              sous la ligne de flottaison, elle ne doit rien prendre au LCP du
+              hero. `width`/`height` réservent la place pour que rien ne saute
+              quand elle arrive. */}
+          <img
+            className="split__photo"
+            src="/media/signature/signature-800.webp"
+            srcSet="/media/signature/signature-560.webp 560w, /media/signature/signature-800.webp 800w, /media/signature/signature-1040.webp 1040w"
+            sizes="(min-width: 1280px) 560px, (min-width: 900px) 45vw, 100vw"
+            width={800}
+            height={600}
+            alt={t.home.pairImageAlt}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </section>
 

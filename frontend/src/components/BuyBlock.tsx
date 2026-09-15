@@ -1,13 +1,16 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import type { Locale } from '@/i18n/config';
 import type { Product } from '@/types';
 import { getDict } from '@/i18n/dictionaries';
 import { discountPercent, formatPrice } from '@/lib/format';
 import { routes } from '@/lib/routes';
 import { site } from '@/config/site';
+import { defaultChoice, unitPrice } from '@/lib/options';
 import AddToCart from './AddToCart';
 import Link from './Link';
+import OptionPicker from './OptionPicker';
 import { useLiveProduct } from './LiveCatalogue';
 
 /**
@@ -23,6 +26,17 @@ export default function BuyBlock({ product: built, locale }: { product: Product;
   const t = getDict(locale);
   const { product, removed } = useLiveProduct(built);
   const off = discountPercent(product);
+
+  // La sélection part de la fiche construite : le HTML statique affiche donc le
+  // même prix que le premier rendu du navigateur. Si le catalogue en direct
+  // change les choix ensuite, resolveChoice() les ramène dans les clous.
+  const [picked, setPicked] = useState<Record<string, string>>(() => defaultChoice(built));
+  const choice = useMemo(() => {
+    const out: Record<string, string> = { ...defaultChoice(product) };
+    for (const [k, v] of Object.entries(picked)) if (k in out) out[k] = v;
+    return out;
+  }, [product, picked]);
+  const price = unitPrice(product, choice);
 
   if (removed) {
     return (
@@ -46,7 +60,7 @@ export default function BuyBlock({ product: built, locale }: { product: Product;
       <div className="product__price">
         {product.price > 0 ? (
           <>
-            <strong>{formatPrice(product.price, locale)}</strong>
+            <strong>{formatPrice(price, locale)}</strong>
             {product.compareAtPrice && <del>{formatPrice(product.compareAtPrice, locale)}</del>}
             {off !== null && <span className="off">-{off}%</span>}
           </>
@@ -63,7 +77,14 @@ export default function BuyBlock({ product: built, locale }: { product: Product;
           : t.common.inStock}
       </span>
 
-      <AddToCart product={product} locale={locale} />
+      <OptionPicker
+        product={product}
+        locale={locale}
+        choice={choice}
+        onChange={(optionId, valueId) => setPicked((c) => ({ ...c, [optionId]: valueId }))}
+      />
+
+      <AddToCart product={product} locale={locale} choice={choice} />
     </>
   );
 }

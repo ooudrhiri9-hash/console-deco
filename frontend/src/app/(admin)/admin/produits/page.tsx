@@ -5,6 +5,7 @@ import AdminShell from '@/admin/AdminShell';
 import { api, ApiError, uploadPhoto } from '@/admin/client';
 import { dh } from '@/admin/format';
 import type { AdminCategory, AdminProduct } from '@/admin/types';
+import type { ProductOption } from '@/types';
 
 export default function ProductsPage() {
   return (
@@ -33,6 +34,7 @@ const blankDraft = (categoryId: string): Draft => ({
   inStock: true,
   madeToOrder: false,
   featured: false,
+  bestSeller: false,
   active: true,
 });
 
@@ -40,6 +42,50 @@ const toDraft = (p: AdminProduct): Draft => ({
   ...p,
   colorsFr: (p.colors || []).map((c) => c.fr).join(', '),
   colorsEn: (p.colors || []).map((c) => c.en).join(', '),
+});
+
+/**
+ * Deux listes toutes faites, parce que personne n'a envie de taper huit cadres
+ * à la main sur chaque toile. Ce sont des points de départ : les libellés, les
+ * suppléments et le nombre de valeurs se modifient ensuite ligne par ligne.
+ *
+ * Les identifiants restent vides : l'API les dérive du libellé français et les
+ * fige à l'enregistrement, comme les adresses de pièces. Une valeur renommée
+ * plus tard garde donc l'identifiant que les commandes déjà passées citent.
+ */
+const PRESETS: Record<'cadre' | 'dimensions', ProductOption> = {
+  cadre: {
+    id: 'cadre',
+    name: { fr: 'Cadre', en: 'Frame' },
+    values: [
+      { id: '', label: { fr: 'Sans cadre', en: 'No frame' }, extra: 0 },
+      { id: '', label: { fr: 'Cadre noir', en: 'Black frame' }, extra: 0 },
+      { id: '', label: { fr: 'Cadre blanc', en: 'White frame' }, extra: 0 },
+      { id: '', label: { fr: 'Cadre doré', en: 'Gold frame' }, extra: 0 },
+      { id: '', label: { fr: 'Cadre argenté', en: 'Silver frame' }, extra: 0 },
+      { id: '', label: { fr: 'Cadre marron', en: 'Brown frame' }, extra: 0 },
+      { id: '', label: { fr: 'Cadre bleu marine', en: 'Navy frame' }, extra: 0 },
+      { id: '', label: { fr: 'Cadre bois hêtre', en: 'Beech frame' }, extra: 0 },
+    ],
+  },
+  dimensions: {
+    id: 'dimensions',
+    name: { fr: 'Dimensions', en: 'Dimensions' },
+    values: [
+      { id: '', label: { fr: 'S — 50 × 75 cm', en: 'S — 50 × 75 cm' }, extra: 0 },
+      { id: '', label: { fr: 'M — 100 × 60 cm', en: 'M — 100 × 60 cm' }, extra: 0 },
+      { id: '', label: { fr: 'L — 120 × 80 cm', en: 'L — 120 × 80 cm' }, extra: 0 },
+    ],
+  },
+};
+
+const blankOption = (): ProductOption => ({
+  id: '',
+  name: { fr: '', en: '' },
+  values: [
+    { id: '', label: { fr: '', en: '' }, extra: 0 },
+    { id: '', label: { fr: '', en: '' }, extra: 0 },
+  ],
 });
 
 /**
@@ -98,7 +144,7 @@ function ProductsView() {
   }, [products, search, family]);
 
   /** Optimistic switch: the row flips at once, and reverts if the API refuses. */
-  async function toggle(p: AdminProduct, key: 'active' | 'featured' | 'inStock') {
+  async function toggle(p: AdminProduct, key: 'active' | 'featured' | 'inStock' | 'bestSeller') {
     const next = !(p[key] ?? true);
     setProducts((list) => list.map((x) => (x.slug === p.slug ? { ...x, [key]: next } : x)));
     try {
@@ -173,6 +219,7 @@ function ProductsView() {
                 <th className="adm-num">Prix</th>
                 <th>En ligne</th>
                 <th>Vedette</th>
+                <th>Best-seller</th>
                 <th>Stock</th>
                 <th />
               </tr>
@@ -200,6 +247,9 @@ function ProductsView() {
                     <Switch on={!!p.featured} onClick={() => toggle(p, 'featured')} labels={['Oui', 'Non']} />
                   </td>
                   <td>
+                    <Switch on={!!p.bestSeller} onClick={() => toggle(p, 'bestSeller')} labels={['Oui', 'Non']} />
+                  </td>
+                  <td>
                     <Switch on={p.inStock !== false} onClick={() => toggle(p, 'inStock')} labels={['Dispo', 'Épuisée']} />
                   </td>
                   <td className="adm-num">
@@ -216,7 +266,7 @@ function ProductsView() {
               ))}
               {!rows.length && (
                 <tr>
-                  <td colSpan={8} className="adm-muted">Aucune pièce ne correspond.</td>
+                  <td colSpan={9} className="adm-muted">Aucune pièce ne correspond.</td>
                 </tr>
               )}
             </tbody>
@@ -301,6 +351,14 @@ function ProductSheet({
     }
     setUploading(false);
   }
+
+  // --- Choix proposés (cadre, dimensions) -----------------------------------
+  const options: ProductOption[] = form.options || [];
+  const setOptions = (next: ProductOption[]) => setForm((f) => ({ ...f, options: next }));
+  const patchOption = (i: number, patch: Partial<ProductOption>) =>
+    setOptions(options.map((o, k) => (k === i ? { ...o, ...patch } : o)));
+  const patchValue = (i: number, j: number, patch: Partial<ProductOption['values'][number]>) =>
+    patchOption(i, { values: options[i].values.map((v, k) => (k === j ? { ...v, ...patch } : v)) });
 
   const moveImage = (from: number, to: number) =>
     setForm((f) => {
@@ -520,6 +578,10 @@ function ProductSheet({
               Mise en avant sur l’accueil
             </label>
             <label className="adm-check">
+              <input type="checkbox" checked={!!form.bestSeller} onChange={(e) => set('bestSeller', e.target.checked)} />
+              Meilleure vente
+            </label>
+            <label className="adm-check">
               <input type="checkbox" checked={form.inStock !== false} onChange={(e) => set('inStock', e.target.checked)} />
               En stock
             </label>
@@ -529,6 +591,142 @@ function ProductSheet({
             </label>
           </div>
           <p className="adm-hint">Un prix à 0 affiche « Sur demande » et bascule la commande en devis.</p>
+          <p className="adm-hint">
+            « Meilleure vente » remplit la section du même nom sur l’accueil (4 pièces au
+            maximum, sans numéro de classement). Dès que les commandes enregistrées suffisent
+            à classer, c’est le vrai classement des ventes qui prend la place.
+          </p>
+        </section>
+
+        <section>
+          <h3 className="adm-legend">Choix proposés</h3>
+          <p className="adm-hint" style={{ marginBottom: '.9rem' }}>
+            Le cadre, les formats. Ils s’affichent sur la fiche sous le prix ; la première
+            valeur est celle cochée d’office, mettez donc la moins chère en tête. Un choix
+            avec moins de deux valeurs est ignoré. Sans aucun choix, la fiche ne change pas —
+            c’est le cas de toutes les consoles.
+          </p>
+
+          {options.map((option, i) => (
+            <div className="adm-option" key={i}>
+              <div className="adm-fields">
+                <label className="adm-field">
+                  <span>Nom du choix (FR)</span>
+                  <input
+                    value={option.name.fr}
+                    placeholder="Cadre"
+                    onChange={(e) => patchOption(i, { name: { ...option.name, fr: e.target.value } })}
+                  />
+                </label>
+                <label className="adm-field">
+                  <span>Nom du choix (EN)</span>
+                  <input
+                    value={option.name.en}
+                    placeholder="Frame"
+                    onChange={(e) => patchOption(i, { name: { ...option.name, en: e.target.value } })}
+                  />
+                </label>
+                <div className="adm-field" style={{ justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    className="adm-btn adm-btn--sm adm-btn--danger"
+                    onClick={() => setOptions(options.filter((_, k) => k !== i))}
+                  >
+                    Supprimer ce choix
+                  </button>
+                </div>
+              </div>
+
+              <table className="adm-table adm-table--tight">
+                <thead>
+                  <tr>
+                    <th>Valeur (FR)</th>
+                    <th>Valeur (EN)</th>
+                    <th className="adm-num">Supplément (DH)</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {option.values.map((value, j) => (
+                    <tr key={j}>
+                      <td>
+                        <input
+                          value={value.label.fr}
+                          placeholder="Cadre doré"
+                          onChange={(e) => patchValue(i, j, { label: { ...value.label, fr: e.target.value } })}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={value.label.en}
+                          placeholder="Gold frame"
+                          onChange={(e) => patchValue(i, j, { label: { ...value.label, en: e.target.value } })}
+                        />
+                      </td>
+                      <td className="adm-num">
+                        <input
+                          type="number"
+                          min={0}
+                          value={value.extra || ''}
+                          placeholder="0"
+                          onChange={(e) => patchValue(i, j, { extra: Number(e.target.value) || 0 })}
+                        />
+                      </td>
+                      <td className="adm-num">
+                        <button
+                          type="button"
+                          className="adm-btn adm-btn--sm"
+                          onClick={() =>
+                            patchOption(i, { values: option.values.filter((_, k) => k !== j) })
+                          }
+                        >
+                          Retirer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <button
+                type="button"
+                className="adm-btn adm-btn--sm"
+                style={{ marginTop: '.6rem' }}
+                onClick={() =>
+                  patchOption(i, {
+                    values: [...option.values, { id: '', label: { fr: '', en: '' }, extra: 0 }],
+                  })
+                }
+              >
+                Ajouter une valeur
+              </button>
+            </div>
+          ))}
+
+          <div className="adm-row" style={{ marginTop: '.8rem' }}>
+            <button type="button" className="adm-btn" onClick={() => setOptions([...options, blankOption()])}>
+              Ajouter un choix
+            </button>
+            <button
+              type="button"
+              className="adm-btn"
+              onClick={() => setOptions([...options, structuredClone(PRESETS.cadre)])}
+            >
+              Cadres (8 valeurs)
+            </button>
+            <button
+              type="button"
+              className="adm-btn"
+              onClick={() => setOptions([...options, structuredClone(PRESETS.dimensions)])}
+            >
+              Dimensions (S / M / L)
+            </button>
+          </div>
+          <p className="adm-hint" style={{ marginTop: '.6rem' }}>
+            Le supplément s’ajoute au prix de la pièce. Sur une pièce à 0 (sur demande) il est
+            enregistré avec la commande mais rien ne s’affiche : il n’y a pas de prix auquel
+            l’ajouter.
+          </p>
         </section>
 
         <section>

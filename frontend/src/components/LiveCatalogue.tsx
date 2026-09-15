@@ -2,8 +2,13 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { apiUrl } from '@/config/api';
-import { builtBestSellers, products as built, categories as builtCategories } from '@/lib/catalogue';
-import type { BestSeller, Category, Product } from '@/types';
+import {
+  builtBestSellers,
+  builtBestSellersSource,
+  products as built,
+  categories as builtCategories,
+} from '@/lib/catalogue';
+import type { BestSeller, BestSellersSource, Category, Product } from '@/types';
 
 /**
  * The catalogue, refreshed in the browser.
@@ -17,7 +22,12 @@ import type { BestSeller, Category, Product } from '@/types';
  * CORS or down, the visitor simply sees what was true at build time.
  */
 
-type Snapshot = { products: Product[]; categories: Category[]; bestSellers: BestSeller[] };
+type Snapshot = {
+  products: Product[];
+  categories: Category[];
+  bestSellers: BestSeller[];
+  bestSellersSource: BestSellersSource;
+};
 
 const Ctx = createContext<Snapshot | null>(null);
 
@@ -32,9 +42,13 @@ function load(): Promise<Snapshot | null> {
       const products = Array.isArray(data?.products) ? (data.products as Product[]) : null;
       const categories = Array.isArray(data?.categories) ? (data.categories as Category[]) : null;
       const bestSellers = Array.isArray(data?.bestSellers) ? (data.bestSellers as BestSeller[]) : [];
+      const bestSellersSource: BestSellersSource =
+        data?.bestSellersSource === 'orders' ? 'orders' : 'manual';
       // An empty answer means a misconfigured API, not an empty shop: ignoring
       // it keeps the built snapshot on screen instead of emptying the page.
-      return products?.length && categories?.length ? { products, categories, bestSellers } : null;
+      return products?.length && categories?.length
+        ? { products, categories, bestSellers, bestSellersSource }
+        : null;
     })
     .catch(() => null);
   return pending;
@@ -84,23 +98,31 @@ export function useProductBySlug(slug: string): { product: Product | null; ready
 
 /**
  * Le classement des ventes, rafraichi comme le reste : une piece qui se met a
- * bien se vendre remonte sans qu'on reconstruise le site.
+ * bien se vendre remonte sans qu'on reconstruise le site, et la selection
+ * cochee dans /admin apparait des que le patron la change.
  *
  * Renvoie les produits complets, dans l'ordre du classement, en ignorant une
- * piece entre-temps retiree du catalogue. Liste vide = pas assez de commandes
- * pour classer quoi que ce soit, et la section ne s'affiche pas.
+ * piece entre-temps retiree du catalogue. Liste vide = ni commandes ni
+ * selection, et la section ne s'affiche pas. `source` dit d'ou vient l'ordre :
+ * la boutique ne numerote les pieces que sur un vrai comptage.
  */
-export function useBestSellers(): Array<{ product: Product; sold: number }> {
+export function useBestSellers(): {
+  items: Array<{ product: Product; sold: number }>;
+  source: BestSellersSource;
+} {
   const live = useLiveCatalogue();
   const ranking = live ? live.bestSellers : builtBestSellers;
   const catalogue = live ? live.products : built;
+  const source = live ? live.bestSellersSource : builtBestSellersSource;
 
-  return (ranking || [])
+  const items = (ranking || [])
     .map(({ slug, sold }) => {
       const product = catalogue.find((p) => p.slug === slug);
       return product ? { product, sold } : null;
     })
     .filter(Boolean) as Array<{ product: Product; sold: number }>;
+
+  return { items, source };
 }
 
 export function useLiveCategories(): Category[] {

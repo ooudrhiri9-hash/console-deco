@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { store } from '../store/index.js';
 import { publicView } from '../lib/product.js';
 import { readSettings } from '../lib/settings.js';
-import { bestSellers } from '../lib/bestsellers.js';
+import { pickBestSellers } from '../lib/bestsellers.js';
 
 export const catalogueRoutes = Router();
 
@@ -20,14 +20,18 @@ catalogueRoutes.get('/catalogue', async (req, res) => {
       store.orders.all(),
     ]);
 
+    const ranking = pickBestSellers(orders, products, 4);
+
     res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=300');
     res.json({
       products: (products || []).filter((p) => p.active !== false).map(publicView),
       categories: (categories || []).sort((a, b) => (a.order ?? 99) - (b.order ?? 99)),
       settings,
-      // Classement calcule sur les commandes reelles. Liste vide tant qu'il n'y
-      // a pas de quoi classer : la boutique masque alors la section.
-      bestSellers: bestSellers(orders, products, 4),
+      // Classement calcule sur les commandes reelles, ou a defaut la selection
+      // faite dans /admin. Liste vide = rien a montrer, la boutique masque la
+      // section plutot que d'inventer un palmares.
+      bestSellers: ranking.list,
+      bestSellersSource: ranking.source,
       generatedAt: new Date().toISOString(),
     });
   } catch (e) {

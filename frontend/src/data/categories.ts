@@ -30,7 +30,7 @@ export const categories: Category[] = [
       fr: 'Notre signature : une console et son tableau dessinés ensemble, mêmes matières et mêmes teintes. Vous n’avez plus à chercher le tableau qui ira avec le meuble — l’accord est déjà fait. Un ensemble complet, livré assorti, pour habiller un mur d’entrée ou de salon en une seule commande.',
       en: 'Our signature: a console and its artwork designed as one, sharing materials and tones. No more hunting for a painting that matches the furniture — the pairing is already done. A complete set, delivered matched, to dress an entrance or living-room wall in a single order.',
     },
-    image: '',
+    image: '/media/categories/console-tableau.webp',
   },
   {
     id: 'tables-basses',
@@ -66,7 +66,7 @@ export const categories: Category[] = [
       fr: 'Tableaux décoratifs peints et finis à la main : abstrait, art marocain, calligraphie, matières et reliefs. Formats uniques, diptyques et triptyques, avec ou sans caisse américaine. Nous réalisons également les dimensions sur mesure pour un mur précis.',
       en: 'Decorative artworks, hand-painted and hand-finished: abstract, Moroccan art, calligraphy, textures and relief. Single formats, diptychs and triptychs, with or without a floating frame. We also produce made-to-measure dimensions for a specific wall.',
     },
-    image: '',
+    image: '/media/categories/tableaux.webp',
   },
 ];
 

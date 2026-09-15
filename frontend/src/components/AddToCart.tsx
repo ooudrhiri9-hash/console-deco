@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { Product } from '@/types';
+import type { OptionChoice, Product } from '@/types';
 import type { Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
 import { site } from '@/config/site';
@@ -11,7 +11,16 @@ import { productMessage, waLink } from '@/lib/whatsapp';
 import { useCart } from './CartProvider';
 import { WhatsappIcon } from './Icons';
 
-export default function AddToCart({ product, locale }: { product: Product; locale: Locale }) {
+export default function AddToCart({
+  product,
+  locale,
+  choice,
+}: {
+  product: Product;
+  locale: Locale;
+  /** Cadre, dimensions… choisis juste au-dessus. */
+  choice?: OptionChoice;
+}) {
   const t = getDict(locale);
   const router = useRouter();
   const { add } = useCart();
@@ -19,13 +28,13 @@ export default function AddToCart({ product, locale }: { product: Product; local
   const [added, setAdded] = useState(false);
 
   const onAdd = () => {
-    add(product, qty);
+    add(product, qty, choice);
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
   };
 
   const wa = waLink(
-    productMessage(product, locale, qty, `${site.url}${routes.product(locale, product)}`),
+    productMessage(product, locale, qty, `${site.url}${routes.product(locale, product)}`, choice),
   );
 
   return (

@@ -1,16 +1,26 @@
 import { site } from '@/config/site';
 import type { Locale } from '@/i18n/config';
-import type { Product } from '@/types';
+import type { OptionChoice, Product } from '@/types';
 import { formatPrice } from './format';
+import { choiceLabels, unitPrice } from './options';
 
 /** wa.me deep link. encodeURIComponent keeps the line breaks (%0A) intact. */
 export const waLink = (message: string) =>
   `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
 
 /** "I'm interested in this piece" — from a product sheet. */
-export function productMessage(p: Product, locale: Locale, qty = 1, url?: string): string {
+export function productMessage(
+  p: Product,
+  locale: Locale,
+  qty = 1,
+  url?: string,
+  choice?: OptionChoice,
+): string {
   const name = p.name[locale];
-  const price = p.price > 0 ? formatPrice(p.price, locale) : '—';
+  const price = p.price > 0 ? formatPrice(unitPrice(p, choice), locale) : '—';
+  // Le cadre et les dimensions font partie de la demande : sans eux, le premier
+  // message de retour serait « laquelle, et en quelle taille ? ».
+  const picked = choiceLabels(p, choice, locale).map((o) => `• ${o.name} : ${o.label}`);
   const lines =
     locale === 'fr'
       ? [
@@ -18,6 +28,7 @@ export function productMessage(p: Product, locale: Locale, qty = 1, url?: string
           '',
           `Je suis intéressé(e) par cette pièce :`,
           `• ${name} (réf. ${p.id})`,
+          ...picked,
           `• Quantité : ${qty}`,
           `• Prix : ${price}`,
           url ? `• ${url}` : '',
@@ -29,6 +40,7 @@ export function productMessage(p: Product, locale: Locale, qty = 1, url?: string
           '',
           `I am interested in this piece:`,
           `• ${name} (ref. ${p.id})`,
+          ...picked,
           `• Quantity: ${qty}`,
           `• Price: ${price}`,
           url ? `• ${url}` : '',
@@ -43,6 +55,8 @@ export interface OrderLine {
   name: string;
   qty: number;
   price: number;
+  /** « Cadre : doré », « Dimensions : L — 120×80 cm ». */
+  picked?: Array<{ name: string; label: string }>;
 }
 
 export interface OrderCustomer {
@@ -62,9 +76,10 @@ export function orderMessage(
   locale: Locale,
 ): string {
   const fr = locale === 'fr';
-  const items = lines.map(
-    (l) => `• ${l.name} (${l.id}) × ${l.qty} — ${formatPrice(l.price * l.qty, locale)}`,
-  );
+  const items = lines.flatMap((l) => [
+    `• ${l.name} (${l.id}) × ${l.qty} — ${formatPrice(l.price * l.qty, locale)}`,
+    ...(l.picked || []).map((o) => `   ${o.name} : ${o.label}`),
+  ]);
   const out = [
     fr ? `Bonjour ${site.brandShort}, je souhaite passer commande :` : `Hello ${site.brandShort}, I would like to place an order:`,
     '',

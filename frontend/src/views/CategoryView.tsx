@@ -2,7 +2,7 @@ import Link from '@/components/Link';
 import type { Locale } from '@/i18n/config';
 import type { Category } from '@/types';
 import { getDict } from '@/i18n/dictionaries';
-import { categoriesInOrder, productsInCategory } from '@/lib/catalogue';
+import { listedCategories, productsInCategory } from '@/lib/catalogue';
 import { routes } from '@/lib/routes';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import CatalogueGrid from '@/components/CatalogueGrid';
@@ -43,7 +43,7 @@ export default function CategoryView({
           <Link href={routes.products(locale)} className="chip">
             {t.products.filterAll}
           </Link>
-          {categoriesInOrder.map((c) => (
+          {listedCategories.map((c) => (
             <Link
               key={c.id}
               href={routes.category(locale, c)}

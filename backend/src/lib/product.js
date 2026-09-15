@@ -18,6 +18,64 @@ function imagePath(value) {
   return null;
 }
 
+const MAX_OPTIONS = 4;
+const MAX_VALUES = 12;
+
+/**
+ * Les choix proposés sur la fiche : « Cadre », « Dimensions »…
+ *
+ * Chaque valeur porte son supplément en dirhams. C'est la seule source de prix
+ * qui compte : buildOrder() relit le supplément ici même à partir de l'id
+ * envoyé par le navigateur, donc un panier trafiqué ne peut pas s'offrir un
+ * cadre doré au prix du sans-cadre.
+ *
+ * Les ids sont dérivés des libellés français et figés à la création, comme les
+ * slugs de pièces : renommer « Cadre doré » en « Cadre laiton » ne doit pas
+ * transformer les commandes déjà passées en choix introuvables.
+ */
+function options(value) {
+  if (!Array.isArray(value)) return [];
+  const out = [];
+  const seenOption = new Set();
+
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object') continue;
+    const name = localized(raw.name, { max: 60 });
+    if (!name.fr) continue;
+
+    const id = clean(raw.id, 40) || slugify(name.fr).slice(0, 40);
+    if (!id || seenOption.has(id)) continue;
+
+    const values = [];
+    const seenValue = new Set();
+    for (const rawValue of Array.isArray(raw.values) ? raw.values : []) {
+      if (!rawValue || typeof rawValue !== 'object') continue;
+      const label = localized(rawValue.label, { max: 80 });
+      if (!label.fr) continue;
+      const valueId = clean(rawValue.id, 40) || slugify(label.fr).slice(0, 40);
+      if (!valueId || seenValue.has(valueId)) continue;
+      seenValue.add(valueId);
+      values.push({
+        id: valueId,
+        label,
+        // Un supplément négatif ferait baisser le prix : ce n'est pas une remise,
+        // c'est une porte ouverte. Une vraie promotion passe par compareAtPrice.
+        extra: int(rawValue.extra, { min: 0, max: 10_000_000, fallback: 0 }),
+      });
+      if (values.length >= MAX_VALUES) break;
+    }
+
+    // Un choix sans option à choisir n'est pas un choix.
+    if (values.length < 2) continue;
+
+    seenOption.add(id);
+    out.push({ id, name, values });
+    if (out.length >= MAX_OPTIONS) break;
+  }
+
+  return out;
+}
+
 function dimensions(value) {
   if (!value || typeof value !== 'object') return undefined;
   const out = {};
@@ -74,6 +132,10 @@ export function normaliseProduct(body = {}, base = null, known = new Set()) {
     madeToOrder,
     active: merged.active === undefined ? true : bool(merged.active),
     featured: bool(merged.featured),
+    // Choix du patron, utilise seulement tant que les commandes enregistrees ne
+    // suffisent pas a classer : voir lib/bestsellers.js.
+    bestSeller: bool(merged.bestSeller),
+    options: options(merged.options),
   };
 
   if (compareAtPrice) product.compareAtPrice = compareAtPrice;
@@ -92,7 +154,7 @@ export function normaliseProduct(body = {}, base = null, known = new Set()) {
 }
 
 /** Fields the list screen may flip without re-validating the whole sheet. */
-export const TOGGLES = ['active', 'featured', 'inStock'];
+export const TOGGLES = ['active', 'featured', 'inStock', 'bestSeller'];
 
 export const isToggleOnly = (body) => {
   const keys = Object.keys(body || {});

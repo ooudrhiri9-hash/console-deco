@@ -9,37 +9,42 @@ import { useBestSellers } from './LiveCatalogue';
 import { ArrowIcon } from './Icons';
 
 /**
- * Les pièces les plus commandées.
+ * Les pièces les plus vendues.
  *
- * Le classement vient des commandes réelles, calculé par l'API. Tant qu'il n'y
- * a pas assez de ventes pour classer, la section ne s'affiche pas du tout :
- * une boutique neuve n'a pas de meilleures ventes, et en inventer une reviendrait
- * à promettre au visiteur une popularité qui n'existe pas.
+ * Deux sources, dans cet ordre. Les commandes enregistrées d'abord : l'API les
+ * compte et la boutique numérote le classement, 01 à 04. À défaut — une bonne
+ * part des ventes se conclut sur WhatsApp ou à l'atelier et n'atteint jamais la
+ * table des commandes — la sélection cochée dans /admin prend le relais, sans
+ * numéros : le patron désigne ses pièces phares, il n'annonce pas un comptage
+ * qui n'a pas eu lieu. Sans commandes ni sélection, la section disparaît
+ * plutôt que d'inventer un palmarès.
  *
- * Comme le reste du catalogue, le classement se rafraîchit dans le navigateur :
- * la section apparaît d'elle-même dès que les commandes le permettent, sans
- * reconstruction du site.
+ * Comme le reste du catalogue, tout cela se rafraîchit dans le navigateur : une
+ * case cochée dans /admin se voit au rechargement, sans reconstruire le site.
  */
 export default function BestSellers({ locale }: { locale: Locale }) {
   const t = getDict(locale);
-  const ranked = useBestSellers();
+  const { items, source } = useBestSellers();
+  const counted = source === 'orders';
 
-  if (ranked.length === 0) return null;
+  if (items.length === 0) return null;
 
   return (
     <section className="section container">
       <div className="section-head">
         <span className="eyebrow">{t.home.bestSellersEyebrow}</span>
         <h2 className="h-1">{t.home.bestSellersTitle}</h2>
-        <p>{t.home.bestSellersText}</p>
+        <p>{counted ? t.home.bestSellersText : t.home.bestSellersTextPicked}</p>
       </div>
 
       <div className="grid grid--4">
-        {ranked.map(({ product }, i) => (
-          <div className="ranked" key={product.id}>
-            <span className="ranked__badge" aria-hidden="true">
-              {String(i + 1).padStart(2, '0')}
-            </span>
+        {items.map(({ product }, i) => (
+          <div className={counted ? 'ranked' : undefined} key={product.id}>
+            {counted && (
+              <span className="ranked__badge" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+            )}
             <ProductCard product={product} locale={locale} />
           </div>
         ))}

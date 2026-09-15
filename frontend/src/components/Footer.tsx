@@ -1,6 +1,6 @@
 import Link from '@/components/Link';
 import { site } from '@/config/site';
-import { categoriesInOrder } from '@/lib/catalogue';
+import { listedCategories } from '@/lib/catalogue';
 import { getDict } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/config';
 import { routes } from '@/lib/routes';
@@ -41,7 +41,7 @@ export default function Footer({ locale }: { locale: Locale }) {
           <div>
             <h2>{t.footer.collectionsTitle}</h2>
             <ul>
-              {categoriesInOrder.map((c) => (
+              {listedCategories.map((c) => (
                 <li key={c.id}>
                   <Link href={routes.category(locale, c)}>{c.name[locale]}</Link>
                 </li>

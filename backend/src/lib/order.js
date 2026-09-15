@@ -33,6 +33,39 @@ function customer(raw = {}) {
 }
 
 /**
+ * Résout les choix du client (cadre, dimensions…) contre la fiche.
+ *
+ * Le navigateur n'envoie que des identifiants ; le libellé et le supplément
+ * sont relus ici, comme le prix. Un identifiant inconnu — panier resté ouvert
+ * pendant qu'on modifiait la fiche, ou requête écrite à la main — retombe sur
+ * la première valeur, celle que la page propose par défaut, et ce que le
+ * panier réclamait est conservé à côté pour qu'un appel au client puisse
+ * l'expliquer.
+ */
+function chooseOptions(product, requested) {
+  const wanted = requested && typeof requested === 'object' ? requested : {};
+  const chosen = [];
+  let extra = 0;
+
+  for (const option of product.options || []) {
+    if (!Array.isArray(option?.values) || !option.values.length) continue;
+    const askedId = clean(wanted[option.id], 40);
+    const value = option.values.find((v) => v.id === askedId) || option.values[0];
+    chosen.push({
+      id: option.id,
+      name: option.name,
+      valueId: value.id,
+      label: value.label,
+      extra: int(value.extra, { fallback: 0 }),
+      ...(askedId && askedId !== value.id ? { requested: askedId } : {}),
+    });
+    extra += int(value.extra, { fallback: 0 });
+  }
+
+  return { chosen, extra };
+}
+
+/**
  * @param body      raw request body
  * @param catalogue array of stored products
  * @param settings  normalised shop settings (delivery threshold, flat rate)
@@ -58,17 +91,22 @@ export function buildOrder(body = {}, catalogue = [], settings = {}) {
       continue;
     }
     const qty = int(line.qty, { min: 1, max: 99, fallback: 1 });
+    const { chosen, extra } = chooseOptions(product, line.options);
     // price 0 is the catalogue's "price on request" — a real, allowed state here.
+    // Un supplément sur un prix sur demande n'en fait pas un prix : la pièce
+    // reste un devis, et le cadre choisi est noté pour la personne qui rappelle.
     if (!product.price) quoteOnly = true;
+    const unit = product.price ? product.price + extra : 0;
     items.push({
       id: product.id,
       slug: product.slug,
       name: product.name,
       qty,
-      price: product.price,
-      lineTotal: product.price * qty,
+      price: unit,
+      lineTotal: unit * qty,
+      ...(chosen.length ? { options: chosen } : {}),
       // What the browser believed, kept only when it differs from the truth.
-      ...(int(line.price, { fallback: -1 }) !== product.price && line.price !== undefined
+      ...(int(line.price, { fallback: -1 }) !== unit && line.price !== undefined
         ? { quotedPrice: int(line.price, { fallback: 0 }) }
         : {}),
     });

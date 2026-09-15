@@ -18,6 +18,30 @@ export interface Category {
   order: number;
 }
 
+/** Une valeur possible d'un choix, avec ce qu'elle ajoute au prix. */
+export interface ProductOptionValue {
+  id: string;
+  label: Localized;
+  /** Supplément en dirhams, 0 quand la valeur n'ajoute rien. */
+  extra: number;
+}
+
+/**
+ * Un choix offert sur la fiche : le cadre d'un tableau, ses dimensions.
+ *
+ * L'API en est la seule source : les libellés et les suppléments affichés ici
+ * sont relus côté serveur au moment de la commande, à partir des seuls
+ * identifiants. Le navigateur propose, la base dispose.
+ */
+export interface ProductOption {
+  id: string;
+  name: Localized;
+  values: ProductOptionValue[];
+}
+
+/** Ce que le visiteur a choisi : id du choix -> id de la valeur. */
+export type OptionChoice = Record<string, string>;
+
 export interface Product {
   /** Client-facing reference (SKU). Shown on the product sheet. */
   id: string;
@@ -45,12 +69,26 @@ export interface Product {
   madeToOrder?: boolean;
   leadTimeDays?: number;
   featured?: boolean;
+  /** Choix proposés sur la fiche : « Cadre », « Dimensions »… Vide = aucun. */
+  options?: ProductOption[];
+  /** Cochée dans /admin : sert de meilleures ventes tant que les commandes
+   *  enregistrées ne suffisent pas à établir un classement. */
+  bestSeller?: boolean;
 }
 
 
 /** Une pièce du classement des ventes, telle que l'API la renvoie. */
 export interface BestSeller {
   slug: string;
-  /** Quantité vendue sur la fenêtre retenue par l'API. */
+  /** Quantité vendue sur la fenêtre retenue par l'API. 0 si la sélection est
+   *  celle cochée à la main dans /admin. */
   sold: number;
 }
+
+/**
+ * D'où vient le classement : `orders` = compté sur les commandes enregistrées,
+ * `manual` = la sélection du patron dans /admin. La boutique ne numérote les
+ * pièces que dans le premier cas — un rang chiffré sur un choix à la main
+ * annoncerait un comptage qui n'a pas eu lieu.
+ */
+export type BestSellersSource = 'orders' | 'manual';

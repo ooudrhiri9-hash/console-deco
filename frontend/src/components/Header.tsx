@@ -4,7 +4,7 @@ import Link from '@/components/Link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { site } from '@/config/site';
-import { categoriesInOrder, countByCategory } from '@/lib/catalogue';
+import { listedCategories, countByCategory } from '@/lib/catalogue';
 import { getDict } from '@/i18n/dictionaries';
 import { localeLabel, locales, type Locale } from '@/i18n/config';
 import { routes, switchLocalePath } from '@/lib/routes';
@@ -60,7 +60,7 @@ export default function Header({ locale }: { locale: Locale }) {
                 {t.nav.products}
               </Link>
               <div className="nav__panel">
-                {categoriesInOrder.map((c) => (
+                {listedCategories.map((c) => (
                   <Link key={c.id} href={routes.category(locale, c)}>
                     {c.name[locale]}
                     <em>{countByCategory(c.id)}</em>
@@ -116,7 +116,7 @@ export default function Header({ locale }: { locale: Locale }) {
             <span className="drawer__label">{t.nav.products}</span>
             <div className="drawer__sub">
               <Link href={routes.products(locale)}>{t.products.filterAll}</Link>
-              {categoriesInOrder.map((c) => (
+              {listedCategories.map((c) => (
                 <Link key={c.id} href={routes.category(locale, c)}>
                   {c.name[locale]}
                 </Link>

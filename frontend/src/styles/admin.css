@@ -79,6 +79,17 @@
 .adm-table tbody tr:hover { background: var(--surface-alt); }
 .adm-table .adm-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
+/* Un choix proposé (cadre, dimensions) et ses valeurs, encadrés pour qu'on voie
+   d'un coup d'oeil où finit un choix et où commence le suivant. */
+.adm-option {
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: .9rem; margin-bottom: .9rem; background: var(--surface-alt);
+}
+.adm-table--tight { margin-top: .7rem; background: var(--white); }
+.adm-table--tight td { padding: .35rem .4rem; }
+.adm-table--tight input { width: 100%; }
+.adm-table--tight .adm-num input { text-align: right; }
+
 .adm-thumb {
   width: 44px; height: 56px; object-fit: cover; display: block;
   background: var(--surface-deep); border: 1px solid var(--line); border-radius: var(--radius);

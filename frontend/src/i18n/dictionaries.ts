@@ -24,7 +24,7 @@ export const dict = {
       heroImageAlt: 'Console en marqueterie bleue à motifs floraux, dans une entrée claire',
       heroCtaAlt: 'Nous contacter',
       categoriesTitle: 'Nos collections',
-      categoriesText: 'Cinq familles de pièces, pensées pour se répondre les unes aux autres.',
+      categoriesText: 'Des familles de pièces, pensées pour se répondre les unes aux autres.',
       featuredTitle: 'Pièces du moment',
       featuredText: 'Une sélection de nos créations les plus demandées.',
       pairEyebrow: 'Notre signature',
@@ -32,6 +32,8 @@ export const dict = {
       pairText:
         'Notre signature : une console et son tableau conçus ensemble, mêmes matières, mêmes teintes. Un mur entier composé d’un seul geste — ce qu’aucun catalogue de tableaux seuls ne peut offrir.',
       pairCta: 'Voir les ensembles',
+      pairImageAlt:
+        'Deux tableaux assortis accrochés au-dessus d’une console claire, dans un salon beige',
       valuesTitle: 'Pourquoi nos clients nous choisissent',
       values: [
         { title: 'Fabriqué au Maroc', text: 'Atelier local, artisans locaux. Nous maîtrisons chaque étape, du bois brut à la finition.' },
@@ -42,6 +44,7 @@ export const dict = {
       bestSellersEyebrow: 'Les plus demandées',
       bestSellersTitle: 'Nos meilleures ventes',
       bestSellersText: 'Le classement des pièces les plus commandées ces derniers mois.',
+      bestSellersTextPicked: 'Les pièces qui quittent le plus souvent l’atelier.',
       faqTitle: 'Questions fréquentes',
       faqText: 'Ce qu’on nous demande le plus souvent avant de commander.',
       faqCta: 'Une autre question ? Écrivez-nous',
@@ -175,7 +178,7 @@ export const dict = {
       heroImageAlt: 'Blue floral marquetry console in a bright entrance hall',
       heroCtaAlt: 'Get in touch',
       categoriesTitle: 'Our collections',
-      categoriesText: 'Five families of pieces, designed to speak to one another.',
+      categoriesText: 'Families of pieces, designed to speak to one another.',
       featuredTitle: 'Featured pieces',
       featuredText: 'A selection of our most requested creations.',
       pairEyebrow: 'Our signature',
@@ -183,6 +186,8 @@ export const dict = {
       pairText:
         'Our signature: a console and its artwork designed together — same materials, same tones. A whole wall composed in a single move, which no wall-art-only catalogue can offer.',
       pairCta: 'See the sets',
+      pairImageAlt:
+        'Two matching artworks hung above a pale console in a beige living room',
       valuesTitle: 'Why clients choose us',
       values: [
         { title: 'Made in Morocco', text: 'Local workshop, local craftsmen. We control every step, from raw wood to final finish.' },
@@ -193,6 +198,7 @@ export const dict = {
       bestSellersEyebrow: 'Most wanted',
       bestSellersTitle: 'Our best sellers',
       bestSellersText: 'The pieces ordered most over the past few months.',
+      bestSellersTextPicked: 'The pieces that most often leave the workshop.',
       faqTitle: 'Frequently asked questions',
       faqText: 'What people ask us most before ordering.',
       faqCta: 'Another question? Write to us',

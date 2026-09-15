@@ -1,5 +1,6 @@
 /**
  * Product photos: src/products/**  ->  public/media/products/*.webp
+ * Family photos:  src/products/**  ->  public/media/categories/*.webp
  *
  *   node scripts/prepare-media.mjs            (write)
  *   node scripts/prepare-media.mjs --check    (report only)
@@ -35,6 +36,17 @@ const SRC = resolve('src/products');
 const CONSOLES = join(SRC, 'console-products');
 const OUT = resolve('public/media/products');
 
+/**
+ * La photo d'une famille n'est lue qu'a un seul endroit, la carte de
+ * « Nos collections », et cette carte est un paysage 3:2.2 — pas le puits 4:5
+ * du catalogue. On la taille donc a sa mesure : recadrer un portrait 4:5 en
+ * CSS ne garderait que la bande du milieu, ce qui coupe soit le tableau soit
+ * la console, c'est-a-dire le sujet.
+ */
+const CAT_W = 800;
+const CAT_H = 587;
+const CAT_OUT = resolve('public/media/categories');
+
 const wa = (t) => join(CONSOLES, `WhatsApp Image 2026-09-01 at ${t}.jpeg`);
 const wa4 = (t) => join(SRC, `WhatsApp Image 2026-09-04 at ${t}.jpeg`);
 
@@ -69,6 +81,23 @@ const MAP = {
   'table-basse-damier': [join(SRC, 'Tables Basses.jpeg'), join(SRC, 'Tables Basses-1.jpeg')],
 };
 
+/**
+ * id de famille -> photo d'ambiance. Les deux familles encore vides du
+ * catalogue montraient une vignette « ATELIER OMAR » : une collection annoncee
+ * sur l'accueil sans rien a regarder. Ces deux photos existaient deja dans le
+ * dossier de depot sans qu'aucune piece les reclame.
+ *
+ * `tables-appoint` n'y figure pas : aucune photo de table d'appoint n'a encore
+ * ete fournie, et emprunter celle d'une table basse ferait passer une famille
+ * pour une autre. Elle garde sa vignette jusqu'a la vraie photo.
+ */
+const CATEGORY_MAP = {
+  // Un tableau et la console dessous : l'ensemble, en une image.
+  'console-tableau': join(SRC, 'Tableau.jpeg'),
+  // Trois toiles accrochees ensemble, pour une famille au pluriel.
+  tableaux: join(SRC, 'Tableau 3 pack.jpeg'),
+};
+
 /** Client drawings and product sheets: they carry text, so never copy-extend. */
 const SHEETS = new Set([
   wa4('01.39.35'),
@@ -97,14 +126,28 @@ async function cornerColour(file) {
   return { r: Math.round(r / px), g: Math.round(g / px), b: Math.round(b / px) };
 }
 
-async function convert(file, dest) {
+async function convert(file, dest, w = W, h = H) {
   const meta = await sharp(file).metadata();
   const ratio = meta.width / meta.height;
+  const wanted = w / h;
+
+  // Une cible paysage (les familles) n'a pas le probleme du puits 4:5 : une
+  // photo de piece est toujours plus haute que large, donc le recadrage centre
+  // ne mord que le plafond et le sol.
+  if (wanted >= 1) {
+    if (!checkOnly) {
+      await sharp(file)
+        .resize(w, h, { fit: 'cover', position: 'centre' })
+        .webp({ quality: 80, effort: 5 })
+        .toFile(dest);
+    }
+    return `crop      ${ratio.toFixed(2)}`;
+  }
 
   if (ratio <= MAX_CROP_RATIO) {
     if (!checkOnly) {
       await sharp(file)
-        .resize(W, H, { fit: 'cover', position: 'centre' })
+        .resize(w, h, { fit: 'cover', position: 'centre' })
         .webp({ quality: 80, effort: 5 })
         .toFile(dest);
     }
@@ -115,7 +158,7 @@ async function convert(file, dest) {
     const background = await cornerColour(file);
     if (!checkOnly) {
       await sharp(file)
-        .resize(W, H, { fit: 'contain', background })
+        .resize(w, h, { fit: 'contain', background })
         .webp({ quality: 80, effort: 5 })
         .toFile(dest);
     }
@@ -126,13 +169,13 @@ async function convert(file, dest) {
   // Upwards only: the top of these frames is always plain wall, which copies
   // invisibly, whereas copying the bottom row smears the floor or the rug into
   // vertical streaks.
-  const fitted = await sharp(file).resize({ width: W }).toBuffer();
+  const fitted = await sharp(file).resize({ width: w }).toBuffer();
   const fittedHeight = (await sharp(fitted).metadata()).height;
-  const short = Math.max(0, H - fittedHeight);
+  const short = Math.max(0, h - fittedHeight);
   if (!checkOnly) {
     await sharp(fitted)
       .extend({ top: short, extendWith: 'copy' })
-      .resize(W, H, { fit: 'cover' })
+      .resize(w, h, { fit: 'cover' })
       .webp({ quality: 80, effort: 5 })
       .toFile(dest);
   }
@@ -144,12 +187,16 @@ const absent = [];
 for (const files of Object.values(MAP)) {
   for (const f of files) if (!existsSync(f)) absent.push(f);
 }
+for (const f of Object.values(CATEGORY_MAP)) if (!existsSync(f)) absent.push(f);
 if (absent.length) {
   console.error('\n! Source photo(s) not found:\n' + absent.map((m) => '  x ' + m).join('\n') + '\n');
   process.exit(1);
 }
 
-if (!checkOnly) mkdirSync(OUT, { recursive: true });
+if (!checkOnly) {
+  mkdirSync(OUT, { recursive: true });
+  mkdirSync(CAT_OUT, { recursive: true });
+}
 
 let count = 0;
 let bytes = 0;
@@ -164,8 +211,17 @@ for (const [slug, files] of Object.entries(MAP)) {
   }
 }
 
-// Anything in the drop folder that no product claims.
-const claimed = new Set(Object.values(MAP).flat());
+for (const [id, file] of Object.entries(CATEGORY_MAP)) {
+  const name = `${id}.webp`;
+  const dest = join(CAT_OUT, name);
+  const how = await convert(file, dest, CAT_W, CAT_H);
+  if (!checkOnly) bytes += statSync(dest).size;
+  console.log(`  ${name.padEnd(44)} ${how} (famille)`);
+  count++;
+}
+
+// Anything in the drop folder that no product or family claims.
+const claimed = new Set([...Object.values(MAP).flat(), ...Object.values(CATEGORY_MAP)]);
 const orphans = [];
 for (const dir of [SRC, CONSOLES]) {
   for (const f of readdirSync(dir)) {
@@ -175,9 +231,11 @@ for (const dir of [SRC, CONSOLES]) {
 }
 
 const size = checkOnly ? '' : ` (${(bytes / 1024 / 1024).toFixed(1)} MB)`;
-console.log(`\n${count} images ${checkOnly ? 'checked' : 'written to public/media/products'}${size}`);
+console.log(`\n${count} images ${checkOnly ? 'checked' : 'written to public/media/{products,categories}'}${size}`);
 if (orphans.length) {
-  console.log(`\n${orphans.length} source file(s) not used by any product:`);
+  // `Tableaux 2 pack.jpeg` apparaît ici sans être inutilisée : c'est la photo
+  // du bandeau de l'accueil, que prepare-signature.mjs taille en 4:3.
+  console.log(`\n${orphans.length} source file(s) not used by any product or family:`);
   for (const o of orphans) console.log('  . ' + o);
 }
 console.log('');

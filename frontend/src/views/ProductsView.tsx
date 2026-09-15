@@ -1,7 +1,7 @@
 import Link from '@/components/Link';
 import type { Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
-import { allProducts, categoriesInOrder } from '@/lib/catalogue';
+import { allProducts, listedCategories } from '@/lib/catalogue';
 import { routes } from '@/lib/routes';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import CatalogueGrid from '@/components/CatalogueGrid';
@@ -31,7 +31,7 @@ export default function ProductsView({ locale }: { locale: Locale }) {
             indexable page with its own copy. */}
         <div className="filters">
           <span className="chip is-active">{t.products.filterAll}</span>
-          {categoriesInOrder.map((c) => (
+          {listedCategories.map((c) => (
             <Link key={c.id} href={routes.category(locale, c)} className="chip">
               {c.name[locale]}
             </Link>

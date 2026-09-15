@@ -51,3 +51,27 @@ export function bestSellers(orders = [], products = [], limit = 4) {
   // ne rien afficher que d'afficher un classement qui ne classe rien.
   return ranked.length >= MIN_RANKED ? ranked : [];
 }
+
+/**
+ * Le classement que la boutique affiche, et d'ou il vient.
+ *
+ * Les commandes enregistrees font foi des qu'il y en a assez. En dessous, on
+ * prend la selection cochee dans /admin : une bonne part des ventes se conclut
+ * sur WhatsApp ou a l'atelier et n'arrive jamais dans la table des commandes,
+ * donc une boutique sans commande enregistree n'est pas une boutique sans
+ * ventes. La source est renvoyee avec la liste pour que la boutique n'affiche
+ * pas un rang chiffre sur une selection qui ne compte rien.
+ *
+ * @returns {{ list: Array<{ slug: string, sold: number }>, source: 'orders' | 'manual' }}
+ */
+export function pickBestSellers(orders = [], products = [], limit = 4) {
+  const counted = bestSellers(orders, products, limit);
+  if (counted.length) return { list: counted, source: 'orders' };
+
+  const picked = (products || [])
+    .filter((p) => p.active !== false && p.bestSeller)
+    .slice(0, limit)
+    .map((p) => ({ slug: p.slug, sold: 0 }));
+
+  return { list: picked, source: 'manual' };
+}

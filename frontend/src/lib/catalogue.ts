@@ -9,13 +9,14 @@
 import snapshot from '@/data/catalogue.json';
 import { products as fallbackProducts } from '@/data/products';
 import { categories as fallbackCategories } from '@/data/categories';
-import type { BestSeller, Category, Product } from '@/types';
+import type { BestSeller, BestSellersSource, Category, Product } from '@/types';
 
 type Snapshot = {
   products: Product[];
   categories: Category[];
   settings: unknown;
   bestSellers?: BestSeller[];
+  bestSellersSource?: BestSellersSource;
   generatedAt: string | null;
 };
 
@@ -39,12 +40,16 @@ export const getCategory = (id: string) => categories.find((c) => c.id === id);
 export const allProducts = products;
 
 /**
- * Les pièces les plus commandées au moment du build. Vide tant que l'API n'a
- * pas assez de commandes pour établir un classement honnête.
+ * Les pièces les plus commandées au moment du build — ou, à défaut de
+ * commandes, la sélection cochée dans /admin. Vide quand l'API n'a ni l'un ni
+ * l'autre : mieux vaut pas de section qu'un palmarès inventé.
  */
 export const builtBestSellers: BestSeller[] = live && Array.isArray(snap.bestSellers)
   ? snap.bestSellers
   : [];
+
+export const builtBestSellersSource: BestSellersSource =
+  snap.bestSellersSource === 'orders' ? 'orders' : 'manual';
 
 export const productsInCategory = (categoryId: string) =>
   products.filter((p) => p.categoryId === categoryId);
@@ -57,6 +62,27 @@ export const featuredProducts = (limit = 8) => {
 };
 
 export const countByCategory = (categoryId: string) => productsInCategory(categoryId).length;
+
+/**
+ * Les familles que la boutique met en avant : menu, pied de page, filtres et
+ * « Nos collections ».
+ *
+ * Une famille sans aucune pièce et sans photo n'a rien à montrer : sa carte est
+ * une vignette muette qui mène à une page vide, et le visiteur qui clique
+ * apprend seulement qu'il a perdu son clic. Une famille encore vide mais
+ * photographiée, elle, annonce un savoir-faire dont on peut discuter par
+ * téléphone — elle reste.
+ *
+ * La page de la famille cachée continue d'exister et de répondre : un lien déjà
+ * partagé ou indexé ne doit pas tomber sur un 404 parce qu'on a retiré une
+ * carte. Elle n'est simplement plus proposée nulle part.
+ *
+ * Calculé au build, comme tout ce qui touche aux familles : la carte revient à
+ * la reconstruction qui suit l'ajout de la première pièce, pas avant.
+ */
+export const listedCategories = categoriesInOrder.filter(
+  (c) => countByCategory(c.id) > 0 || Boolean(c.image),
+);
 
 /**
  * "You may also like": same category first, then any other piece,
