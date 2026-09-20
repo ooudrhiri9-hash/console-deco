@@ -72,7 +72,7 @@ en changer plus tard : `git -C /srv/maisondeco checkout <branche>`.
 Le script installe Nginx, Node 22 (dépôts Ubuntu), PM2, certbot, le pare-feu
 UFW et fail2ban,
 ajoute 2 Go de swap, crée l'utilisateur **`deco`** qui fera tourner l'API — pas
-root — et clone le dépôt dans `/srv/maisondeco`.
+root, de home `/home/deco` — et clone le dépôt dans `/srv/maisondeco`.
 
 > Il coupe aussi l'authentification SSH par mot de passe. Vérifiez que votre clé
 > fonctionne **avant** de fermer la session en cours.
@@ -137,7 +137,7 @@ sudo -u deco npm run seed
 
 sudo -u deco pm2 start /srv/maisondeco/deploy/ecosystem.config.cjs
 sudo -u deco pm2 save
-pm2 startup systemd -u deco --hp /srv/maisondeco   # puis exécuter la ligne affichée
+pm2 startup systemd -u deco --hp /home/deco   # puis exécuter la ligne affichée
 ```
 
 Vérification :

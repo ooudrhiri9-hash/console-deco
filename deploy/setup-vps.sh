@@ -14,6 +14,7 @@ REPO=${REPO:-https://github.com/ooudrhiri9-hash/console-deco.git}
 # Branche suivie par le VPS. `deploy.sh` fait ensuite `git pull` sur celle-ci.
 BRANCH=${BRANCH:-main}
 USER_APP=deco
+HOME_APP=/home/deco
 APP=/srv/maisondeco
 WEB=/var/www/maisondeco
 
@@ -60,9 +61,12 @@ fi
 echo "==> Utilisateur $USER_APP"
 # L'API ne tourne pas en root : une faille dans Express ne doit pas donner la
 # machine entiere.
-id -u "$USER_APP" >/dev/null 2>&1 || useradd -m -d "$APP" -s /bin/bash "$USER_APP"
+#
+# Le home reste distinct du dossier applicatif : `useradd -m` y recopie les
+# fichiers de squelette, et `git clone` refuse d'ecrire dans un dossier non vide.
+id -u "$USER_APP" >/dev/null 2>&1 || useradd -m -d "$HOME_APP" -s /bin/bash "$USER_APP"
 mkdir -p "$APP" "$WEB" /var/log/maisondeco
-chown -R "$USER_APP":"$USER_APP" "$APP" /var/log/maisondeco
+chown -R "$USER_APP":"$USER_APP" "$APP" "$HOME_APP" /var/log/maisondeco
 chown -R "$USER_APP":www-data "$WEB"
 chmod 755 "$WEB"
 
