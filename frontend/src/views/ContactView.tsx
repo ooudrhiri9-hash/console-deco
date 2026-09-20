@@ -4,6 +4,7 @@ import { site } from '@/config/site';
 import { routes } from '@/lib/routes';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ContactForm from '@/components/ContactForm';
+import OrderSteps from '@/components/OrderSteps';
 import { MailIcon, PhoneIcon, PinIcon, WhatsappIcon } from '@/components/Icons';
 import { waLink } from '@/lib/whatsapp';
 
@@ -81,6 +82,8 @@ export default function ContactView({ locale }: { locale: Locale }) {
             <p className="small muted">{t.contact.hours}</p>
           </aside>
         </div>
+
+        <OrderSteps locale={locale} />
       </div>
     </>
   );

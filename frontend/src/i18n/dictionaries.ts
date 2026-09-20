@@ -82,6 +82,56 @@ export const dict = {
       ctaText: 'Envoyez-nous les dimensions et l’ambiance de votre pièce, nous vous répondons avec une proposition.',
       ctaButton: 'Parler à un conseiller',
     },
+    catalogueHelp: {
+      title: 'Choisir une pièce',
+      body: [
+        "Commencez par le mur, pas par le meuble. Mesurez la largeur disponible, la hauteur sous un tableau ou un miroir déjà accroché, et ce qui passe par la porte et la cage d'escalier — c'est là que se jouent la plupart des mauvaises surprises.",
+        "Si les dimensions ne tombent pas juste, elles s'adaptent : largeur, hauteur, profondeur, teintes et finitions se reprennent à l'atelier. Donnez-nous vos mesures et l'ambiance de la pièce, nous revenons avec une proposition.",
+        "Et avant de décider, demandez à voir : nous envoyons des photos et des vidéos supplémentaires de la pièce qui vous intéresse, sous l'angle et dans la lumière que vous voulez.",
+      ],
+      faqTitle: 'Avant de commander',
+      faq: [
+        {
+          q: 'Comment savoir si une pièce ira chez moi ?',
+          a: "Mesurez d'abord l'espace, puis comparez aux dimensions de la fiche. Si l'écart est gênant, dites-le-nous : les pièces se reprennent aux mesures de votre mur.",
+        },
+        {
+          q: "Peut-on voir plus de photos d'une pièce ?",
+          a: "Oui. Nous envoyons des photos et des vidéos supplémentaires, sous l'angle et dans la lumière que vous demandez. Une visite de l'atelier est possible sur rendez-vous.",
+        },
+        {
+          q: 'Les pièces sont-elles disponibles tout de suite ?',
+          a: "Cela dépend de la pièce. Une pièce disponible part sous quelques jours ; une pièce fabriquée sur commande demande le délai indiqué sur sa fiche, confirmé avec vous avant le lancement.",
+        },
+        {
+          q: 'Livrez-vous en dehors de Casablanca ?',
+          a: "Oui, partout au Maroc, avec un emballage renforcé pour le transport. Les frais et le délai vous sont confirmés au moment de la commande, selon la ville et le volume de la pièce.",
+        },
+      ],
+    },
+    orderSteps: {
+      eyebrow: 'En pratique',
+      title: 'Comment se passe une commande',
+      lead: "Rien n'est payé en ligne, et rien n'est lancé sans votre accord.",
+      steps: [
+        {
+          title: 'Vous choisissez la pièce',
+          text: "Ajoutez-la au panier, ou demandez son prix si la fiche porte « Prix sur demande » : ces pièces se chiffrent selon le modèle, les finitions et la taille.",
+        },
+        {
+          title: 'Nous confirmons avec vous',
+          text: 'Dimensions, teintes, finitions, puis le délai et les frais de livraison selon votre ville et le volume de la pièce. Rien ne part en fabrication avant cet accord.',
+        },
+        {
+          title: 'L’atelier fabrique',
+          text: "Une pièce disponible part sous quelques jours. Une pièce faite sur commande demande le délai annoncé sur sa fiche, confirmé avec vous avant le lancement.",
+        },
+        {
+          title: 'Livraison et paiement',
+          text: 'Livraison partout au Maroc, emballage renforcé pour le transport. Vous payez à la réception, en dirhams.',
+        },
+      ],
+    },
     products: {
       title: 'Nos produits',
       intro:
@@ -277,6 +327,56 @@ export const dict = {
       ctaTitle: 'A project, or a bespoke piece?',
       ctaText: 'Send us the dimensions and the mood of your room and we will come back with a proposal.',
       ctaButton: 'Talk to an advisor',
+    },
+    catalogueHelp: {
+      title: 'Choosing a piece',
+      body: [
+        'Start with the wall, not the furniture. Measure the width you have, the height under any artwork or mirror already hanging, and what will fit through the door and stairwell — that is where most bad surprises happen.',
+        'If the dimensions do not quite land, they can be changed: width, height, depth, tones and finishes are all reworked in the workshop. Send us your measurements and the feel of the room, and we come back with a proposal.',
+        'And before you decide, ask to see more: we send extra photos and videos of the piece you are interested in, from the angle and in the light you want.',
+      ],
+      faqTitle: 'Before you order',
+      faq: [
+        {
+          q: 'How do I know a piece will fit?',
+          a: 'Measure the space first, then compare it with the dimensions on the page. If the gap is a problem, tell us — pieces can be rebuilt to the measurements of your wall.',
+        },
+        {
+          q: 'Can I see more photos of a piece?',
+          a: 'Yes. We send extra photos and videos, from the angle and in the light you ask for. A workshop visit is possible by appointment.',
+        },
+        {
+          q: 'Are pieces available right away?',
+          a: 'It depends on the piece. One in stock ships within a few days; a made-to-order piece takes the lead time shown on its page, confirmed with you before work starts.',
+        },
+        {
+          q: 'Do you deliver outside Casablanca?',
+          a: 'Yes, anywhere in Morocco, packed for transport. The cost and the lead time are confirmed when you order, based on your city and the size of the piece.',
+        },
+      ],
+    },
+    orderSteps: {
+      eyebrow: 'How it works',
+      title: 'What ordering looks like',
+      lead: 'Nothing is paid online, and nothing is made without your go-ahead.',
+      steps: [
+        {
+          title: 'You pick a piece',
+          text: 'Add it to the basket, or ask for a price when the page says “Price on request” — those pieces are quoted on the model, the finishes and the size.',
+        },
+        {
+          title: 'We confirm with you',
+          text: 'Dimensions, tones, finishes, then the lead time and delivery cost for your city and the size of the piece. Nothing goes into production before that.',
+        },
+        {
+          title: 'The workshop builds it',
+          text: 'A piece in stock ships within a few days. A made-to-order piece takes the lead time shown on its page, confirmed with you before work starts.',
+        },
+        {
+          title: 'Delivery and payment',
+          text: 'Delivered anywhere in Morocco, packed for transport. You pay on arrival, in dirhams.',
+        },
+      ],
     },
     products: {
       title: 'Our products',

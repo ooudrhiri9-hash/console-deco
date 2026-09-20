@@ -6,6 +6,7 @@ import { listedCategories, productsInCategory } from '@/lib/catalogue';
 import { routes } from '@/lib/routes';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import CatalogueGrid from '@/components/CatalogueGrid';
+import OrderSteps from '@/components/OrderSteps';
 import { itemListJsonLd, JsonLd } from '@/lib/seo';
 
 export default function CategoryView({
@@ -56,6 +57,12 @@ export default function CategoryView({
         </div>
 
         <CatalogueGrid products={items} locale={locale} categoryId={category.id} />
+
+        {/* Le texte propre a la famille est en haut, ecrit dans /admin et
+            different d'une famille a l'autre. Ici, seulement la marche a
+            suivre, identique partout : c'est un repere, pas du contenu
+            editorial — le dupliquer ne dilue donc rien. */}
+        <OrderSteps locale={locale} />
       </div>
     </>
   );
