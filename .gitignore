@@ -4,3 +4,9 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 .env*.local
+
+# Captures et scripts d inspection jetables, ecrits a la racine par erreur
+# lors des verifications visuelles.
+/entete-*.png
+/capture.mjs
+/sweep.mjs
