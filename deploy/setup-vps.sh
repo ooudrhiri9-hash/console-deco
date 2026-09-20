@@ -11,6 +11,8 @@
 set -euo pipefail
 
 REPO=${REPO:-https://github.com/ooudrhiri9-hash/console-deco.git}
+# Branche suivie par le VPS. `deploy.sh` fait ensuite `git pull` sur celle-ci.
+BRANCH=${BRANCH:-main}
 USER_APP=deco
 APP=/srv/maisondeco
 WEB=/var/www/maisondeco
@@ -66,9 +68,9 @@ chmod 755 "$WEB"
 
 echo "==> Depot"
 if [ ! -d "$APP/.git" ]; then
-  sudo -u "$USER_APP" git clone "$REPO" "$APP"
+  sudo -u "$USER_APP" git clone --branch "$BRANCH" "$REPO" "$APP"
 else
-  echo "  deja clone."
+  echo "  deja clone, branche $(git -C "$APP" rev-parse --abbrev-ref HEAD)."
 fi
 
 echo "==> Nginx"
