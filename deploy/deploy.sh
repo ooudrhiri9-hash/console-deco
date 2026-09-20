@@ -13,6 +13,12 @@ WEB=/var/www/maisondeco
 cd "$APP"
 
 echo "==> Code"
+# `sync-catalogue` reecrit frontend/src/data/catalogue.json a chaque build. Ce
+# fichier est suivi par git — il sert de repli quand l'API est injoignable —
+# donc le depot du VPS est sale en permanence, et `git pull` refuse des que le
+# meme fichier a bouge en amont. On le remet a l'etat du depot avant de tirer :
+# le build suivant le regenere depuis l'API de toute facon.
+git checkout -- frontend/src/data/catalogue.json 2>/dev/null || true
 git pull --ff-only
 
 echo "==> API"
