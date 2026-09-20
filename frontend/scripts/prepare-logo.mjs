@@ -6,6 +6,7 @@
  *                       ->  public/logo.png               (512 px, donnÉes structurées)
  *                       ->  public/apple-touch-icon.png   (180 px, fond opaque)
  *                       ->  public/favicon.ico            (16, 32, 48 px)
+ *                       ->  public/og-default.png         (1200x630, partages)
  *
  *   node scripts/prepare-logo.mjs            (écrit)
  *   node scripts/prepare-logo.mjs --check    (constate seulement)
@@ -38,6 +39,8 @@ const check = process.argv.includes('--check');
 
 /** Le symbole seul, repéré par analyse du fichier source (voir le journal). */
 const SYMBOLE = { top: 425, bottom: 874 };
+/** Le bloc entier, symbole et nom : ce qui part dans les partages. */
+const BLOC = { top: 425, bottom: 1111 };
 /** Le fond sombre de la marque, celui du pied de page et de l'icône iOS. */
 const ENCRE = '#14120f';
 const ICO_SIZES = [16, 32, 48];
@@ -50,13 +53,13 @@ if (!existsSync(SRC)) {
 }
 
 /** Colonnes occupées par le symbole, pour ne pas recadrer à vue. */
-async function bornesDuSymbole() {
+async function bornesDuSymbole(bande = SYMBOLE) {
   const { data, info } = await sharp(SRC).greyscale().raw().toBuffer({ resolveWithObject: true });
   const W = info.width;
   const colonnes = [];
   for (let x = 0; x < W; x += 1) {
     let n = 0;
-    for (let y = SYMBOLE.top; y <= SYMBOLE.bottom; y += 1) if (data[y * W + x] < 190) n += 1;
+    for (let y = bande.top; y <= bande.bottom; y += 1) if (data[y * W + x] < 190) n += 1;
     colonnes.push(n);
   }
   const debut = colonnes.findIndex((v) => v > 1);
@@ -65,15 +68,15 @@ async function bornesDuSymbole() {
 }
 
 /** Le symbole sur fond transparent. `reverse` éclaircit les traits sombres. */
-async function marque({ reverse = false } = {}) {
-  const { left, right } = await bornesDuSymbole();
+async function marque({ reverse = false, bande = SYMBOLE } = {}) {
+  const { left, right } = await bornesDuSymbole(bande);
   const marge = 10;
   const brut = await sharp(SRC)
     .extract({
       left: left - marge,
-      top: SYMBOLE.top - marge,
+      top: bande.top - marge,
       width: right - left + marge * 2,
-      height: SYMBOLE.bottom - SYMBOLE.top + marge * 2,
+      height: bande.bottom - bande.top + marge * 2,
     })
     .ensureAlpha()
     .raw()
@@ -129,6 +132,52 @@ function ico(images) {
 
 const claire = await marque();
 const inversee = await marque({ reverse: true });
+const blocInverse = await marque({ reverse: true, bande: BLOC });
+
+/**
+ * La carte des partages — WhatsApp, Facebook, LinkedIn.
+ *
+ * Celle d'avant etait un gabarit assume, et elle arrivait *blanche* : elle
+ * dessinait son texte en SVG, or sharp passe par librsvg, qui n'utilise que
+ * les polices installees sur la machine. Marcellus n'y etant pas, le texte
+ * disparaissait sans la moindre erreur et il ne restait qu'un filet dore.
+ *
+ * D'ou le parti pris ici : aucune police. Le bloc complet — symbole et nom —
+ * existe deja en pixels dans le fichier source, on le compose sur le fond de
+ * la marque. Rien a resoudre, rien a installer, le meme rendu partout.
+ *
+ * Fond sombre : la vignette se detache des deux interfaces de WhatsApp, claire
+ * comme sombre, alors qu'un fond blanc s'y fond.
+ */
+async function carteDePartage() {
+  const W = 1200;
+  const H = 630;
+  const bloc = await sharp(blocInverse)
+    .resize({ width: Math.round(W * 0.56), fit: 'inside' })
+    .toBuffer();
+  const { width, height } = await sharp(bloc).metadata();
+
+  // Un filet dore a 48 px du bord, comme sur la carte precedente : c'est le
+  // seul element qu'elle affichait correctement, et il fait la marque.
+  const filet = Buffer.from(
+    `<svg width="${W}" height="${H}"><rect x="48" y="48" width="${W - 96}" height="${H - 96}" `
+    + `fill="none" stroke="#a67c34" stroke-width="2"/></svg>`,
+  );
+
+  return sharp({
+    create: { width: W, height: H, channels: 4, background: '#14120f' },
+  })
+    .composite([
+      { input: filet, top: 0, left: 0 },
+      { input: bloc, top: Math.round((H - height) / 2), left: Math.round((W - width) / 2) },
+    ])
+    // Sans canal alpha : plusieurs clients de messagerie rendent la
+    // transparence en noir plutot que de la composer. Le fond etant deja
+    // opaque, on ne perd rien et on retire le piege.
+    .flatten({ background: '#14120f' })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+}
 
 /** Le symbole centré dans un carré, sur fond transparent ou plein. */
 const carre = (buffer, taille, fond) =>
@@ -163,6 +212,7 @@ const sorties = [
   ['public/media/brand/mark-footer.webp', await enPage(inversee, 30)],
   ['public/logo.png', await carre(claire, LOGO)],
   ['public/apple-touch-icon.png', await carre(inversee, APPLE, ENCRE)],
+  ['public/og-default.png', await carteDePartage()],
   [
     'public/favicon.ico',
     ico(await Promise.all(ICO_SIZES.map(async (size) => ({ size, data: await carre(claire, size) })))),
