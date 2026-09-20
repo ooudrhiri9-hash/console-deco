@@ -55,9 +55,8 @@ Depuis le VPS, récupérez le script d'installation et lancez-le :
 
 ```bash
 ssh root@VOTRE_IP
-BRANCHE=boutique/choix-et-photos   # ou main une fois la fusion faite
-curl -fsSL "https://raw.githubusercontent.com/ooudrhiri9-hash/console-deco/$BRANCHE/deploy/setup-vps.sh" -o setup-vps.sh
-BRANCH="$BRANCHE" bash setup-vps.sh
+curl -fsSL https://raw.githubusercontent.com/ooudrhiri9-hash/console-deco/main/deploy/setup-vps.sh -o setup-vps.sh
+bash setup-vps.sh
 ```
 
 Le dépôt visé est `ooudrhiri9-hash/console-deco`, branche `main`. S'il est
@@ -65,9 +64,9 @@ privé, `curl` renverra une page d'erreur : clonez-le alors à la main (clé de
 déploiement GitHub, ou jeton) dans `/srv/maisondeco`, puis lancez
 `bash /srv/maisondeco/deploy/setup-vps.sh`.
 
-Le dépôt est public, donc le clone se fait sans clé. La branche suivie est
-donnée par `BRANCH` ; `deploy.sh` fait ensuite ses `git pull` sur celle-ci. Pour
-en changer plus tard : `git -C /srv/maisondeco checkout <branche>`.
+Le dépôt est public, donc le clone se fait sans clé. `main` est la branche
+suivie par défaut ; `BRANCH=<autre>` permet d'en viser une autre, et
+`deploy.sh` fait ensuite ses `git pull` sur celle qui est en place.
 
 Le script installe Nginx, Node 22 (dépôts Ubuntu), PM2, certbot, le pare-feu
 UFW et fail2ban,
