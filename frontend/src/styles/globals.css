@@ -298,6 +298,13 @@ p { text-wrap: pretty; }
   font-family: var(--font-display); font-size: 1.5rem;
 }
 .drawer__label { padding: 0.9rem 0; border-bottom: 1px solid var(--line); font-family: var(--font-display); font-size: 1.5rem; color: var(--ink-faint); }
+/* Les liens de sous-categories vivent dans un div, pas directement dans le
+   nav : `.drawer nav > a` ne les atteint donc pas, et ils restaient `inline`.
+   Sept liens s'enchainaient alors comme du texte, trois par ligne, avec leurs
+   paddings et leurs bordures qui se chevauchaient — 79 px de haut pour sept
+   entrees. Le conteneur porte la mise en colonne, ce qui blocifie ses enfants
+   quel que soit leur nombre. */
+.drawer__sub { display: flex; flex-direction: column; }
 .drawer__sub a { font-size: 1rem; font-family: var(--font-sans); padding-left: 1rem; color: var(--ink-soft); }
 
 /* Announcement strip */
