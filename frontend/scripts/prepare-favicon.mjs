@@ -34,6 +34,8 @@ import sharp from 'sharp';
 const SRC = resolve('public/favicon.svg');
 const OUT = resolve('public/favicon.ico');
 const OUT_APPLE = resolve('public/apple-touch-icon.png');
+/** Le logo que reclame Google pour le noeud Organization des donnees structurees. */
+const OUT_LOGO = resolve('public/logo.png');
 const SIZES = [16, 32, 48];
 /** Ce qu'Apple attend depuis les écrans Retina, et ce que tout le monde publie. */
 const APPLE_SIZE = 180;
@@ -117,3 +119,12 @@ writeFileSync(OUT, buffer);
 console.log(`prepare-favicon: ${OUT} — ${SIZES.join(', ')} px, ${buffer.length} octets`);
 writeFileSync(OUT_APPLE, apple);
 console.log(`prepare-favicon: ${OUT_APPLE} — ${APPLE_SIZE} px sur ${fond}, ${apple.length} octets`);
+
+// Google recommande 512 px de cote et tolere la transparence ici, contrairement
+// a iOS : le logo se detache donc sur fond clair comme sur fond sombre.
+const logo = await sharp(readFileSync(SRC), { density: 512 })
+  .resize(512, 512, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  .png({ compressionLevel: 9 })
+  .toBuffer();
+writeFileSync(OUT_LOGO, logo);
+console.log(`prepare-favicon: ${OUT_LOGO} — 512 px, ${logo.length} octets`);

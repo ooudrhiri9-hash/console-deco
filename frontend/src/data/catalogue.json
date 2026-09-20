@@ -1435,6 +1435,48 @@
       },
       "image": "/media/categories/tableaux.webp",
       "order": 5
+    },
+    {
+      "id": "tableaux-duo",
+      "slug": {
+        "fr": "tableaux-duo",
+        "en": "artwork-duos"
+      },
+      "name": {
+        "fr": "Tableaux en duo",
+        "en": "Artwork duos"
+      },
+      "tagline": {
+        "fr": "Deux toiles, une seule composition",
+        "en": "Two canvases, one composition"
+      },
+      "description": {
+        "fr": "Deux toiles pensées comme une seule composition : mêmes teintes, mêmes matières, un dessin qui se poursuit de l'une à l'autre. Côte à côte, elles occupent un mur que la plupart des pièces seules laisseraient vide. Peintes à la main dans notre atelier au Maroc et livrées ensemble.",
+        "en": "Two canvases conceived as a single composition: shared tones, shared materials, a line that carries from one to the other. Side by side they fill a wall most single pieces would leave bare. Hand-painted in our Moroccan workshop and delivered together."
+      },
+      "image": "/media/categories/tableaux-duo.webp",
+      "order": 6
+    },
+    {
+      "id": "tableaux-trio",
+      "slug": {
+        "fr": "tableaux-trio",
+        "en": "artwork-trios"
+      },
+      "name": {
+        "fr": "Tableaux en trio",
+        "en": "Artwork trios"
+      },
+      "tagline": {
+        "fr": "Trois toiles, un mur entier",
+        "en": "Three canvases, a whole wall"
+      },
+      "description": {
+        "fr": "Trois toiles qui se lisent d'un bout à l'autre du mur. C'est le format le plus large de l'atelier, celui des grands pans de salon où une pièce unique se perdrait. Peintes à la main au Maroc, livrées ensemble et dans l'ordre prévu.",
+        "en": "Three canvases that read across the whole wall. The workshop's widest format, made for the long living-room walls where a single piece would be lost. Hand-painted in Morocco, delivered together and in their intended order."
+      },
+      "image": "/media/categories/tableaux-trio.webp",
+      "order": 7
     }
   ],
   "settings": {
@@ -1448,7 +1490,7 @@
     "phone": "+212 6 65 20 24 95",
     "phoneHref": "+212665202495",
     "whatsapp": "212665202495",
-    "email": "contact@maisondeco.ma",
+    "email": "contact@atelier-omar.ma",
     "address": {
       "street": "",
       "city": "Casablanca",
@@ -1467,7 +1509,7 @@
     },
     "currency": "MAD",
     "currencyLabel": "DH",
-    "freeShippingThreshold": 1500,
+    "freeShippingThreshold": 0,
     "shippingFlatRate": 0,
     "announcement": {
       "fr": "",
@@ -1476,6 +1518,6 @@
   },
   "bestSellers": [],
   "bestSellersSource": "manual",
-  "generatedAt": "2026-09-15T23:44:06.968Z",
-  "source": "https://atelier-omar-api.onrender.com"
+  "generatedAt": "2026-09-20T18:37:28.174Z",
+  "source": "https://maisondeco.ma"
 }

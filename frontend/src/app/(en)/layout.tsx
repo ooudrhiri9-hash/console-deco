@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   description: site.baseline.en,
   applicationName: site.brand,
   formatDetection: { telephone: true, address: true, email: true },
+  // Propriete Google Search Console. Next l'ecrit en
+  // <meta name="google-site-verification">. A garder tant que la propriete
+  // existe : Google la reverifie, la retirer fait perdre l'acces.
+  verification: { google: 'pZLGxVZ7GOqUKJdp7QVsPuPWNIDqAa3HYOFEvxlqOu4' },
   // Le SVG d'abord, net a toute taille ; le .ico derriere, pour les navigateurs
   // qui ne le lisent pas et pour ceux qui demandent /favicon.ico sans regarder
   // la page. Le fichier est fabrique par scripts/prepare-favicon.mjs.

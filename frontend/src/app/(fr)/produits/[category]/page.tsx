@@ -4,7 +4,7 @@ import { site } from '@/config/site';
 import { categories } from '@/lib/catalogue';
 import { alternates, categoryBySlug, routes } from '@/lib/routes';
 import CategoryView from '@/views/CategoryView';
-import { buildMetadata, categoryMetaTitle } from '@/lib/seo';
+import { buildMetadata, categoryMetaTitle, categoryMetaDescription } from '@/lib/seo';
 
 const LOCALE = 'fr' as const;
 
@@ -26,7 +26,7 @@ export async function generateMetadata({
   return buildMetadata({
     locale: LOCALE,
     title: categoryMetaTitle(c.name[LOCALE], LOCALE),
-    description: c.description[LOCALE].slice(0, 158),
+    description: categoryMetaDescription(c.description[LOCALE]),
     path: routes.category(LOCALE, c),
     alternates: alternates(LOCALE, 'category', c),
   });

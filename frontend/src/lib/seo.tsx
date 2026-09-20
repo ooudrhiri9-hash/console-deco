@@ -64,6 +64,36 @@ function clamp(text: string, max: number): string {
 }
 
 /**
+ * Coupe une description de famille pour la balise meta.
+ *
+ * Deux pieges, et `slice(0, 158)` tombait dans les deux. Le premier est la
+ * coupe en plein mot. Le second est invisible a la lecture du code : React
+ * echappe l'apostrophe droite en `&#x27;`, cinq caracteres au lieu d'un, si
+ * bien qu'un texte de 158 caracteres arrive a 178 dans le HTML servi. On
+ * mesure donc la chaine echappee, celle que Google lit, en retirant un mot a
+ * la fois jusqu'a tenir.
+ *
+ * Le texte vient de /admin : la borne protege toutes les familles a venir,
+ * pas seulement celles ecrites aujourd'hui.
+ */
+const escaped = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;')
+    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+export function categoryMetaDescription(text: string, max = 158): string {
+  const mots = text.replace(/\s+/g, ' ').trim().split(' ');
+  let out = '';
+  for (const mot of mots) {
+    const essai = out ? `${out} ${mot}` : mot;
+    if (escaped(essai).length > max) {
+      return out ? `${out.replace(/[,;:.]$/, '')}…` : escaped(essai).slice(0, max);
+    }
+    out = essai;
+  }
+  return out;
+}
+
+/**
  * A product's own one-liner runs 30–60 characters — too thin to be a useful
  * snippet. Compose it with the material, the size and the delivery promise so
  * every product page lands in the 120–160 band with real information.
@@ -103,6 +133,12 @@ export function organizationJsonLd(locale: Locale) {
     '@id': `${site.url}/#organization`,
     name: site.brand,
     url: site.url,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${site.url}/logo.png`,
+      width: 512,
+      height: 512,
+    },
     description: site.baseline[locale],
     telephone: site.phone,
     email: site.email,
@@ -185,6 +221,11 @@ export function productJsonLd(product: Product, locale: Locale, category?: Categ
 
 /** Collection page: helps Google understand the listing. */
 export function itemListJsonLd(products: Product[], locale: Locale) {
+  // Une famille sans piece produisait `itemListElement: []`, que Google refuse.
+  // Cinq familles vides x deux langues : dix pages au balisage invalide. Mieux
+  // vaut aucun ItemList qu'un ItemList creux — le reste de la page (fil
+  // d'Ariane, Organization) continue d'etre lu normalement.
+  if (!products.length) return null;
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -219,7 +260,14 @@ export function faqJsonLd(entries: ReadonlyArray<{ q: string; a: string }>) {
   };
 }
 
-/** Small helper so pages stay readable. */
-export const JsonLd = ({ data }: { data: object }) => (
-  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
-);
+/**
+ * Small helper so pages stay readable.
+ *
+ * `null` est accepte et n'ecrit rien : un bloc qui n'a rien a decrire — un
+ * ItemList sans piece — ne doit pas partir vide. La condition vit ici, une
+ * fois, plutot que dans chaque vue qui appelle un helper.
+ */
+export const JsonLd = ({ data }: { data: object | null }) =>
+  data ? (
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
+  ) : null;
