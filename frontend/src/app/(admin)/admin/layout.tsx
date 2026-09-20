@@ -21,10 +21,11 @@ export const metadata: Metadata = {
   // qui ne le lisent pas et pour ceux qui demandent /favicon.ico sans regarder
   // la page. Le fichier est fabrique par scripts/prepare-favicon.mjs.
   icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
-    ],
+    // Plus de SVG : les navigateurs le preferent quand il est declare, et
+    // c'etait encore l'icone provisoire dessinee avant le vrai logo. Les
+    // fichiers sont produits par scripts/prepare-logo.mjs a partir de
+    // src/brand/logo.jpg.
+    icon: [{ url: '/favicon.ico', sizes: '16x16 32x32 48x48' }],
     // Le site ajoute a l'ecran d'accueil d'un iPhone : sans cette icone, iOS
     // met une capture de la page, illisible a cette taille.
     apple: '/apple-touch-icon.png',
