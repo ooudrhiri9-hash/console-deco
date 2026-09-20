@@ -129,16 +129,19 @@ NEXT_PUBLIC_API_URL=https://maisondeco.ma
 ## 3. Démarrer l'API
 
 ```bash
-cd /srv/maisondeco/backend
-sudo -u deco npm ci --omit=dev
+sudo -iu deco bash -c 'cd /srv/maisondeco/backend && npm ci --omit=dev'
 
 # Seulement si la base Atlas est vide : crée l'administrateur et le catalogue.
-sudo -u deco npm run seed
+sudo -iu deco bash -c 'cd /srv/maisondeco/backend && npm run seed'
 
-sudo -u deco pm2 start /srv/maisondeco/deploy/ecosystem.config.cjs
-sudo -u deco pm2 save
-pm2 startup systemd -u deco --hp /home/deco   # puis exécuter la ligne affichée
+sudo -iu deco pm2 start /srv/maisondeco/deploy/ecosystem.config.cjs
+sudo -iu deco pm2 save
+pm2 startup systemd -u deco --hp /home/deco   # installe le service de demarrage
 ```
+
+> `-i` n'est pas décoratif : `sudo -u deco` sans lui garde `/root` comme
+> répertoire courant, que `deco` ne peut pas lire, et le lancement de Node
+> échoue sur un `spawn /usr/bin/node EACCES` déroutant.
 
 Vérification :
 
@@ -146,7 +149,8 @@ Vérification :
 curl -s http://127.0.0.1:4400/health
 ```
 
-`{"ok":true,...}` attendu. En cas de silence : `sudo -u deco pm2 logs maisondeco-api`.
+`{"ok":true,...}` attendu. En cas de silence : `sudo -iu deco pm2 logs maisondeco-api`,
+ou `tail /var/log/maisondeco/api-error.log`.
 
 ---
 
@@ -172,7 +176,7 @@ installe un renouvellement automatique (`systemctl list-timers | grep certbot`).
 ## 5. Premier déploiement du site
 
 ```bash
-sudo -u deco /srv/maisondeco/deploy/deploy.sh
+sudo -iu deco /srv/maisondeco/deploy/deploy.sh
 ```
 
 Le script récupère le code, met à jour l'API, attend qu'elle réponde,
@@ -194,10 +198,14 @@ Sur 1 vCPU, compter deux à trois minutes pour le build.
 | Une commande part | passer une commande de test, la voir dans `/admin/commandes` |
 | Une photo envoyée reste | téléverser depuis `/admin`, relancer `deploy.sh`, vérifier qu'elle s'affiche |
 
-**À ne pas oublier** : dans `/admin → Réglages`, le champ *URL du site* doit
-contenir `https://maisondeco.ma`. Cette valeur vit en base et l'emporte sur la
-valeur par défaut du code ; c'est elle qui alimente les URLs canoniques, le
-`sitemap.xml` et les données structurées au build suivant.
+**Les réglages en base l'emportent sur le code.** La base contenait encore
+`https://atelier-omar.ma` : la valeur a été corrigée en `https://maisondeco.ma`
+le 20/09/2026, sans quoi le build aurait figé des canonicals et un `sitemap.xml`
+pointant sur l'ancien domaine. Toute reprise depuis une sauvegarde ancienne
+ramènera le problème — vérifier `/admin → Réglages` après une restauration.
+
+Reste en attente dans ces mêmes réglages : `email`, toujours à
+`contact@atelier-omar.ma`, une adresse qui n'existe pas.
 
 ---
 
@@ -232,7 +240,7 @@ pied de page.
 
 | Symptôme | Cause la plus fréquente |
 |---|---|
-| `502 Bad Gateway` sur `/api` | le process est tombé : `sudo -u deco pm2 logs maisondeco-api` |
+| `502 Bad Gateway` sur `/api` | le process est tombé : `sudo -iu deco pm2 logs maisondeco-api` |
 | Le site s'affiche, mais prix et stock ne bougent jamais | l'API ne répond pas ; `curl https://maisondeco.ma/health` |
 | Commande ou message refusé sans erreur claire | domaine absent de `ALLOWED_ORIGINS`, puis `pm2 reload maisondeco-api --update-env` |
 | `/admin` déconnecte aussitôt | `AUTH_SECRET` vide ou modifié — les jetons émis avant deviennent invalides |
