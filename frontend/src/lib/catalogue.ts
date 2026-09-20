@@ -67,22 +67,19 @@ export const countByCategory = (categoryId: string) => productsInCategory(catego
  * Les familles que la boutique met en avant : menu, pied de page, filtres et
  * « Nos collections ».
  *
- * Une famille sans aucune pièce et sans photo n'a rien à montrer : sa carte est
- * une vignette muette qui mène à une page vide, et le visiteur qui clique
- * apprend seulement qu'il a perdu son clic. Une famille encore vide mais
- * photographiée, elle, annonce un savoir-faire dont on peut discuter par
- * téléphone — elle reste.
+ * Une famille sans pièce n'a rien à montrer. Sa carte mène à une page vide, et
+ * le visiteur qui clique apprend seulement qu'il a perdu son clic — une photo
+ * de famille n'y change rien, elle rend la déception plus soignée. Seul le
+ * comptage compte donc, photo ou pas.
  *
  * La page de la famille cachée continue d'exister et de répondre : un lien déjà
  * partagé ou indexé ne doit pas tomber sur un 404 parce qu'on a retiré une
- * carte. Elle n'est simplement plus proposée nulle part.
+ * carte. Elle n'est simplement plus proposée nulle part, ni dans le sitemap.
  *
  * Calculé au build, comme tout ce qui touche aux familles : la carte revient à
  * la reconstruction qui suit l'ajout de la première pièce, pas avant.
  */
-export const listedCategories = categoriesInOrder.filter(
-  (c) => countByCategory(c.id) > 0 || Boolean(c.image),
-);
+export const listedCategories = categoriesInOrder.filter((c) => countByCategory(c.id) > 0);
 
 /**
  * "You may also like": same category first, then any other piece,
