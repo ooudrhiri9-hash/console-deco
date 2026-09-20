@@ -94,8 +94,15 @@ const MAP = {
 const CATEGORY_MAP = {
   // Un tableau et la console dessous : l'ensemble, en une image.
   'console-tableau': join(SRC, 'Tableau.jpeg'),
-  // Trois toiles accrochees ensemble, pour une famille au pluriel.
-  tableaux: join(SRC, 'Tableau 3 pack.jpeg'),
+  // Une toile seule au-dessus d'un canape : la famille generale. Elle montrait
+  // les trois toiles avant que le trio ait sa propre famille — deux cartes
+  // auraient alors porte la meme photo, et le visiteur n'aurait pas su ce qui
+  // les distingue.
+  tableaux: join(SRC, 'Tableau rectangulaire.jpeg'),
+  // Deux toiles cote a cote, composition unique.
+  'tableaux-duo': join(SRC, 'Tableaux 2 pack.jpeg'),
+  // Trois toiles alignees : le format qui tient un mur entier.
+  'tableaux-trio': join(SRC, 'Tableau 3 pack.jpeg'),
 };
 
 /** Client drawings and product sheets: they carry text, so never copy-extend. */
