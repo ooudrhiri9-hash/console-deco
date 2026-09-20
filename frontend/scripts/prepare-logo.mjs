@@ -148,9 +148,19 @@ const carre = (buffer, taille, fond) =>
     .png({ compressionLevel: 9 })
     .toBuffer();
 
+/**
+ * Les versions affichees dans les pages. Le PNG detoure pese 250 Ko : parfait
+ * comme source, absurde dans un en-tete present sur chaque page. Le WebP a
+ * deux fois la taille d'affichage suffit largement.
+ */
+const enPage = (buffer, hauteur) =>
+  sharp(buffer).resize({ height: hauteur * 2 }).webp({ quality: 88, effort: 6 }).toBuffer();
+
 const sorties = [
   ['public/logo-mark.png', claire],
   ['public/logo-mark-reverse.png', inversee],
+  ['public/media/brand/mark-header.webp', await enPage(claire, 34)],
+  ['public/media/brand/mark-footer.webp', await enPage(inversee, 30)],
   ['public/logo.png', await carre(claire, LOGO)],
   ['public/apple-touch-icon.png', await carre(inversee, APPLE, ENCRE)],
   [

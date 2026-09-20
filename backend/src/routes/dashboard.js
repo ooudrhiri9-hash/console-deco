@@ -19,6 +19,45 @@ function lastDays(n) {
   return out;
 }
 
+/**
+ * Ce qui attend quelqu'un, et rien d'autre.
+ *
+ * Le back-office interroge cette route toutes les 30 s. `/dashboard` calcule un
+ * chiffre d'affaires, un panier moyen et quatorze jours d'histogramme : le
+ * relancer en boucle pour savoir s'il y a une commande de plus serait payer
+ * cher une question simple.
+ *
+ * `latest` sert a distinguer « une commande de plus » d'un simple rafraichissement :
+ * le client compare la reference, pas seulement le compte, car une commande
+ * confirmee dans un autre onglet fait baisser le compte sans qu'il se passe
+ * rien de neuf.
+ */
+dashboardRoutes.get('/pending', requireAdmin, async (req, res) => {
+  try {
+    const [orders, messages] = await Promise.all([store.orders.all(), store.messages.all()]);
+    const nouvelles = orders
+      .filter((o) => o.status === 'nouvelle')
+      .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+
+    res.json({
+      orders: nouvelles.length,
+      messages: messages.filter((m) => !m.read).length,
+      latest: nouvelles[0]
+        ? {
+            reference: nouvelles[0].reference,
+            name: nouvelles[0].customer?.name || '',
+            total: nouvelles[0].total || 0,
+            quoteOnly: Boolean(nouvelles[0].quoteOnly),
+            createdAt: nouvelles[0].createdAt,
+          }
+        : null,
+    });
+  } catch (e) {
+    console.error('[pending]', e);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 dashboardRoutes.get('/dashboard', requireAdmin, async (req, res) => {
   try {
     const [products, categories, orders, messages] = await Promise.all([

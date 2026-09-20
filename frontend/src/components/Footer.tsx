@@ -15,7 +15,17 @@ export default function Footer({ locale }: { locale: Locale }) {
       <div className="container">
         <div className="footer__grid">
           <div>
-            <div className="brand">{site.brand}</div>
+            <div className="brand">
+              <img
+                className="brand__mark"
+                src="/media/brand/mark-footer.webp"
+                alt=""
+                width={55}
+                height={60}
+                loading="lazy"
+              />
+              <span className="brand__text">{site.brand}</span>
+            </div>
             <p className="small" style={{ marginTop: '1rem', maxWidth: '30ch' }}>
               {t.footer.tagline}
             </p>

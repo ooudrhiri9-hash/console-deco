@@ -209,7 +209,17 @@ p { text-wrap: pretty; }
   font-size: 1.35rem; letter-spacing: 0.16em; text-transform: uppercase;
   white-space: nowrap;
 }
-.brand span { color: var(--brass-text); } /* 21.6px regular is not "large text" -> needs 4.5:1 */
+.brand { display: inline-flex; align-items: center; gap: 0.6rem; }
+.brand__mark { height: 34px; width: auto; flex-shrink: 0; }
+.footer .brand__mark { height: 30px; }
+.brand__text span { color: var(--brass-text); } /* 21.6px regular is not "large text" -> needs 4.5:1 */
+
+/* Sous 480 px l'en-tete etait deja juste : le symbole seul y suffit, le nom
+   reprend sa place des qu'il y a de quoi l'afficher entier. */
+@media (max-width: 400px) {
+  .brand__text { display: none; }
+  .brand__mark { height: 30px; }
+}
 
 .nav { display: none; }
 @media (min-width: 960px) { .nav { display: flex; align-items: center; gap: 2rem; } }

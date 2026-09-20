@@ -52,7 +52,20 @@ export default function Header({ locale }: { locale: Locale }) {
       <header className="header">
         <div className="container header__bar">
           <Link href={routes.home(locale)} className="brand" aria-label={site.brand}>
-            {site.brand.split(' ')[0]} <span>{site.brand.split(' ').slice(1).join(' ')}</span>
+            {/* alt vide : le nom est juste a cote, en texte. Le repeter ferait
+                lire « Maison Deco Maison Deco » a un lecteur d'ecran. Les
+                dimensions sont ecrites pour que rien ne saute au chargement. */}
+            <img
+              className="brand__mark"
+              src="/media/brand/mark-header.webp"
+              alt=""
+              width={62}
+              height={68}
+              fetchPriority="high"
+            />
+            <span className="brand__text">
+              {site.brand.split(' ')[0]} <span>{site.brand.split(' ').slice(1).join(' ')}</span>
+            </span>
           </Link>
 
           <nav className="nav" aria-label={t.nav.products}>
