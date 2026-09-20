@@ -1,7 +1,8 @@
 /**
- * L'icône de l'onglet, au format que réclament les navigateurs anciens.
+ * Les icônes dérivées du logo, aux formats que les navigateurs réclament.
  *
- *   public/favicon.svg  ->  public/favicon.ico  (16, 32 et 48 px)
+ *   public/favicon.svg  ->  public/favicon.ico          (16, 32 et 48 px)
+ *                       ->  public/apple-touch-icon.png (180 px, opaque)
  *
  *   node scripts/prepare-favicon.mjs            (écrit)
  *   node scripts/prepare-favicon.mjs --check    (constate seulement)
@@ -19,6 +20,12 @@
  *
  * Le conteneur ICO est écrit à la main : il contient des PNG, ce que tout
  * navigateur sorti après 2007 sait lire, et sharp ne sait pas produire d'ICO.
+ *
+ * L'icône iOS suit d'autres règles, d'où un fichier séparé plutôt qu'une taille
+ * de plus dans l'ICO : iOS ignore la transparence et la remplace par du noir,
+ * et il applique lui-même le masque aux coins arrondis. Le fond est donc aplati
+ * sur la couleur du logo, et les coins sont laissés carrés — les arrondir deux
+ * fois ne ferait que rogner le dessin.
  */
 import { readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -26,7 +33,10 @@ import sharp from 'sharp';
 
 const SRC = resolve('public/favicon.svg');
 const OUT = resolve('public/favicon.ico');
+const OUT_APPLE = resolve('public/apple-touch-icon.png');
 const SIZES = [16, 32, 48];
+/** Ce qu'Apple attend depuis les écrans Retina, et ce que tout le monde publie. */
+const APPLE_SIZE = 180;
 const check = process.argv.includes('--check');
 
 if (!existsSync(SRC)) {
@@ -79,13 +89,31 @@ for (const size of SIZES) {
 
 const buffer = ico(images);
 
+/**
+ * Le fond du logo, relu dans le SVG plutôt que recopié ici : le jour où le logo
+ * change de couleur, l'icône iOS suit sans qu'on y pense. Repli sur le noir du
+ * dessin actuel si la forme du fichier change au point de ne plus se laisser
+ * lire.
+ */
+const fond = (readFileSync(SRC, 'utf8').match(/fill="(#[0-9a-f]{3,8})"/i) || [, '#14120f'])[1];
+
+const apple = await sharp(readFileSync(SRC), { density: 384 })
+  .resize(APPLE_SIZE, APPLE_SIZE, { fit: 'contain', background: fond })
+  .flatten({ background: fond })
+  .png({ compressionLevel: 9 })
+  .toBuffer();
+
 if (check) {
-  const actuel = existsSync(OUT) ? statSync(OUT).size : null;
-  console.log(actuel === null
-    ? `prepare-favicon: ${OUT} absent — lancer sans --check.`
-    : `prepare-favicon: ${OUT} présent, ${actuel} octets (l'exécution en écrirait ${buffer.length}).`);
+  for (const [chemin, prevu] of [[OUT, buffer.length], [OUT_APPLE, apple.length]]) {
+    const actuel = existsSync(chemin) ? statSync(chemin).size : null;
+    console.log(actuel === null
+      ? `prepare-favicon: ${chemin} absent — lancer sans --check.`
+      : `prepare-favicon: ${chemin} présent, ${actuel} octets (l'exécution en écrirait ${prevu}).`);
+  }
   process.exit(0);
 }
 
 writeFileSync(OUT, buffer);
 console.log(`prepare-favicon: ${OUT} — ${SIZES.join(', ')} px, ${buffer.length} octets`);
+writeFileSync(OUT_APPLE, apple);
+console.log(`prepare-favicon: ${OUT_APPLE} — ${APPLE_SIZE} px sur ${fond}, ${apple.length} octets`);

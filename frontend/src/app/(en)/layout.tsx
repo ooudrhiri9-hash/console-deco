@@ -17,6 +17,9 @@ export const metadata: Metadata = {
       { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
     ],
+    // Le site ajoute a l'ecran d'accueil d'un iPhone : sans cette icone, iOS
+    // met une capture de la page, illisible a cette taille.
+    apple: '/apple-touch-icon.png',
   },
 };
 
