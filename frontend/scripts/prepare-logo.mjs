@@ -174,7 +174,10 @@ async function carteDePartage() {
     // Sans canal alpha : plusieurs clients de messagerie rendent la
     // transparence en noir plutot que de la composer. Le fond etant deja
     // opaque, on ne perd rien et on retire le piege.
+    // `flatten` compose la transparence sur le fond mais laisse le canal en
+    // place : il faut le retirer explicitement pour sortir en trois canaux.
     .flatten({ background: '#14120f' })
+    .removeAlpha()
     .png({ compressionLevel: 9 })
     .toBuffer();
 }
