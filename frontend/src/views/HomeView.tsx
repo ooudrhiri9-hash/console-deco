@@ -11,10 +11,10 @@ import { ArrowIcon } from '@/components/Icons';
 export default function HomeView({ locale }: { locale: Locale }) {
   const t = getDict(locale);
   const featured = featuredProducts(4);
-  // Le bouton n'a de sens que s'il y a des ensembles a voir : la famille est
-  // encore vide, et « Voir les ensembles » menerait sur une page sans rien. Le
-  // texte et la photo restent — ils decrivent un savoir-faire, pas un stock —
-  // et le bouton revient avec la premiere piece rattachee a la famille.
+  // Le bouton suit la meme regle que les cartes de familles, au lieu de pointer
+  // en dur sur une famille qui pourrait ne plus etre proposee : si elle
+  // disparait des listes, « Voir les ensembles » disparait avec elle. Le texte
+  // et la photo restent dans tous les cas — ils decrivent un savoir-faire.
   const pairCategory = getCategory('console-tableau');
   const pairListed = pairCategory && listedCategories.some((c) => c.id === pairCategory.id);
 
