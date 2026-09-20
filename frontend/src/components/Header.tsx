@@ -3,7 +3,7 @@
 import Link from '@/components/Link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { site } from '@/config/site';
+import { deliveryAlwaysFree, site } from '@/config/site';
 import { listedCategories, countByCategory } from '@/lib/catalogue';
 import { getDict } from '@/i18n/dictionaries';
 import { localeLabel, locales, type Locale } from '@/i18n/config';
@@ -31,8 +31,15 @@ export default function Header({ locale }: { locale: Locale }) {
   const isCurrent = (href: string) =>
     href === routes.home(locale) ? pathname === href : pathname.startsWith(href);
 
-  const announce =
-    site.freeShippingThreshold > 0
+  // Trois cas, dans cet ordre : port offert quoi qu'il arrive, port offert
+  // au-dela d'un montant, ou rien a annoncer. Le deuxieme n'a de sens que si
+  // un tarif forfaitaire existe — sinon le bandeau reclamait un panier minimum
+  // pour une gratuite deja acquise.
+  const announce = deliveryAlwaysFree
+    ? locale === 'fr'
+      ? 'Livraison gratuite partout au Maroc · Paiement à la livraison'
+      : 'Free delivery anywhere in Morocco · Cash on delivery'
+    : site.freeShippingThreshold > 0
       ? locale === 'fr'
         ? `Livraison offerte au Maroc dès ${site.freeShippingThreshold} ${site.currencyLabel} · Paiement à la livraison`
         : `Free delivery in Morocco from ${site.freeShippingThreshold} ${site.currencyLabel} · Cash on delivery`

@@ -3,7 +3,7 @@
 import Link from '@/components/Link';
 import type { Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
-import { site } from '@/config/site';
+import { deliveryAlwaysFree, site } from '@/config/site';
 import { routes } from '@/lib/routes';
 import { formatPrice } from '@/lib/format';
 import { choiceLabels } from '@/lib/options';
@@ -29,8 +29,12 @@ export default function CartView({ locale }: { locale: Locale }) {
     );
   }
 
-  const threshold = site.freeShippingThreshold;
-  const freeShipping = threshold > 0 && subtotal >= threshold;
+  // Le port etant offert sans condition, le seuil ne s'applique plus : la barre
+  // de progression reclamait un montant pour une gratuite deja acquise — et,
+  // toutes les pieces etant sur devis, un sous-total de 0 DH ne l'atteignait
+  // jamais. Elle ne s'affiche donc que si un tarif forfaitaire existe.
+  const threshold = deliveryAlwaysFree ? 0 : site.freeShippingThreshold;
+  const freeShipping = deliveryAlwaysFree || (threshold > 0 && subtotal >= threshold);
   // Une pièce sur devis ne pèse rien dans le sous-total : le dire, plutôt que
   // de laisser croire à un panier moins cher qu'il ne sera.
   const quoted = lines.some((l) => l.price === 0);

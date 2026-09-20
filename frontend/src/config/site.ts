@@ -86,4 +86,14 @@ function merge(base: Settings, over?: Partial<Settings> | null): Settings {
 
 export const site = merge(DEFAULTS, saved);
 
+/**
+ * La livraison est-elle offerte quoi qu'il arrive ?
+ *
+ * C'est exactement ce que calcule l'API : sans tarif forfaitaire, le port vaut
+ * zero sur toutes les commandes, seuil ou pas. La question se pose partout —
+ * bandeau, fiche, panier — et y repondre trois fois avec trois formulations
+ * est precisement ce qui avait fait diverger les messages.
+ */
+export const deliveryAlwaysFree = site.shippingFlatRate === 0;
+
 export type Site = typeof site;

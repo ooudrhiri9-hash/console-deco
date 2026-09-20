@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import type { Locale } from '@/i18n/config';
 import type { Category, OptionChoice, Product } from '@/types';
 import { getDict } from '@/i18n/dictionaries';
-import { site } from '@/config/site';
+import { deliveryAlwaysFree, site } from '@/config/site';
 import { dimensionsLabel, discountPercent, formatPrice, paragraphs } from '@/lib/format';
 import {
   compareAtFor,
@@ -165,12 +165,14 @@ export default function ProductDetail({
                 <strong>{t.common.onRequest}</strong>
               )}
             </div>
-            {!custom && product.price > 0 && (priceFor || site.freeShippingThreshold > 0) && (
+            {!custom && product.price > 0 && (priceFor || deliveryAlwaysFree || site.freeShippingThreshold > 0) && (
               <p className="product__price-note">
                 {priceFor && t.products.priceFor(priceFor)}
-                {priceFor && site.freeShippingThreshold > 0 && ' '}
-                {site.freeShippingThreshold > 0 &&
-                  t.products.freeDelivery(formatPrice(site.freeShippingThreshold, locale))}
+                {priceFor && (deliveryAlwaysFree || site.freeShippingThreshold > 0) && ' '}
+                {deliveryAlwaysFree
+                  ? t.products.freeDeliveryAll
+                  : site.freeShippingThreshold > 0 &&
+                    t.products.freeDelivery(formatPrice(site.freeShippingThreshold, locale))}
               </p>
             )}
 

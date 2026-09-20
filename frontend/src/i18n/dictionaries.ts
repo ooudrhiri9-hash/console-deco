@@ -39,7 +39,7 @@ export const dict = {
         { title: 'Fabriqué au Maroc', text: 'Atelier local, artisans locaux. Nous maîtrisons chaque étape, du bois brut à la finition.' },
         { title: 'Pièces en série limitée', text: 'Pas de production de masse. Vous ne croiserez pas votre console chez tout le monde.' },
         { title: 'Sur mesure possible', text: 'Dimensions, teintes, finitions : nous adaptons chaque pièce à votre espace.' },
-        { title: 'Livraison partout au Maroc', text: 'Emballage renforcé, livraison et paiement à la réception.' },
+        { title: 'Livraison gratuite au Maroc', text: 'Emballage renforcé, port offert, paiement à la réception.' },
       ],
       bestSellersEyebrow: 'Les plus demandées',
       bestSellersTitle: 'Nos meilleures ventes',
@@ -67,7 +67,7 @@ export const dict = {
         },
         {
           q: 'Livrez-vous partout au Maroc ?',
-          a: 'Oui, dans tout le pays, avec un emballage renforcé pour le transport. Les frais et le délai vous sont confirmés au moment de la commande, selon la ville et le volume de la pièce.',
+          a: 'Oui, dans tout le pays, et la livraison est gratuite quelle que soit la ville. L’emballage est renforcé pour le transport ; seul le délai vous est confirmé au moment de la commande, selon la ville et le volume de la pièce.',
         },
         {
           q: 'Peut-on voir les pièces avant d’acheter ?',
@@ -105,7 +105,7 @@ export const dict = {
         },
         {
           q: 'Livrez-vous en dehors de Casablanca ?',
-          a: "Oui, partout au Maroc, avec un emballage renforcé pour le transport. Les frais et le délai vous sont confirmés au moment de la commande, selon la ville et le volume de la pièce.",
+          a: "Oui, partout au Maroc, et la livraison est gratuite quelle que soit la ville. Seul le délai vous est confirmé au moment de la commande, selon la ville et le volume de la pièce.",
         },
       ],
     },
@@ -120,7 +120,7 @@ export const dict = {
         },
         {
           title: 'Nous confirmons avec vous',
-          text: 'Dimensions, teintes, finitions, puis le délai et les frais de livraison selon votre ville et le volume de la pièce. Rien ne part en fabrication avant cet accord.',
+          text: 'Dimensions, teintes, finitions, puis le délai de livraison selon votre ville et le volume de la pièce. Rien ne part en fabrication avant cet accord.',
         },
         {
           title: 'L’atelier fabrique',
@@ -128,7 +128,7 @@ export const dict = {
         },
         {
           title: 'Livraison et paiement',
-          text: 'Livraison partout au Maroc, emballage renforcé pour le transport. Vous payez à la réception, en dirhams.',
+          text: 'Livraison gratuite partout au Maroc, emballage renforcé pour le transport. Vous payez à la réception, en dirhams.',
         },
       ],
     },
@@ -153,6 +153,7 @@ export const dict = {
         'Cette pièce peut être réalisée sur mesure (dimensions et teintes). Contactez-nous avant de commander.',
       priceFor: (details: string) => 'Prix pour ' + details + '.',
       freeDelivery: (a: string) => 'Livraison offerte dès ' + a + '.',
+      freeDeliveryAll: 'Livraison gratuite partout au Maroc.',
       qtyTotal: (a: string) => a + ' au total',
       less: 'Retirer un exemplaire',
       more: 'Ajouter un exemplaire',
@@ -163,7 +164,7 @@ export const dict = {
         { title: 'Paiement à la livraison', text: 'En espèces, rien à régler en ligne' },
         { title: 'Fait main au Maroc', text: 'Dans notre atelier, en série limitée' },
         { title: 'Sur mesure possible', text: 'Dimensions, teintes et finitions' },
-        { title: 'Livraison partout au Maroc', text: 'Emballage renforcé pour le transport' },
+        { title: 'Livraison gratuite au Maroc', text: 'Emballage renforcé pour le transport' },
       ],
       sizeTitle: 'Dimensions',
       sizeStandard: 'Dimensions standard',
@@ -184,7 +185,7 @@ export const dict = {
       sizeGuide:
         'Au-dessus d’une console ou d’un canapé, visez un tableau d’environ deux tiers de la largeur du meuble. Dans une entrée ou un couloir, un format plus petit suffit. Envoyez-nous une photo de votre mur avec ses mesures : nous vous conseillons le bon format avant de commander.',
       delivery:
-        'Nous livrons dans tout le Maroc, avec un emballage renforcé pour le transport. Les frais et le délai vous sont confirmés au moment de la commande, selon la ville et le volume de la pièce. Le paiement se fait à la livraison, en dirhams : rien n’est réglé en ligne.',
+        'Nous livrons dans tout le Maroc, gratuitement et quelle que soit la ville, avec un emballage renforcé pour le transport. Seul le délai vous est confirmé au moment de la commande, selon la ville et le volume de la pièce. Le paiement se fait à la livraison, en dirhams : rien n’est réglé en ligne.',
     },
     favorites: {
       title: 'Vos favoris',
@@ -285,7 +286,7 @@ export const dict = {
         { title: 'Made in Morocco', text: 'Local workshop, local craftsmen. We control every step, from raw wood to final finish.' },
         { title: 'Limited runs', text: 'No mass production. You will not find your console in every other home.' },
         { title: 'Made to measure', text: 'Dimensions, tones, finishes — we adapt each piece to your space.' },
-        { title: 'Delivery across Morocco', text: 'Reinforced packaging, delivery and payment on receipt.' },
+        { title: 'Free delivery in Morocco', text: 'Reinforced packaging, no delivery charge, payment on receipt.' },
       ],
       bestSellersEyebrow: 'Most wanted',
       bestSellersTitle: 'Our best sellers',
@@ -313,7 +314,7 @@ export const dict = {
         },
         {
           q: 'Do you deliver everywhere in Morocco?',
-          a: 'Yes, across the country, with reinforced packaging for transport. Cost and timing are confirmed when you order, depending on the city and the size of the piece.',
+          a: 'Yes, across the country, and delivery is free whatever the city. Packaging is reinforced for transport; only the timing is confirmed when you order, depending on the city and the size of the piece.',
         },
         {
           q: 'Can we see the pieces before buying?',
@@ -351,7 +352,7 @@ export const dict = {
         },
         {
           q: 'Do you deliver outside Casablanca?',
-          a: 'Yes, anywhere in Morocco, packed for transport. The cost and the lead time are confirmed when you order, based on your city and the size of the piece.',
+          a: 'Yes, anywhere in Morocco, and delivery is free whatever the city. Only the lead time is confirmed when you order, based on your city and the size of the piece.',
         },
       ],
     },
@@ -366,7 +367,7 @@ export const dict = {
         },
         {
           title: 'We confirm with you',
-          text: 'Dimensions, tones, finishes, then the lead time and delivery cost for your city and the size of the piece. Nothing goes into production before that.',
+          text: 'Dimensions, tones, finishes, then the lead time for your city and the size of the piece. Nothing goes into production before that.',
         },
         {
           title: 'The workshop builds it',
@@ -374,7 +375,7 @@ export const dict = {
         },
         {
           title: 'Delivery and payment',
-          text: 'Delivered anywhere in Morocco, packed for transport. You pay on arrival, in dirhams.',
+          text: 'Delivered free anywhere in Morocco, packed for transport. You pay on arrival, in dirhams.',
         },
       ],
     },
@@ -398,6 +399,7 @@ export const dict = {
       customNote: 'This piece can be made to measure (dimensions and tones). Contact us before ordering.',
       priceFor: (details: string) => 'Price for ' + details + '.',
       freeDelivery: (a: string) => 'Free delivery from ' + a + '.',
+      freeDeliveryAll: 'Free delivery anywhere in Morocco.',
       qtyTotal: (a: string) => a + ' in total',
       less: 'Remove one',
       more: 'Add one',
@@ -408,7 +410,7 @@ export const dict = {
         { title: 'Cash on delivery', text: 'Nothing to pay online' },
         { title: 'Handmade in Morocco', text: 'In our workshop, in limited runs' },
         { title: 'Made to measure', text: 'Dimensions, tones and finishes' },
-        { title: 'Delivery across Morocco', text: 'Reinforced packaging for transport' },
+        { title: 'Free delivery in Morocco', text: 'Reinforced packaging for transport' },
       ],
       sizeTitle: 'Dimensions',
       sizeStandard: 'Standard size',
@@ -429,7 +431,7 @@ export const dict = {
       sizeGuide:
         'Above a console or a sofa, aim for an artwork about two thirds of the width of the furniture. In an entrance or a hallway, a smaller size is enough. Send us a photo of your wall with its measurements: we will recommend the right size before you order.',
       delivery:
-        'We deliver across Morocco, with reinforced packaging for transport. Shipping cost and lead time are confirmed when you order, depending on the city and the size of the piece. Payment is cash on delivery, in dirhams: nothing is paid online.',
+        'We deliver across Morocco, free of charge whatever the city, with reinforced packaging for transport. Only the lead time is confirmed when you order, depending on the city and the size of the piece. Payment is cash on delivery, in dirhams: nothing is paid online.',
     },
     favorites: {
       title: 'Your favourites',
