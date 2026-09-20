@@ -1,100 +1,91 @@
 # SEO audit — MAISON DÉCO
 
 **Project type:** e-commerce / catalog (bilingual FR+EN, Morocco)
-**Stack:** Next.js 16 App Router, `output: 'export'` → `out/`
-**Audited:** the built export, served with production-like headers (gzip +
-Cache-Control mirroring `.htaccess`), not the source.
+**Stack:** Next.js 16 App Router, `output: 'export'` → `out/`, served by Nginx on a VPS
+**Domain:** https://maisondeco.ma — live since 20/09/2026
+**Audited:** the production site, plus a local build made against the production
+API so `out/` matches what Nginx serves.
 
-**Overall: complete.** 79 findings → 22, and all 22 remaining share one cause:
-the catalogue has no product photographs yet (client deliverable).
+**Overall: complete.** Second pass, run after the site went live and grew from
+47 to 92 built pages. Six findings fixed; the remaining gap is the one the first
+audit already named — the catalogue has no product photographs and no prices,
+both client deliverables.
 
 | Phase | Status | Result |
 |---|---|---|
-| 0 · Build & inventory | ✅ | 48 routes, 47 HTML pages, build clean |
-| 1 · Per-page meta | ✅ | unique titles/descriptions, canonicals, hreflang, OG on every indexable page |
-| 1b · Targeting & internal links | ➖ | no `research/`/`content/` folders — greenfield build, not from the template |
-| 2 · Structured data | ✅ | Organization+HomeGoodsStore, WebSite, 22 Product, 12 ItemList, 42 BreadcrumbList |
-| 2c · GEO / LLM | ✅ | `llms.txt` shipped; 11 AI crawlers explicitly allowed in `robots.txt` |
-| 3 · Sitemap + robots | ✅ | 40 URLs with hreflang alternates; cart/checkout/api disallowed |
-| 4 · OG image | ✅ | `og-default.png` exists (⚠ placeholder artwork) |
-| 5 · Page weight | ✅ | 60 KB HTML → 10.7 KB gzipped; CLS 0 |
-| 6 · Images | ⚠️ | **no product photos exist yet** — blocked on the client |
-| 7 · Lighthouse | ✅ | product 94 · home 86–97 (TBT jitter) · A11y 100 · BP 100 · SEO 100 |
-| 8 · Launch checklist | ⚠️ | code-side done; hosting/GSC/real data still open |
+| 0 · Build & inventory | ✅ | 92 HTML pages, 76 indexable, build clean |
+| 1 · Per-page meta | ✅ | titles 41–54, descriptions 142–157 chars **as served** (entities counted) |
+| 1b · Targeting & internal links | ➖ | no `research/`/`content/` folders — greenfield build |
+| 2 · Structured data | ✅ | **0 errors** over 148 blocks: 54 Product, 80 BreadcrumbList, 16 ItemList, 4 FAQPage, Organization+HomeGoodsStore, WebSite |
+| 2c · GEO / LLM | ✅ | `llms.txt` served, 12 `User-Agent` blocks in robots.txt, Organization now carries a `logo` |
+| 3 · Sitemap + robots | ✅ | 74 URLs with hreflang; robots.txt valid (verified on a second run) |
+| 4 · OG image | ✅ | `og-default.png` → 200, 4.3 KB (⚠ still placeholder artwork) |
+| 5 · Page weight | ✅ | home 72 KB → **15 KB gzipped**; 354 DOM nodes (Lighthouse warns >800) |
+| 6 · Images | ✅ | half-size variants added — home images 415 KB → **328 KB** |
+| 7 · Lighthouse | ✅ | home **97 / 100 / 100 / 100**; product **70 / 100 / 100 / 100** |
+| 8 · Launch checklist | ⚠️ | GSC tag shipped, property still to verify; no prices, no product photos |
 
-## Fixed during the audit
+## Fixed in this pass
 
 | Finding | Fix |
 |---|---|
-| `ItemList` `ListItem` used `url` — Google requires `item`, so all 12 listings were silently ignored | `src/lib/seo.tsx` |
-| 22 product descriptions were 29–63 chars (thin snippets) | composed from short description + material + dimensions + delivery → 120–158 chars |
-| `/produits/consoles/` and `/en/products/consoles/` shipped an identical `<title>` ("Consoles" is the same word in both languages) | `categoryMetaTitle()` adds a locale-specific descriptor |
-| Home title 68 chars, description 184 chars (`&` ships as `&amp;`, +4) | reworded; measured on the built HTML, entities included |
-| `404.html` was Next's default page — unstyled, no `lang`, wrong copy | self-contained bilingual 404 with inline CSS + `postbuild.mjs` adds `lang` |
-| `<Link>` prefetch 404s flooding the console (no RSC payload exists in a static export) | `components/Link.tsx` wrapper defaults `prefetch={false}` |
-| 4 WCAG AA contrast failures: brass eyebrow 3.31, faint meta 3.39, white-on-WhatsApp-green 3.09, terracotta 4.45 | separate text tokens (`--brass-text` 5.53, `--terracotta-text` 5.71, `--whatsapp-btn` 5.22); bright accents kept for borders and the icon-only FAB |
-| "Fabriqué sur commande" badge 3.33 | `--sage` darkened to 5.55 |
-| Footer `<h4>` after an `<h2>` skipped a level (`heading-order`) | footer column titles are now `<h2>` |
-| **Header overflowed the viewport at 320/360/375 px on every page** (wordmark + lang switch + 2 icon buttons measured 412 px) — horizontal scroll site-wide | `@media (max-width: 480px)` shrinks the wordmark and controls; wordmark can truncate |
+| **10 `ItemList` blocks shipped empty** (5 pieceless families × 2 languages) — Google rejects `itemListElement: []` | `itemListJsonLd` returns `null`; `JsonLd` renders nothing for `null` |
+| **3 meta descriptions over 160 chars.** `slice(0, 158)` counted source characters, but React escapes `'` as `&#x27;` — 5 characters for 1 — so 158 shipped as 178. It also cut mid-word | `categoryMetaDescription()` measures the **escaped** string and trims on a word boundary. Protects every family written in `/admin` from now on |
+| Organization had no `logo` (Google-recommended) | 512 px `logo.png` derived from `favicon.svg` by `prepare-favicon.mjs` |
+| Catalogue cards loaded the 800×1000 product photo to display it 200–400 px wide | `prepare-media.mjs` writes a 400 px variant; `ProductImage` offers it via `srcSet`. **−87 KB on the home page alone** |
+| `ProductImage` hardcoded 800×1000, so family photos (800×587) declared a false height | `width`/`height`/`sizes` are now props |
+| Google Search Console verification | `verification.google` on both root layouts |
+| `deploy.sh` aborted on `git pull`: `catalogue.json` is tracked *and* rewritten by every build, so the VPS working tree is permanently dirty | the script restores that one file before pulling — the build regenerates it anyway |
 
-Accessibility went 94 → **100** and the overflow bug is gone at all 15 widths tested.
+## Two Lighthouse findings that were NOT real
 
-## Verified, not assumed
+Both were chased to the end rather than "fixed" blindly.
 
-- `scripts/seo-check.mjs` — meta/canonical/hreflang/JSON-LD over all 47 built pages
-- `scripts/test-cart.mjs` — **10/10**: add to cart, quantity, badge, persistence
-  across navigation, cart total (14 700 DH), WhatsApp order message, FR→EN
-  switch mapping `/produits/tables-basses/` → `/en/products/coffee-tables/`
-- `scripts/test-responsive.mjs` — 8 templates × 15 widths, **no horizontal
-  overflow anywhere**
-- Lighthouse on home + product page, against a gzip/cache-enabled server
+- **"Enable text compression — 78 KiB"** reproduced on two runs. Three direct
+  tests (HTTP/1.1, HTTP/2, exact Chrome headers) showed gzip working. Settled by
+  making Nginx log the negotiation during a Lighthouse run: it received
+  `gzip, deflate, br, zstd` and answered **`gzip`, ratio 3.84** — 74.8 KB sent as
+  19.5 KB. Lighthouse's `transferSize` was wrong; nothing to fix.
+- **"robots.txt is not valid"** on the home run — `Lighthouse was unable to
+  download a robots.txt file`. The product-page run scored it 1/1 and `curl`
+  returns 200. Transient fetch failure.
 
-## Re-verified after the white redesign (fonts + palette)
+## Not findings
 
-Typography moved to **Marcellus** (titling serif) + **Jost** (geometric sans),
-and the ground moved from bone `#f7f4ef` to **white**. Every token was
-re-derived and re-measured against `#ffffff`, not carried over:
+`0 <h1>` on 7 pages: the 5 `/admin/` screens (`noindex, nofollow, nocache`) and
+the 2 client-rendered fallback sheets (`noindex, follow`). All are also
+`Disallow`ed in robots.txt.
 
-| Token | on white | note |
-|---|---|---|
-| `--ink-soft` #57534c | 7.64 | body copy |
-| `--ink-faint` #6d6862 | 5.52 | meta / captions |
-| `--brass-text` #7a5a22 | 6.34 | eyebrows, wordmark |
-| `--terracotta-text` #9d4630 | 6.26 | sale badge ground (white text) |
-| `--sage` #5a6650 | 6.08 | made-to-order badge |
-| `--brass` #a67c34 | 3.78 | **decorative only** — rules, underlines, focus ring |
+`Product` without `offers` on all 54 product pages: every piece is priced 0 =
+"price on request". Emitting an `offers` node would mean inventing a price. No
+price rich result until real prices exist — that is the honest trade.
 
-Re-ran after the change: SEO 22 findings (unchanged, still only the missing
-photos) · cart **10/10** · responsive **no overflow** at 8 templates × 15 widths ·
-contrast **PASS**, Accessibility **100**, CLS **0**.
+## Measured, not assumed
 
-One regression found and fixed in the same pass: declaring the `latin-ext`
-subset cost two extra preloaded font files (~35 KB) and pushed FCP 0.8 s → 1.5 s.
-next/font preloads *every* subset listed, and Google's `latin` range already
-covers all French accents including the `œ` ligature (U+0152-0153). Dropping it
-restored FCP to 0.9–1.3 s.
+- `scripts/seo-check.mjs` over all 92 built pages
+- `validate-schema.mjs` (skill script, repointed to `out/`) — 148 blocks, 0 errors
+- Lighthouse on production for home and a product page, before and after the image fix
+- Real latency from Morocco: connect 0.08–0.13 s, **first byte 0.28–0.40 s**,
+  total 0.44–0.51 s. Lighthouse's "server response time 3 280 ms" is its
+  simulated 4G throttle, not the server.
+- 27 catalogue images: all WebP, all with `alt`, `width`/`height` and `loading`
 
-## Open — cannot be closed from the codebase
+**On the scores.** Two runs on identical code gave Performance 47 then 57, so
+run-to-run variance is wide. The byte measurements are the solid part: home
+images 415 → 328 KB, total page weight 780 → 696 KB.
 
-1. **Product photographs.** The only remaining audit finding (22×). Without
-   images the `Product` rich result cannot appear in Google.
-2. **Real identity** — phone, WhatsApp, e-mail and address are still
-   placeholders in `src/config/site.ts`. The domain is settled: canonicals and
-   JSON-LD point at `maisondeco.ma`. The live value comes from the database
-   (`/admin → Réglages`), so it must be set there too, not only in the code.
-3. **OG share image** is a generated placeholder; replace with a real 1200×630.
-4. **Search Console** — property to verify, sitemap to submit, money pages to
-   request indexing. Requires the live domain.
-5. **`api/order.php` mail delivery** can only be tested on the real host.
-6. **Legal pages** (CGV, retours, mentions légales) are not written — required
-   in Morocco for online sales and a ranking/trust factor.
-7. **Reviews.** All three competitors show ratings. Once real reviews exist, add
-   the block plus `AggregateRating` to earn stars in the SERP.
+## Open — needs the client, not code
 
-## Not applicable
+1. **Prices.** All 27 pieces are 0 DH. No price list exists anywhere in the
+   repo; `docs/CLIENT-CHECKLIST.md` already marks this blocking.
+2. **Product photographs of the tableaux.** The four `Tableau*.jpeg` sources are
+   room scenes, now used as family photos. No single-piece shots exist, so the
+   three tableaux families stay empty.
+3. **OG share image** is still generated placeholder artwork.
+4. **Search Console**: the verification tag is live — verify the property,
+   submit `sitemap.xml`, request indexing for the money pages.
+5. **Legal pages** (CGV, retours, mentions légales) are still unwritten.
+6. **Contact form and orders notify nobody** — messages and orders land in the
+   database and wait for someone to open `/admin`. No email, no SMS, no webhook.
 
-- **hreflang beyond FR/EN** — only two languages.
-- **Faceted-nav crawl control** — category filters are plain links to indexable
-  category pages; there are no filter/sort URL parameters to canonicalize.
-- **Pagination** — 11 products; no category needs it yet. Revisit past ~50 per
-  category.
+*Last run: 20/09/2026.*
