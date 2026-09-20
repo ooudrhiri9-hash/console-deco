@@ -214,11 +214,15 @@ p { text-wrap: pretty; }
 .footer .brand__mark { height: 30px; }
 .brand__text span { color: var(--brass-text); } /* 21.6px regular is not "large text" -> needs 4.5:1 */
 
-/* Sous 480 px l'en-tete etait deja juste : le symbole seul y suffit, le nom
-   reprend sa place des qu'il y a de quoi l'afficher entier. */
-@media (max-width: 400px) {
+/* L'en-tete etait deja juste avant que le symbole n'y prenne sa place : un
+   audit precedent l'avait trouve en debordement a 320-375 px. Le nom ne
+   s'efface donc que sur les plus petits ecrans, ou il ne rentre vraiment plus —
+   a 390 px il reste 200 px de vide, le cacher la n'avait aucun sens. */
+@media (max-width: 359px) {
   .brand__text { display: none; }
-  .brand__mark { height: 30px; }
+}
+@media (max-width: 480px) {
+  .brand__mark { height: 28px; }
 }
 
 .nav { display: none; }
