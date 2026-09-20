@@ -77,7 +77,14 @@ export function CategoryCard({ category, locale }: { category: Category; locale:
   return (
     <Link href={routes.category(locale, category)} className="card cat-card">
       <div className="card__media">
-        <ProductImage src={category.image} alt={category.name[locale]} seed={category.id} />
+        <ProductImage
+          src={category.image}
+          alt={category.name[locale]}
+          seed={category.id}
+          {...(category.image?.includes('/categories/')
+            ? { width: 800, height: 587, sizes: '(min-width: 1080px) 520px, (min-width: 640px) 50vw, 100vw' }
+            : {})}
+        />
       </div>
       <div className="card__body">
         <h3 className="card__title">{category.name[locale]}</h3>

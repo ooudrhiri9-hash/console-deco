@@ -215,6 +215,17 @@ for (const [slug, files] of Object.entries(MAP)) {
     if (!checkOnly) bytes += statSync(dest).size;
     console.log(`  ${name.padEnd(44)} ${how}`);
     count++;
+
+    // Variante moitie pour les cartes. Une carte du catalogue fait 200 a 400 px
+    // de large ; servir le 800x1000 de la fiche produit a chacune faisait
+    // telecharger quatre fois les pixels affiches — 129 Ko sur l'accueil seule,
+    // mesures par Lighthouse.
+    const half = join(OUT, `${slug}-${i + 1}-400.webp`);
+    if (!checkOnly) {
+      await sharp(dest).resize(W / 2, H / 2).webp({ quality: 78, effort: 5 }).toFile(half);
+      bytes += statSync(half).size;
+    }
+    count++;
   }
 }
 
@@ -224,6 +235,13 @@ for (const [id, file] of Object.entries(CATEGORY_MAP)) {
   const how = await convert(file, dest, CAT_W, CAT_H);
   if (!checkOnly) bytes += statSync(dest).size;
   console.log(`  ${name.padEnd(44)} ${how} (famille)`);
+  count++;
+
+  const half = join(CAT_OUT, `${id}-400.webp`);
+  if (!checkOnly) {
+    await sharp(dest).resize(CAT_W / 2, Math.round(CAT_H / 2)).webp({ quality: 78, effort: 5 }).toFile(half);
+    bytes += statSync(half).size;
+  }
   count++;
 }
 

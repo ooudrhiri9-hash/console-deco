@@ -55,23 +55,43 @@ export default function ProductImage({
   alt,
   seed,
   priority = false,
+  width = 800,
+  height = 1000,
+  sizes = '(min-width: 1080px) 400px, (min-width: 640px) 33vw, 50vw',
 }: {
   src?: string;
   alt: string;
   seed: string;
   priority?: boolean;
+  /** Les photos de familles sont en 800x587, pas dans le puits 4:5 du catalogue. */
+  width?: number;
+  height?: number;
+  sizes?: string;
 }) {
   if (!src) return <ImagePlaceholder seed={seed} label={alt} />;
+
   // Plain <img>: static export has no image optimiser, and these are already
   // served as pre-sized WebP from /public.
+  //
+  // `prepare-media.mjs` ecrit une variante moitie a cote de chaque fichier de
+  // /media/. Une carte fait 200 a 400 px de large : sans ce srcSet, le
+  // navigateur telechargeait le 800 px de la fiche produit pour l'afficher au
+  // quart de sa taille. Les photos envoyees depuis /admin n'ont pas cette
+  // variante — leur URL ne commence pas par /media/, et elles gardent une
+  // source unique.
+  const half = src.startsWith('/media/') && src.endsWith('.webp')
+    ? src.replace(/\.webp$/, '-400.webp')
+    : null;
+
   return (
     <img
       src={src}
+      {...(half ? { srcSet: `${half} 400w, ${src} 800w`, sizes } : {})}
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
       decoding="async"
-      width={800}
-      height={1000}
+      width={width}
+      height={height}
     />
   );
 }
