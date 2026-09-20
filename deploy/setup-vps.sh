@@ -92,10 +92,24 @@ ufw --force enable
 ufw status
 
 echo "==> SSH par cle uniquement"
-# La cle a ete deposee au moment de la creation du VPS ; on ferme le mot de
-# passe, qui est ce que les robots essaient toute la journee.
-sed -i 's/^#\?PasswordAuthentication .*/PasswordAuthentication no/' /etc/ssh/sshd_config
-systemctl restart ssh || systemctl restart sshd
+# La cle a ete deposee a la creation du VPS ; on ferme le mot de passe, qui est
+# ce que les robots essaient toute la journee.
+#
+# Surtout pas un sed sur /etc/ssh/sshd_config : l'image Hostinger depose
+# /etc/ssh/sshd_config.d/50-cloud-init.conf avec `PasswordAuthentication yes`,
+# et sshd retient la PREMIERE valeur lue, les drop-ins etant inclus en tete.
+# D'ou un fichier en 00- : il passe devant tout le reste.
+cat > /etc/ssh/sshd_config.d/00-maisondeco.conf <<'SSHD'
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin prohibit-password
+SSHD
+chmod 600 /etc/ssh/sshd_config.d/00-maisondeco.conf
+# Valider avant de redemarrer : une config refusee laisserait sshd a l'arret,
+# donc la machine injoignable.
+sshd -t
+systemctl restart ssh 2>/dev/null || systemctl restart sshd
+echo "  PasswordAuthentication -> $(sshd -T | awk '/^passwordauthentication/{print $2}')"
 
 cat <<'NEXT'
 
