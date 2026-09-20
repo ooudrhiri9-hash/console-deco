@@ -88,12 +88,8 @@ function ShopSettings() {
 
       <div className="adm-fields" style={{ marginTop: '.9rem' }}>
         <label className="adm-field">
-          <span>Baseline (FR)</span>
+          <span>Baseline</span>
           <input value={form.baseline.fr} onChange={(e) => setIn('baseline', 'fr', e.target.value)} />
-        </label>
-        <label className="adm-field">
-          <span>Baseline (EN)</span>
-          <input value={form.baseline.en} onChange={(e) => setIn('baseline', 'en', e.target.value)} />
         </label>
       </div>
 
@@ -137,12 +133,8 @@ function ShopSettings() {
 
       <div className="adm-fields" style={{ marginTop: '.9rem' }}>
         <label className="adm-field">
-          <span>Horaires (FR)</span>
+          <span>Horaires</span>
           <input value={form.hours.fr} onChange={(e) => setIn('hours', 'fr', e.target.value)} />
-        </label>
-        <label className="adm-field">
-          <span>Horaires (EN)</span>
-          <input value={form.hours.en} onChange={(e) => setIn('hours', 'en', e.target.value)} />
         </label>
       </div>
 
@@ -185,12 +177,8 @@ function ShopSettings() {
       </div>
       <div className="adm-fields" style={{ marginTop: '.9rem' }}>
         <label className="adm-field">
-          <span>Bandeau d’annonce (FR)</span>
+          <span>Bandeau d’annonce</span>
           <input value={form.announcement.fr} onChange={(e) => setIn('announcement', 'fr', e.target.value)} />
-        </label>
-        <label className="adm-field">
-          <span>Bandeau d’annonce (EN)</span>
-          <input value={form.announcement.en} onChange={(e) => setIn('announcement', 'en', e.target.value)} />
         </label>
       </div>
       <p className="adm-hint">
@@ -318,12 +306,8 @@ function Families() {
 
           <div className="adm-fields">
             <label className="adm-field">
-              <span>Nom (FR) *</span>
+              <span>Nom *</span>
               <input required value={editing.name.fr} onChange={(e) => setLoc('name', 'fr', e.target.value)} />
-            </label>
-            <label className="adm-field">
-              <span>Nom (EN)</span>
-              <input value={editing.name.en} onChange={(e) => setLoc('name', 'en', e.target.value)} />
             </label>
             <label className="adm-field">
               <span>Identifiant</span>
@@ -351,10 +335,7 @@ function Families() {
               <span>Adresse FR</span>
               <input value={editing.slug.fr} onChange={(e) => setLoc('slug', 'fr', e.target.value)} />
             </label>
-            <label className="adm-field">
-              <span>Adresse EN</span>
-              <input value={editing.slug.en} onChange={(e) => setLoc('slug', 'en', e.target.value)} />
-            </label>
+            
             <label className="adm-field">
               <span>Image (chemin ou URL)</span>
               <input
@@ -371,23 +352,15 @@ function Families() {
 
           <div className="adm-fields" style={{ marginTop: '.9rem' }}>
             <label className="adm-field">
-              <span>Accroche (FR)</span>
+              <span>Accroche</span>
               <input value={editing.tagline.fr} onChange={(e) => setLoc('tagline', 'fr', e.target.value)} />
-            </label>
-            <label className="adm-field">
-              <span>Accroche (EN)</span>
-              <input value={editing.tagline.en} onChange={(e) => setLoc('tagline', 'en', e.target.value)} />
             </label>
           </div>
 
           <div className="adm-fields" style={{ marginTop: '.9rem' }}>
             <label className="adm-field">
-              <span>Texte de présentation (FR)</span>
+              <span>Texte de présentation</span>
               <textarea value={editing.description.fr} onChange={(e) => setLoc('description', 'fr', e.target.value)} />
-            </label>
-            <label className="adm-field">
-              <span>Texte de présentation (EN)</span>
-              <textarea value={editing.description.en} onChange={(e) => setLoc('description', 'en', e.target.value)} />
             </label>
           </div>
 

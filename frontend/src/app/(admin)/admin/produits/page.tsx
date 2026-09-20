@@ -454,14 +454,18 @@ function ProductSheet({
 
         <section>
           <h3 className="adm-legend">Identité</h3>
+          {/* Le site est bilingue, la saisie ne l'est plus : un champ anglais
+              vide reprend le francais (backend/src/lib/text.js, localized()).
+              Les traductions deja enregistrees ne sont pas perdues pour autant
+              — le formulaire les recharge et les renvoie telles quelles. */}
+          <p className="adm-muted adm-small" style={{ marginBottom: '.9rem' }}>
+            Les pages anglaises reprennent ces textes tant qu’aucune traduction
+            n’a été saisie.
+          </p>
           <div className="adm-fields">
             <label className="adm-field">
-              <span>Nom (FR) *</span>
+              <span>Nom *</span>
               <input required value={form.name.fr} onChange={(e) => setLoc('name', 'fr', e.target.value)} />
-            </label>
-            <label className="adm-field">
-              <span>Nom (EN)</span>
-              <input value={form.name.en} onChange={(e) => setLoc('name', 'en', e.target.value)} />
             </label>
             <label className="adm-field">
               <span>Référence (SKU)</span>
@@ -491,35 +495,20 @@ function ProductSheet({
           <h3 className="adm-legend">Textes</h3>
           <div className="adm-fields">
             <label className="adm-field">
-              <span>Accroche (FR)</span>
+              <span>Accroche</span>
               <input
                 value={form.shortDescription.fr}
                 onChange={(e) => setLoc('shortDescription', 'fr', e.target.value)}
                 maxLength={220}
               />
             </label>
-            <label className="adm-field">
-              <span>Accroche (EN)</span>
-              <input
-                value={form.shortDescription.en}
-                onChange={(e) => setLoc('shortDescription', 'en', e.target.value)}
-                maxLength={220}
-              />
-            </label>
           </div>
           <div className="adm-fields" style={{ marginTop: '.9rem' }}>
             <label className="adm-field">
-              <span>Description (FR)</span>
+              <span>Description</span>
               <textarea
                 value={form.description.fr}
                 onChange={(e) => setLoc('description', 'fr', e.target.value)}
-              />
-            </label>
-            <label className="adm-field">
-              <span>Description (EN)</span>
-              <textarea
-                value={form.description.en}
-                onChange={(e) => setLoc('description', 'en', e.target.value)}
               />
             </label>
           </div>
@@ -645,19 +634,11 @@ function ProductSheet({
             <div className="adm-option" key={i}>
               <div className="adm-fields">
                 <label className="adm-field">
-                  <span>Nom du choix (FR)</span>
+                  <span>Nom du choix</span>
                   <input
                     value={option.name.fr}
                     placeholder="Cadre"
                     onChange={(e) => patchOption(i, { name: { ...option.name, fr: e.target.value } })}
-                  />
-                </label>
-                <label className="adm-field">
-                  <span>Nom du choix (EN)</span>
-                  <input
-                    value={option.name.en}
-                    placeholder="Frame"
-                    onChange={(e) => patchOption(i, { name: { ...option.name, en: e.target.value } })}
                   />
                 </label>
                 <label className="adm-field">
@@ -685,8 +666,7 @@ function ProductSheet({
               <table className="adm-table adm-table--tight">
                 <thead>
                   <tr>
-                    <th>Valeur (FR)</th>
-                    <th>Valeur (EN)</th>
+                    <th>Valeur</th>
                     {option.kind === 'frame' && <th>Teinte</th>}
                     <th className="adm-num">Supplément (DH)</th>
                     <th />
@@ -700,13 +680,6 @@ function ProductSheet({
                           value={value.label.fr}
                           placeholder="Cadre doré"
                           onChange={(e) => patchValue(i, j, { label: { ...value.label, fr: e.target.value } })}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          value={value.label.en}
-                          placeholder="Gold frame"
-                          onChange={(e) => patchValue(i, j, { label: { ...value.label, en: e.target.value } })}
                         />
                       </td>
                       {option.kind === 'frame' && (
@@ -851,20 +824,12 @@ function ProductSheet({
           <h3 className="adm-legend">Matières &amp; dimensions</h3>
           <div className="adm-fields">
             <label className="adm-field">
-              <span>Matières (FR)</span>
+              <span>Matières</span>
               <input value={form.materials.fr} onChange={(e) => setLoc('materials', 'fr', e.target.value)} />
             </label>
             <label className="adm-field">
-              <span>Matières (EN)</span>
-              <input value={form.materials.en} onChange={(e) => setLoc('materials', 'en', e.target.value)} />
-            </label>
-            <label className="adm-field">
-              <span>Finition (FR)</span>
+              <span>Finition</span>
               <input value={form.finish?.fr || ''} onChange={(e) => setLoc('finish', 'fr', e.target.value)} />
-            </label>
-            <label className="adm-field">
-              <span>Finition (EN)</span>
-              <input value={form.finish?.en || ''} onChange={(e) => setLoc('finish', 'en', e.target.value)} />
             </label>
           </div>
           <div className="adm-fields" style={{ marginTop: '.9rem' }}>
@@ -883,19 +848,11 @@ function ProductSheet({
           </div>
           <div className="adm-fields" style={{ marginTop: '.9rem' }}>
             <label className="adm-field">
-              <span>Couleurs (FR)</span>
+              <span>Couleurs</span>
               <input
                 value={form.colorsFr}
                 onChange={(e) => set('colorsFr', e.target.value)}
                 placeholder="Terre brûlée, Sauge, Sable"
-              />
-            </label>
-            <label className="adm-field">
-              <span>Couleurs (EN)</span>
-              <input
-                value={form.colorsEn}
-                onChange={(e) => set('colorsEn', e.target.value)}
-                placeholder="Burnt earth, Sage, Sand"
               />
             </label>
           </div>
