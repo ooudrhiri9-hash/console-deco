@@ -17,7 +17,15 @@ export const metadata: Metadata = {
   // Belt and braces with the Disallow in robots.ts: a page that is linked from
   // nowhere still gets found, and this is the rule a crawler honours.
   robots: { index: false, follow: false, nocache: true },
-  icons: { icon: '/favicon.svg' },
+  // Le SVG d'abord, net a toute taille ; le .ico derriere, pour les navigateurs
+  // qui ne le lisent pas et pour ceux qui demandent /favicon.ico sans regarder
+  // la page. Le fichier est fabrique par scripts/prepare-favicon.mjs.
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
+    ],
+  },
 };
 
 export const viewport = {
