@@ -11,7 +11,12 @@ import { ArrowIcon } from '@/components/Icons';
 export default function HomeView({ locale }: { locale: Locale }) {
   const t = getDict(locale);
   const featured = featuredProducts(4);
+  // Le bouton n'a de sens que s'il y a des ensembles a voir : la famille est
+  // encore vide, et « Voir les ensembles » menerait sur une page sans rien. Le
+  // texte et la photo restent — ils decrivent un savoir-faire, pas un stock —
+  // et le bouton revient avec la premiere piece rattachee a la famille.
   const pairCategory = getCategory('console-tableau');
+  const pairListed = pairCategory && listedCategories.some((c) => c.id === pairCategory.id);
 
   return (
     <>
@@ -80,7 +85,7 @@ export default function HomeView({ locale }: { locale: Locale }) {
               {t.home.pairTitle}
             </h2>
             <p className="lede">{t.home.pairText}</p>
-            {pairCategory && (
+            {pairCategory && pairListed && (
               <Link
                 href={routes.category(locale, pairCategory)}
                 className="btn btn--light"
