@@ -7,7 +7,7 @@ const LOCALE = 'en' as const;
 
 export const metadata: Metadata = buildMetadata({
   locale: LOCALE,
-  title: "Consoles, tables and wall art | ATELIER OMAR",
+  title: "Consoles, tables and wall art | MAISON DÉCO",
   description: "Every piece: consoles, console + artwork sets, coffee tables, side tables and wall art. Handmade in Morocco, delivered across the Kingdom.",
   path: routes.products(LOCALE),
   alternates: alternates(LOCALE, 'products'),

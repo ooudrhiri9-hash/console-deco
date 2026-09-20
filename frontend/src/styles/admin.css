@@ -187,3 +187,8 @@
   .adm-top { gap: .6rem; }
   .adm-top__right { width: 100%; justify-content: space-between; }
 }
+
+/* Teinte d'un cadre : le sélecteur natif, et de quoi revenir à « aucune ». */
+.adm-swatch { display: inline-flex; align-items: center; gap: .5rem; }
+.adm-swatch input[type='color'] { width: 34px; height: 30px; padding: 0; border: 1px solid var(--line); background: none; cursor: pointer; }
+.adm-swatch em { font-size: .78rem; color: var(--ink-faint); }

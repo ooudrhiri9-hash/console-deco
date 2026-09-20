@@ -1,4 +1,4 @@
-# SEO audit — ATELIER OMAR
+# SEO audit — MAISON DÉCO
 
 **Project type:** e-commerce / catalog (bilingual FR+EN, Morocco)
 **Stack:** Next.js 16 App Router, `output: 'export'` → `out/`
@@ -78,9 +78,10 @@ restored FCP to 0.9–1.3 s.
 
 1. **Product photographs.** The only remaining audit finding (22×). Without
    images the `Product` rich result cannot appear in Google.
-2. **Real identity** — brand name, domain, phone, WhatsApp, e-mail, address are
-   placeholders in `src/config/site.ts`. Canonicals and JSON-LD point at
-   `atelier-omar.ma`.
+2. **Real identity** — phone, WhatsApp, e-mail and address are still
+   placeholders in `src/config/site.ts`. The domain is settled: canonicals and
+   JSON-LD point at `maisondeco.ma`. The live value comes from the database
+   (`/admin → Réglages`), so it must be set there too, not only in the code.
 3. **OG share image** is a generated placeholder; replace with a real 1200×630.
 4. **Search Console** — property to verify, sitemap to submit, money pages to
    request indexing. Requires the live domain.

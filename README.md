@@ -1,10 +1,11 @@
-# Atelier Omar — boutique + back-office
+# Maison Déco — boutique + back-office
 
 Mobilier d'art et tableaux, fabriqués au Maroc. Deux applications, un seul projet.
 
 ```
-frontend/   Next.js 16, export statique FR/EN  → hébergement mutualisé (cPanel/Hostinger)
-backend/    API Express + JSON ou MongoDB      → hébergement Node (Render, VPS, cPanel Node)
+frontend/   Next.js 16, export statique FR/EN  → servi par Nginx sur le VPS
+backend/    API Express + MongoDB Atlas        → process Node sous PM2, même VPS
+deploy/     Nginx, PM2, scripts d'installation et de déploiement
 docs/       catalogue de départ (CSV) et notes client
 ```
 
@@ -63,30 +64,35 @@ node scripts/serve-out.mjs 4321   # http://localhost:4321
 
 ## Mise en ligne
 
-1. **API d'abord.** `render.yaml` à la racine décrit le service : sur Render,
-   *New → Blueprint*, choisir ce dépôt, et remplir les variables qu'il réclame —
-   `MONGODB_URI`, `ALLOWED_ORIGINS` (le domaine du site, sinon le navigateur
-   bloque commandes et messages), `PUBLIC_URL`, `CLOUDINARY_URL`. `AUTH_SECRET`
-   est généré par Render. La base contenant déjà le catalogue et le compte
-   administrateur, `npm run seed` n'est pas nécessaire.
-   Sur le plan gratuit le service s'endort après 15 min : la première visite
-   attend ~50 s. La boutique reste lisible pendant ce temps (elle affiche
-   l'instantané du build), mais une commande passée pile à ce moment attend.
-2. **Site ensuite.** Mettre `NEXT_PUBLIC_API_URL` sur l'API en production, puis
-   `npm run build:live` et envoyer `out/` dans `public_html/`.
+Cible actuelle : **un VPS Hostinger (KVM 1, Ubuntu 24.04)**, un seul domaine —
+`maisondeco.ma`. Nginx sert l'export statique et transmet `/api` et `/uploads`
+au process Node tenu par PM2 ; la base reste chez MongoDB Atlas.
+
+La procédure complète, de la création du VPS au premier déploiement, est dans
+**[docs/DEPLOIEMENT-VPS.md](docs/DEPLOIEMENT-VPS.md)**. En résumé :
+
+```bash
+# une seule fois, en root sur le VPS
+REPO=https://github.com/…/….git bash deploy/setup-vps.sh
+certbot --nginx -d maisondeco.ma -d www.maisondeco.ma
+
+# à chaque mise à jour
+/srv/maisondeco/deploy/deploy.sh
+```
+
+Les fichiers correspondants vivent dans `deploy/` : configuration Nginx,
+déclaration PM2, script d'installation, script de déploiement.
 
 L'adresse de l'API est figée dans le HTML au moment du build : la changer impose
-un nouveau build, jamais un simple réglage sur le serveur.
-
-⚠️ Ne pas zipper avec `Compress-Archive` de PowerShell (chemins en antislash,
-illisibles par l'extracteur de cPanel). Utiliser `tar.exe -a -c -f site.zip -C out .`
+un nouveau build, jamais un simple réglage sur le serveur. Sur le VPS elle vaut
+`https://maisondeco.ma`, l'API étant derrière le même domaine.
 
 ## Points d'attention
 
-- **Photos envoyées depuis l'admin** : avec `CLOUDINARY_URL` renseigné elles
-  partent chez Cloudinary (dossier `atelier-omar/produits`) et survivent à un
-  déploiement, même sur un hébergeur au disque éphémère. Sans cette variable
-  elles restent dans `backend/uploads/`, ce qui ne convient qu'au développement.
+- **Photos envoyées depuis l'admin** : sur le VPS elles restent dans
+  `backend/uploads/`, que le disque persistant et `.gitignore` gardent d'un
+  déploiement à l'autre — Cloudinary n'est plus nécessaire. `CLOUDINARY_URL`
+  reste utile sur un hébergeur au disque éphémère.
 - **Les adresses des pages ne bougent pas** quand on renomme une pièce : le slug
   est fixé à la création, pour ne casser aucun lien déjà indexé.
 - **`frontend/src/data/products.ts` et `categories.ts`** ne sont plus la source

@@ -1,5 +1,5 @@
 /**
- * Atelier Omar API.
+ * Maison Déco API.
  *
  * Back office for a shop that is published as static HTML on shared hosting.
  * No page is rendered here: the API serves the catalogue, takes orders and
@@ -112,7 +112,7 @@ const PORT = envInt('PORT', 4400);
 connectStore()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`API Atelier Omar — http://localhost:${PORT}`);
+      console.log(`API Maison Déco — http://localhost:${PORT}`);
       console.log(allowed.length
         ? `Origines autorisées : ${allowed.join(', ')}`
         : 'Aucune origine déclarée : seuls les appels sans en-tête Origin passeront.');

@@ -31,6 +31,9 @@ export default function CartView({ locale }: { locale: Locale }) {
 
   const threshold = site.freeShippingThreshold;
   const freeShipping = threshold > 0 && subtotal >= threshold;
+  // Une pièce sur devis ne pèse rien dans le sous-total : le dire, plutôt que
+  // de laisser croire à un panier moins cher qu'il ne sera.
+  const quoted = lines.some((l) => l.price === 0);
   const missing = threshold > 0 ? Math.max(0, threshold - subtotal) : 0;
 
   return (
@@ -69,7 +72,9 @@ export default function CartView({ locale }: { locale: Locale }) {
             </div>
 
             <div className="cart-line__right">
-              <strong>{formatPrice(price * qty, locale)}</strong>
+              {/* Une pièce sans prix, ou faite à vos dimensions, se chiffre
+                  à l'atelier : « 0 DH » serait un prix, et un prix faux. */}
+              <strong>{price > 0 ? formatPrice(price * qty, locale) : t.common.onRequest}</strong>
               <button className="cart-line__remove" onClick={() => remove(key)}>
                 {t.cart.remove}
               </button>
@@ -85,14 +90,14 @@ export default function CartView({ locale }: { locale: Locale }) {
       <aside className="summary">
         <div className="summary__row">
           <span>{t.cart.subtotal}</span>
-          <span>{formatPrice(subtotal, locale)}</span>
+          <span>{subtotal > 0 ? formatPrice(subtotal, locale) : t.common.onRequest}</span>
         </div>
         <div className="summary__row">
           <span>{t.cart.shipping}</span>
           <span>{freeShipping ? t.cart.shippingFree : t.cart.shippingQuote}</span>
         </div>
 
-        {threshold > 0 && !freeShipping && (
+        {threshold > 0 && !freeShipping && subtotal > 0 && (
           <>
             <div className="progress">
               <i style={{ width: `${Math.min(100, (subtotal / threshold) * 100)}%` }} />
@@ -103,8 +108,10 @@ export default function CartView({ locale }: { locale: Locale }) {
 
         <div className="summary__row summary__row--total">
           <span>{t.cart.total}</span>
-          <span>{formatPrice(subtotal, locale)}</span>
+          <span>{subtotal > 0 ? formatPrice(subtotal, locale) : t.common.onRequest}</span>
         </div>
+
+        {quoted && <p className="small muted">{t.cart.quoteNote}</p>}
 
         <Link href={routes.checkout(locale)} className="btn btn--primary btn--block" style={{ marginTop: '1.25rem' }}>
           {t.cart.checkout}

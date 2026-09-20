@@ -11,21 +11,21 @@ import snapshot from '@/data/catalogue.json';
 type Localized = { fr: string; en: string };
 
 const DEFAULTS = {
-  brand: 'ATELIER OMAR',
-  brandShort: 'Atelier Omar',
+  brand: 'MAISON DÉCO',
+  brandShort: 'Maison Déco',
   baseline: {
     fr: "Mobilier d'art & tableaux, façonnés au Maroc",
     en: 'Art furniture & wall art, handcrafted in Morocco',
   } as Localized,
 
   /** Final domain — used for canonicals, sitemap, JSON-LD, OG tags. */
-  url: 'https://atelier-omar.ma',
+  url: 'https://maisondeco.ma',
 
   phone: '+212 6 65 20 24 95',
   phoneHref: '+212665202495',
   /** Digits only, international format, no "+" — used to build wa.me links */
   whatsapp: '212665202495',
-  email: 'contact@atelier-omar.ma',
+  email: 'contact@maisondeco.ma',
 
   address: {
     street: '',

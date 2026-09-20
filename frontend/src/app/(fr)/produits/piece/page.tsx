@@ -8,7 +8,7 @@ import { getDict } from '@/i18n/dictionaries';
  * Never indexed: the real product page takes over at the next build.
  */
 export const metadata: Metadata = {
-  title: 'Pièce — ATELIER OMAR',
+  title: 'Pièce — MAISON DÉCO',
   robots: { index: false, follow: true },
 };
 

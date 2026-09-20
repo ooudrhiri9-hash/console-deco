@@ -24,7 +24,8 @@ const MAX_VALUES = 12;
 /**
  * Les choix proposés sur la fiche : « Cadre », « Dimensions »…
  *
- * Chaque valeur porte son supplément en dirhams. C'est la seule source de prix
+ * Chaque valeur porte son supplément en dirhams, et peut en porter un par
+ * format (`extraBySize`) quand l'écart dépend de la taille. C'est la seule source de prix
  * qui compte : buildOrder() relit le supplément ici même à partir de l'id
  * envoyé par le navigateur, donc un panier trafiqué ne peut pas s'offrir un
  * cadre doré au prix du sans-cadre.
@@ -33,10 +34,16 @@ const MAX_VALUES = 12;
  * slugs de pièces : renommer « Cadre doré » en « Cadre laiton » ne doit pas
  * transformer les commandes déjà passées en choix introuvables.
  */
+const KINDS = new Set(['size', 'frame']);
+const HEX = /^#[0-9a-f]{6}$/i;
+
 function options(value) {
   if (!Array.isArray(value)) return [];
   const out = [];
   const seenOption = new Set();
+  // Les suppléments par format visent des ids de format : on les garde bruts
+  // le temps de connaître ces ids, puis on les trie en fin de passe.
+  const pending = [];
 
   for (const raw of value) {
     if (!raw || typeof raw !== 'object') continue;
@@ -45,6 +52,10 @@ function options(value) {
 
     const id = clean(raw.id, 40) || slugify(name.fr).slice(0, 40);
     if (!id || seenOption.has(id)) continue;
+
+    // Un seul format par pièce : un second serait un prix sans règle.
+    let kind = KINDS.has(raw.kind) ? raw.kind : undefined;
+    if (kind === 'size' && out.some((o) => o.kind === 'size')) kind = undefined;
 
     const values = [];
     const seenValue = new Set();
@@ -55,13 +66,19 @@ function options(value) {
       const valueId = clean(rawValue.id, 40) || slugify(label.fr).slice(0, 40);
       if (!valueId || seenValue.has(valueId)) continue;
       seenValue.add(valueId);
-      values.push({
+      const v = {
         id: valueId,
         label,
         // Un supplément négatif ferait baisser le prix : ce n'est pas une remise,
         // c'est une porte ouverte. Une vraie promotion passe par compareAtPrice.
         extra: int(rawValue.extra, { min: 0, max: 10_000_000, fallback: 0 }),
-      });
+      };
+      const swatch = clean(rawValue.swatch, 7);
+      if (kind === 'frame' && HEX.test(swatch)) v.swatch = swatch.toLowerCase();
+      if (kind !== 'size' && rawValue.extraBySize && typeof rawValue.extraBySize === 'object') {
+        pending.push([v, rawValue.extraBySize]);
+      }
+      values.push(v);
       if (values.length >= MAX_VALUES) break;
     }
 
@@ -69,8 +86,21 @@ function options(value) {
     if (values.length < 2) continue;
 
     seenOption.add(id);
-    out.push({ id, name, values });
+    out.push({ id, name, ...(kind ? { kind } : {}), values });
     if (out.length >= MAX_OPTIONS) break;
+  }
+
+  // Seuls les formats qui existent encore gardent leur supplément : un format
+  // retiré ne doit pas laisser derrière lui un prix fantôme.
+  const sizes = new Set(out.find((o) => o.kind === 'size')?.values.map((v) => v.id) || []);
+  for (const [v, raw] of pending) {
+    const own = {};
+    for (const [sizeId, amount] of Object.entries(raw)) {
+      if (!sizes.has(sizeId) || amount === '' || amount === null || amount === undefined) continue;
+      const n = int(amount, { min: 0, max: 10_000_000, fallback: -1 });
+      if (n >= 0) own[sizeId] = n;
+    }
+    if (Object.keys(own).length) v.extraBySize = own;
   }
 
   return out;

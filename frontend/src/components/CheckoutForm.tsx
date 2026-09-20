@@ -182,13 +182,15 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
                 </em>
               ))}
             </span>
-            <span>{formatPrice(price * qty, locale)}</span>
+            <span>{price > 0 ? formatPrice(price * qty, locale) : t.common.onRequest}</span>
           </div>
         ))}
         <div className="summary__row summary__row--total">
           <span>{t.cart.total}</span>
-          <span>{formatPrice(subtotal, locale)}</span>
+          <span>{subtotal > 0 ? formatPrice(subtotal, locale) : t.common.onRequest}</span>
         </div>
+
+        {lines.some((l) => l.price === 0) && <p className="small muted">{t.cart.quoteNote}</p>}
         <p className="small muted" style={{ marginTop: '1rem' }}>
           {t.checkout.intro}
         </p>

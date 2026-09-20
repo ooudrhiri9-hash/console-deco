@@ -8,7 +8,7 @@ const LOCALE = 'en' as const;
 export const metadata: Metadata = {
   ...buildMetadata({
     locale: LOCALE,
-    title: "Checkout | ATELIER OMAR",
+    title: "Checkout | MAISON DÉCO",
     description: "Cash on delivery across Morocco.",
     path: routes.checkout(LOCALE),
     alternates: alternates(LOCALE, 'checkout'),

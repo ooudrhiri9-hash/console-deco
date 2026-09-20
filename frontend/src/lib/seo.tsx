@@ -4,6 +4,7 @@ import { htmlLang, locales, type Locale } from '@/i18n/config';
 import type { Category, Product } from '@/types';
 import { routes } from './routes';
 import { dimensionsLabel } from './format';
+import { optionsOf, priceRange } from './options';
 
 const abs = (path: string) => `${site.url}${path}`;
 
@@ -134,6 +135,7 @@ export function websiteJsonLd() {
 /** Product rich result: price, availability, condition. */
 export function productJsonLd(product: Product, locale: Locale, category?: Category) {
   const dims = dimensionsLabel(product);
+  const range = priceRange(product);
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -146,7 +148,24 @@ export function productJsonLd(product: Product, locale: Locale, category?: Categ
     ...(category ? { category: category.name[locale] } : {}),
     material: product.materials[locale],
     ...(dims ? { size: dims } : {}),
-    ...(product.price > 0
+    ...(product.price > 0 && range.high > range.low
+      ? {
+          // Plusieurs formats, plusieurs prix : Google veut la fourchette.
+          offers: {
+            '@type': 'AggregateOffer',
+            lowPrice: range.low,
+            highPrice: range.high,
+            offerCount: optionsOf(product).reduce((n, o) => n * o.values.length, 1),
+            priceCurrency: site.currency,
+            availability: product.inStock
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/PreOrder',
+            itemCondition: 'https://schema.org/NewCondition',
+            url: `${site.url}${routes.product(locale, product)}`,
+            seller: { '@id': `${site.url}/#organization` },
+          },
+        }
+      : product.price > 0
       ? {
           offers: {
             '@type': 'Offer',

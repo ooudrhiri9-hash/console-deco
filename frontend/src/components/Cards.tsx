@@ -6,6 +6,7 @@ import type { Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
 import { routes } from '@/lib/routes';
 import { discountPercent, formatPrice } from '@/lib/format';
+import { priceRange } from '@/lib/options';
 import { countByCategory, priceFrom } from '@/lib/catalogue';
 import { hasStaticPage, useLiveProduct } from './LiveCatalogue';
 import ProductImage from './ProductImage';
@@ -54,7 +55,9 @@ export function ProductCard({
         <div className="card__price">
           {product.price > 0 ? (
             <>
-              <strong>{formatPrice(product.price, locale)}</strong>
+              {/* Un tableau en plusieurs formats n'a pas un prix mais un point de départ. */}
+              {priceRange(product).high > product.price && <span className="card__from">{t.common.from}</span>}
+              <strong>{formatPrice(priceRange(product).low, locale)}</strong>
               {product.compareAtPrice ? <del>{formatPrice(product.compareAtPrice, locale)}</del> : null}
             </>
           ) : (

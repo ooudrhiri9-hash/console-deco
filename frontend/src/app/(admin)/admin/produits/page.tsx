@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import AdminShell from '@/admin/AdminShell';
 import { api, ApiError, uploadPhoto } from '@/admin/client';
-import { dh } from '@/admin/format';
+import { dh, slugId } from '@/admin/format';
 import type { AdminCategory, AdminProduct } from '@/admin/types';
-import type { ProductOption } from '@/types';
+import type { ProductOption, ProductOptionKind } from '@/types';
 
 export default function ProductsPage() {
   return (
@@ -53,31 +53,49 @@ const toDraft = (p: AdminProduct): Draft => ({
  * fige à l'enregistrement, comme les adresses de pièces. Une valeur renommée
  * plus tard garde donc l'identifiant que les commandes déjà passées citent.
  */
-const PRESETS: Record<'cadre' | 'dimensions', ProductOption> = {
+const PRESETS: Record<'cadre' | 'dimensions' | 'encadrement', ProductOption> = {
   cadre: {
     id: 'cadre',
     name: { fr: 'Cadre', en: 'Frame' },
+    kind: 'frame',
     values: [
       { id: '', label: { fr: 'Sans cadre', en: 'No frame' }, extra: 0 },
-      { id: '', label: { fr: 'Cadre noir', en: 'Black frame' }, extra: 0 },
-      { id: '', label: { fr: 'Cadre blanc', en: 'White frame' }, extra: 0 },
-      { id: '', label: { fr: 'Cadre doré', en: 'Gold frame' }, extra: 0 },
-      { id: '', label: { fr: 'Cadre argenté', en: 'Silver frame' }, extra: 0 },
-      { id: '', label: { fr: 'Cadre marron', en: 'Brown frame' }, extra: 0 },
-      { id: '', label: { fr: 'Cadre bleu marine', en: 'Navy frame' }, extra: 0 },
-      { id: '', label: { fr: 'Cadre bois hêtre', en: 'Beech frame' }, extra: 0 },
+      { id: '', label: { fr: 'Cadre noir', en: 'Black frame' }, extra: 0, swatch: '#1c1917' },
+      { id: '', label: { fr: 'Cadre blanc', en: 'White frame' }, extra: 0, swatch: '#f2eee6' },
+      { id: '', label: { fr: 'Cadre doré', en: 'Gold frame' }, extra: 0, swatch: '#c9a24d' },
+      { id: '', label: { fr: 'Cadre argenté', en: 'Silver frame' }, extra: 0, swatch: '#b8b8b4' },
+      { id: '', label: { fr: 'Cadre marron', en: 'Brown frame' }, extra: 0, swatch: '#5b3a24' },
+      { id: '', label: { fr: 'Cadre bleu marine', en: 'Navy frame' }, extra: 0, swatch: '#1f2a44' },
+      { id: '', label: { fr: 'Cadre bois hêtre', en: 'Beech frame' }, extra: 0, swatch: '#d6b48a' },
     ],
   },
   dimensions: {
     id: 'dimensions',
-    name: { fr: 'Dimensions', en: 'Dimensions' },
+    name: { fr: 'Format', en: 'Size' },
+    kind: 'size',
     values: [
-      { id: '', label: { fr: 'S — 50 × 75 cm', en: 'S — 50 × 75 cm' }, extra: 0 },
-      { id: '', label: { fr: 'M — 100 × 60 cm', en: 'M — 100 × 60 cm' }, extra: 0 },
-      { id: '', label: { fr: 'L — 120 × 80 cm', en: 'L — 120 × 80 cm' }, extra: 0 },
+      { id: '', label: { fr: '50 × 75 cm', en: '50 × 75 cm' }, extra: 0 },
+      { id: '', label: { fr: '100 × 60 cm', en: '100 × 60 cm' }, extra: 0 },
+      { id: '', label: { fr: '120 × 80 cm', en: '120 × 80 cm' }, extra: 0 },
+    ],
+  },
+  // Les deux finitions des tableaux de l'atelier (docs/PRIX-TABLEAUX.md).
+  encadrement: {
+    id: 'encadrement',
+    name: { fr: 'Encadrement', en: 'Framing' },
+    kind: 'frame',
+    values: [
+      { id: '', label: { fr: 'Faux cadre', en: 'Stretched canvas' }, extra: 0 },
+      { id: '', label: { fr: 'Caisse américaine', en: 'Floater frame' }, extra: 0, swatch: '#1c1917' },
     ],
   },
 };
+
+const KIND_LABELS: Array<[ProductOptionKind | '', string]> = [
+  ['', 'Puces simples'],
+  ['size', 'Format — grille des tailles avec leur prix'],
+  ['frame', 'Cadre — pastilles de couleur, photo encadrée'],
+];
 
 const blankOption = (): ProductOption => ({
   id: '',
@@ -359,6 +377,22 @@ function ProductSheet({
     setOptions(options.map((o, k) => (k === i ? { ...o, ...patch } : o)));
   const patchValue = (i: number, j: number, patch: Partial<ProductOption['values'][number]>) =>
     patchOption(i, { values: options[i].values.map((v, k) => (k === j ? { ...v, ...patch } : v)) });
+  // Le format de la pièce, et l'id que l'API donnera à chacune de ses valeurs.
+  const sizeKeys = (options.find((o) => o.kind === 'size')?.values || [])
+    .map((v) => ({ key: v.id || slugId(v.label.fr), label: v.label.fr }))
+    .filter((sz) => sz.key);
+  const setKind = (i: number, kind: ProductOptionKind | '') =>
+    setOptions(options.map((o, k) => {
+      if (k === i) return { ...o, kind: kind || undefined };
+      // Un seul format par pièce : l'ancien redevient un choix simple.
+      return kind === 'size' && o.kind === 'size' ? { ...o, kind: undefined } : o;
+    }));
+  const patchBySize = (i: number, j: number, sizeKey: string, raw: string) => {
+    const current = { ...(options[i].values[j].extraBySize || {}) };
+    if (raw === '') delete current[sizeKey];
+    else current[sizeKey] = Math.max(0, Math.round(Number(raw) || 0));
+    patchValue(i, j, { extraBySize: Object.keys(current).length ? current : undefined });
+  };
 
   const moveImage = (from: number, to: number) =>
     setForm((f) => {
@@ -626,6 +660,17 @@ function ProductSheet({
                     onChange={(e) => patchOption(i, { name: { ...option.name, en: e.target.value } })}
                   />
                 </label>
+                <label className="adm-field">
+                  <span>Affichage sur la fiche</span>
+                  <select
+                    value={option.kind || ''}
+                    onChange={(e) => setKind(i, e.target.value as ProductOptionKind | '')}
+                  >
+                    {KIND_LABELS.map(([k, label]) => (
+                      <option key={k} value={k}>{label}</option>
+                    ))}
+                  </select>
+                </label>
                 <div className="adm-field" style={{ justifyContent: 'flex-end' }}>
                   <button
                     type="button"
@@ -642,6 +687,7 @@ function ProductSheet({
                   <tr>
                     <th>Valeur (FR)</th>
                     <th>Valeur (EN)</th>
+                    {option.kind === 'frame' && <th>Teinte</th>}
                     <th className="adm-num">Supplément (DH)</th>
                     <th />
                   </tr>
@@ -663,6 +709,29 @@ function ProductSheet({
                           onChange={(e) => patchValue(i, j, { label: { ...value.label, en: e.target.value } })}
                         />
                       </td>
+                      {option.kind === 'frame' && (
+                        <td>
+                          <span className="adm-swatch">
+                            <input
+                              type="color"
+                              value={value.swatch || '#ffffff'}
+                              aria-label={`Teinte — ${value.label.fr || 'valeur'}`}
+                              onChange={(e) => patchValue(i, j, { swatch: e.target.value })}
+                            />
+                            {value.swatch ? (
+                              <button
+                                type="button"
+                                className="adm-btn adm-btn--sm"
+                                onClick={() => patchValue(i, j, { swatch: undefined })}
+                              >
+                                Aucune
+                              </button>
+                            ) : (
+                              <em>sans cadre</em>
+                            )}
+                          </span>
+                        </td>
+                      )}
                       <td className="adm-num">
                         <input
                           type="number"
@@ -687,6 +756,47 @@ function ProductSheet({
                   ))}
                 </tbody>
               </table>
+
+              {option.kind !== 'size' && sizeKeys.length > 0 && (
+                <>
+                  <p className="adm-hint" style={{ marginTop: '.8rem' }}>
+                    Supplément selon le format (facultatif). Une case vide reprend le supplément
+                    ci-dessus. Utile quand l’écart change avec la taille : la caisse américaine
+                    coûte +230 DH en 80 × 80 mais +290 DH en 100 × 100.
+                  </p>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className="adm-table adm-table--tight">
+                      <thead>
+                        <tr>
+                          <th>Valeur</th>
+                          {sizeKeys.map((sz) => (
+                            <th className="adm-num" key={sz.key}>{sz.label}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {option.values.map((value, j) => (
+                          <tr key={j}>
+                            <td>{value.label.fr || '—'}</td>
+                            {sizeKeys.map((sz) => (
+                              <td className="adm-num" key={sz.key}>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  value={value.extraBySize?.[sz.key] ?? ''}
+                                  placeholder={String(value.extra || 0)}
+                                  aria-label={`${value.label.fr} — ${sz.label}`}
+                                  onChange={(e) => patchBySize(i, j, sz.key, e.target.value)}
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
 
               <button
                 type="button"
@@ -719,11 +829,19 @@ function ProductSheet({
               className="adm-btn"
               onClick={() => setOptions([...options, structuredClone(PRESETS.dimensions)])}
             >
-              Dimensions (S / M / L)
+              Formats (3 tailles)
+            </button>
+            <button
+              type="button"
+              className="adm-btn"
+              onClick={() => setOptions([...options, structuredClone(PRESETS.encadrement)])}
+            >
+              Faux cadre / caisse américaine
             </button>
           </div>
           <p className="adm-hint" style={{ marginTop: '.6rem' }}>
-            Le supplément s’ajoute au prix de la pièce. Sur une pièce à 0 (sur demande) il est
+            Le supplément s’ajoute au prix de la pièce, qui est donc celui du plus petit format
+            sans cadre ; la fiche affiche chaque format avec son prix. Sur une pièce à 0 (sur demande) il est
             enregistré avec la commande mais rien ne s’affiche : il n’y a pas de prix auquel
             l’ajouter.
           </p>

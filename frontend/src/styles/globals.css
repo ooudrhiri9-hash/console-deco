@@ -368,6 +368,7 @@ p { text-wrap: pretty; }
 .card__meta { font-size: 0.82rem; color: var(--ink-faint); }
 .card__price { margin-top: auto; padding-top: 0.6rem; display: flex; align-items: baseline; gap: 0.6rem; font-size: 0.95rem; }
 .card__price del { color: var(--ink-faint); font-size: 0.85rem; }
+.card__from { font-size: 0.78rem; color: var(--ink-faint); margin-right: -0.3rem; }
 
 .badge {
   position: absolute; top: 0.75rem; left: 0.75rem; z-index: 2;
@@ -468,6 +469,120 @@ p { text-wrap: pretty; }
 .chip--pick:has(input:focus-visible) { outline: 2px solid var(--brass); outline-offset: 2px; }
 .option__extra { font-style: normal; font-size: 0.78rem; opacity: 0.75; }
 .summary__opt { display: block; font-style: normal; font-size: 0.76rem; color: var(--ink-faint); }
+
+/* ============================================================================
+   FICHE PRODUIT — formats, cadre, achat, garanties
+   ========================================================================== */
+.product__media { display: grid; gap: 1.1rem; min-width: 0; }
+.product__title { margin-block: 0.6rem 0.5rem; }
+.product__main { transition: padding var(--slow) var(--ease), background-color var(--slow) var(--ease); }
+
+/* La moulure est dessinée, pas photographiée : un dégradé tiré de la teinte
+   choisie dans /admin, plus clair en haut à gauche comme sous une lampe. */
+.product__main.is-framed {
+  padding: 5%;
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--frame) 72%, #fff),
+    var(--frame) 55%,
+    color-mix(in srgb, var(--frame) 80%, #000)
+  );
+  box-shadow: 0 22px 44px -26px rgba(20, 18, 15, 0.55);
+}
+.product__main.is-framed img, .product__main.is-framed svg {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.badge--inline { position: static; align-self: center; }
+.product__price { flex-wrap: wrap; margin-bottom: 0.35rem; }
+.product__price-note { font-size: 0.82rem; color: var(--ink-faint); margin-bottom: 1rem; }
+
+.option__current { text-transform: none; letter-spacing: 0; color: var(--ink); }
+
+/* La grille des formats : chaque case dit sa taille et son prix. */
+.size-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 0.5rem; }
+.size-opt {
+  position: relative; display: grid; gap: 0.1rem; justify-items: center;
+  padding: 0.7rem 0.5rem; text-align: center; cursor: pointer;
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  transition: all var(--fast) var(--ease);
+}
+.size-opt:hover { border-color: var(--ink); }
+.size-opt.is-active { background: var(--ink); border-color: var(--ink); color: var(--white); }
+.size-opt input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.size-opt:has(input:focus-visible) { outline: 2px solid var(--brass); outline-offset: 2px; }
+.size-opt b { font-size: 0.86rem; font-weight: 500; }
+.size-opt span { font-size: 0.76rem; opacity: 0.75; font-variant-numeric: tabular-nums; }
+
+.chip--frame { align-items: center; }
+.swatch {
+  width: 15px; height: 15px; border-radius: 50%; flex: 0 0 15px;
+  background: var(--swatch); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.swatch--none { background: repeating-linear-gradient(45deg, #d8d4cc 0 3px, #fff 3px 6px); }
+.chip--frame.is-active .swatch { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7); }
+
+.qty-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+.qty button { display: grid; place-items: center; }
+.qty button:disabled { opacity: 0.35; cursor: not-allowed; }
+.qty-row__total { font-style: normal; font-size: 0.85rem; color: var(--ink-soft); }
+
+.buy { display: grid; gap: 0.7rem; margin-block: 1.6rem 0.5rem; }
+.buy__main { display: flex; gap: 0.7rem; }
+.buy__add { flex: 1 1 auto; }
+.buy__fav {
+  flex: 0 0 52px; display: grid; place-items: center;
+  border: 1px solid var(--line-strong); border-radius: var(--radius); color: var(--ink-soft);
+  transition: all var(--fast) var(--ease);
+}
+.buy__fav:hover { border-color: var(--ink); color: var(--ink); }
+.buy__fav.is-active { border-color: var(--terracotta-text); color: var(--terracotta-text); }
+.buy__cart {
+  justify-self: start; display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.85rem; color: var(--brass-text);
+}
+
+/* Sur téléphone la colonne défile sous les photos : les boutons d'achat
+   restent collés en bas tant qu'on la parcourt. La marge de droite laisse la
+   place aux deux boutons ronds d'appel et de WhatsApp. */
+@media (max-width: 899px) {
+  .buy {
+    position: sticky; bottom: 0; z-index: 20;
+    padding-block: 0.9rem 0.75rem;
+    padding-right: calc(54px + clamp(1rem, 3vw, 2rem));
+    background: linear-gradient(to top, var(--white) 78%, rgba(255, 255, 255, 0));
+  }
+}
+
+/* Ce sur quoi l'atelier s'engage déjà ailleurs sur le site, rien de plus. */
+.trust {
+  list-style: none; padding: 1.35rem 0 0; margin-top: 1.5rem;
+  display: grid; gap: 0.85rem; border-top: 1px solid var(--line);
+}
+@media (min-width: 520px) { .trust { grid-template-columns: 1fr 1fr; } }
+.trust li { display: flex; align-items: flex-start; gap: 0.65rem; }
+.trust svg { color: var(--brass); flex-shrink: 0; margin-top: 0.15rem; }
+.trust div { display: grid; gap: 0.05rem; min-width: 0; }
+.trust b { font-size: 0.86rem; font-weight: 500; }
+.trust span { font-size: 0.78rem; color: var(--ink-faint); }
+
+.product__faq { margin-top: 1.75rem; }
+.product__faq .faq__q { font-size: 1.05rem; padding-block: 1rem; }
+.product__faq .faq__a p + p { margin-top: 0.8rem; }
+.spec-list { display: grid; grid-template-columns: minmax(110px, 0.45fr) 1fr; }
+.spec-list dt, .spec-list dd { padding: 0.6rem 0; border-bottom: 1px solid var(--line); font-size: 0.88rem; }
+.spec-list dt { color: var(--ink-faint); }
+.spec-list dd { margin: 0; color: var(--ink); }
+
+.related-head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 1rem; margin-bottom: 2rem;
+}
+
+@media (max-width: 480px) {
+  /* La place manque dans l'en-tête : les favoris restent dans le menu. */
+  .icon-btn--fav { display: none; }
+}
 .filters__spacer { margin-left: auto; }
 .filters select {
   padding: 0.5rem 0.75rem; border: 1px solid var(--line-strong); border-radius: var(--radius);
@@ -633,3 +748,24 @@ p { text-wrap: pretty; }
   color: var(--ink); background: rgba(255, 255, 255, 0.94);
   border: 1px solid var(--line-strong); border-radius: var(--radius);
 }
+
+/* Dimensions sur mesure : un pavé de plus dans la grille des formats, puis la
+   saisie. Le pavé est en pointillés — ce n'est pas une taille au catalogue. */
+.size-opt--custom { border-style: dashed; }
+.size-opt--custom.is-active { border-style: solid; }
+
+.custom-size { margin-top: 0.9rem; padding: 1rem 1.1rem; background: var(--surface-alt); border-radius: var(--radius); }
+.custom-size__fields { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.custom-size__field { display: grid; gap: 0.3rem; flex: 1 1 96px; min-width: 0; position: relative; }
+.custom-size__field > span { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+.custom-size__field input {
+  width: 100%; padding: 0.6rem 2.2rem 0.6rem 0.7rem;
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  background: var(--white); font-size: 0.95rem; font-variant-numeric: tabular-nums;
+}
+.custom-size__field input:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+.custom-size__field em { position: absolute; right: 0.7rem; bottom: 0.7rem; font-style: normal; font-size: 0.78rem; color: var(--ink-faint); }
+.custom-size__note { margin-top: 0.8rem; font-size: 0.8rem; color: var(--ink-soft); }
+.custom-size__note.is-error { color: var(--danger); }
+
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }

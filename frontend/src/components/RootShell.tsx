@@ -3,6 +3,7 @@ import { htmlLang, type Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
 import { fontClass } from '@/lib/fonts';
 import { CartProvider } from './CartProvider';
+import { FavoritesProvider } from './FavoritesProvider';
 import { LiveCatalogueProvider } from './LiveCatalogue';
 import Header from './Header';
 import Footer from './Footer';
@@ -31,6 +32,7 @@ export default function RootShell({ locale, children }: { locale: Locale; childr
       <body suppressHydrationWarning>
         <LiveCatalogueProvider>
         <CartProvider>
+        <FavoritesProvider>
           <a className="skip-link" href="#main">
             {t.common.skipToContent}
           </a>
@@ -43,6 +45,7 @@ export default function RootShell({ locale, children }: { locale: Locale; childr
             <PhoneFloat locale={locale} />
             <WhatsappFloat locale={locale} />
           </div>
+        </FavoritesProvider>
         </CartProvider>
         </LiveCatalogueProvider>
       </body>

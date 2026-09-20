@@ -13,7 +13,7 @@ import '@/styles/admin.css';
  * as static HTML leaks nothing.
  */
 export const metadata: Metadata = {
-  title: 'Back office — Atelier Omar',
+  title: 'Back office — Maison Déco',
   // Belt and braces with the Disallow in robots.ts: a page that is linked from
   // nowhere still gets found, and this is the rule a crawler honours.
   robots: { index: false, follow: false, nocache: true },

@@ -9,17 +9,17 @@ import { store } from '../store/index.js';
 import { clean, int, localized } from './text.js';
 
 export const DEFAULT_SETTINGS = {
-  brand: 'ATELIER OMAR',
-  brandShort: 'Atelier Omar',
+  brand: 'MAISON DÉCO',
+  brandShort: 'Maison Déco',
   baseline: {
     fr: "Mobilier d'art & tableaux, façonnés au Maroc",
     en: 'Art furniture & wall art, handcrafted in Morocco',
   },
-  url: 'https://atelier-omar.ma',
+  url: 'https://maisondeco.ma',
   phone: '+212 6 65 20 24 95',
   phoneHref: '+212665202495',
   whatsapp: '212665202495',
-  email: 'contact@atelier-omar.ma',
+  email: 'contact@maisondeco.ma',
   address: {
     street: '',
     city: 'Casablanca',

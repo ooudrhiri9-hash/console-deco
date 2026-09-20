@@ -22,3 +22,19 @@ export const shortDay = (iso: string) => {
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
 };
+
+/**
+ * Même règle que slugify() dans backend/src/lib/text.js : c'est ainsi que l'API
+ * fabrique l'id d'une valeur à son premier enregistrement. Le formulaire s'en
+ * sert pour rattacher un supplément à un format qui n'a pas encore d'id.
+ */
+export function slugId(input: string, max = 40): string {
+  return String(input ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/['’]/g, ' ')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, max);
+}

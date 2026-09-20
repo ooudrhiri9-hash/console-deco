@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import CartPageView from '@/views/CartPageView';
+import FavoritesPageView from '@/views/FavoritesPageView';
 import { buildMetadata } from '@/lib/seo';
 import { alternates, routes } from '@/lib/routes';
 
@@ -8,14 +8,14 @@ const LOCALE = 'en' as const;
 export const metadata: Metadata = {
   ...buildMetadata({
     locale: LOCALE,
-    title: "Your cart | MAISON DÉCO",
-    description: "The pieces you have selected.",
-    path: routes.cart(LOCALE),
-    alternates: alternates(LOCALE, 'cart'),
+    title: "Your favourites | MAISON DÉCO",
+    description: "The pieces you have set aside.",
+    path: routes.favorites(LOCALE),
+    alternates: alternates(LOCALE, 'favorites'),
   }),
   robots: { index: false, follow: true },
 };
 
 export default function Page() {
-  return <CartPageView locale={LOCALE} />;
+  return <FavoritesPageView locale={LOCALE} />;
 }

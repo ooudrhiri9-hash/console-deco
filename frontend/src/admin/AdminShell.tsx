@@ -69,7 +69,7 @@ export default function AdminShell({ title, children }: { title: string; childre
     <div className="adm">
       <header className="adm-top">
         <div className="adm-top__brand">
-          <strong>Atelier Omar</strong>
+          <strong>Maison Déco</strong>
           <span className="adm-top__tag">Back office</span>
         </div>
         <nav className="adm-nav">
@@ -127,7 +127,7 @@ function LoginScreen({ onDone }: { onDone: () => void }) {
   return (
     <div className="adm-login">
       <form className="adm-card adm-login__box" onSubmit={submit}>
-        <h1 className="adm-login__title">Atelier Omar</h1>
+        <h1 className="adm-login__title">Maison Déco</h1>
         <p className="adm-muted">Espace d’administration</p>
 
         {error && <p className="adm-alert adm-alert--err">{error}</p>}

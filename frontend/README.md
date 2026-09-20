@@ -1,4 +1,4 @@
-# ATELIER OMAR — site vitrine & boutique
+# MAISON DÉCO — site vitrine & boutique
 
 Mobilier d'art et tableaux, fabriqués au Maroc.
 Site statique bilingue (FR/EN) avec catalogue, panier et commande en paiement à la livraison.
@@ -89,6 +89,33 @@ npm run build:live       # build qui refuse de démarrer sans API
 > `src/data/catalogue.json` est **généré**. `src/data/products.ts` et
 > `src/data/categories.ts` ne servent plus que de repli hors ligne : la base de
 > l'API fait foi depuis la mise en place du back-office.
+
+---
+
+## Les choix d'une fiche : formats, cadre, sur mesure
+
+Une pièce peut porter jusqu'à quatre choix, saisis dans `/admin/` (fiche de la
+pièce, section « Choix proposés »). Chacun a un **affichage** :
+
+| Affichage | Sur la fiche | Prix |
+|---|---|---|
+| **Format** | une grille de tailles, chacune avec son prix | le prix de la pièce est celui du plus petit format ; chaque valeur porte son supplément |
+| **Cadre** | des pastilles de la teinte choisie, sous la photo, qui entourent la photo d'une moulure dessinée en CSS | supplément par valeur, et **un supplément par format** quand l'écart dépend de la taille (tarifs tableaux : voir `docs/PRIX-TABLEAUX.md`) |
+| **Puces simples** | des puces | supplément par valeur |
+
+Un seul choix « Format » par pièce. Sans aucun choix — les 26 consoles
+aujourd'hui — la fiche n'affiche ni grille ni pastille.
+
+**Sur mesure.** Toute fiche propose en plus « Sur mesure » : le visiteur saisit
+largeur × hauteur (× profondeur pour un meuble), entre 10 et 500 cm. Ces
+dimensions remplacent le format, la ligne passe en devis (« Prix sur devis »,
+aucun montant dans le panier ni dans le total) et voyagent jusqu'à la commande,
+au message WhatsApp et au back-office.
+
+`src/lib/options.ts` décide de tout cela côté site ; `backend/src/lib/order.js`
+refait le même calcul à la commande, à partir des seuls identifiants. Le
+navigateur propose, la base dispose : un panier trafiqué n'obtient pas le cadre
+doré au prix du sans-cadre.
 
 ---
 

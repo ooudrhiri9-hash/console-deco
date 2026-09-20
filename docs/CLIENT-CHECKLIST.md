@@ -14,11 +14,11 @@ Aucun fichier à modifier.
 
 | À fournir | Actuellement | Utilisé pour |
 |---|---|---|
-| Nom de marque exact | `ATELIER OMAR` *(placeholder)* | Logo texte, titres, e-mails, données structurées |
-| Nom de domaine définitif | `atelier-omar.ma` *(placeholder)* | URLs canoniques, sitemap, partages WhatsApp |
+| Nom de marque exact | `MAISON DÉCO` | Logo texte, titres, e-mails, données structurées |
+| Nom de domaine définitif | `maisondeco.ma` | URLs canoniques, sitemap, partages WhatsApp |
 | Numéro de téléphone | `+212 6 65 20 24 95` *(placeholder)* | Bouton appel, pied de page |
 | Numéro WhatsApp | idem | Tous les boutons WhatsApp et messages pré-remplis |
-| Adresse e-mail | `contact@atelier-omar.ma` | Formulaires, réception des commandes |
+| Adresse e-mail | `contact@maisondeco.ma` *(à confirmer)* | Formulaires, réception des commandes |
 | Adresse de l'atelier / showroom | vide | Pied de page, page contact, référencement local |
 | Instagram / Facebook / TikTok | liens génériques | Pied de page, données structurées |
 | Horaires réels | `Lundi – Samedi, 9h – 19h` | Page contact |

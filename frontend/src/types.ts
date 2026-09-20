@@ -24,7 +24,24 @@ export interface ProductOptionValue {
   label: Localized;
   /** Supplément en dirhams, 0 quand la valeur n'ajoute rien. */
   extra: number;
+  /** Cadre seulement : la teinte de la moulure (#rrggbb), pour la pastille et
+   *  l'aperçu encadré de la photo. */
+  swatch?: string;
+  /**
+   * Supplément propre à chaque format : id de la valeur de format -> dirhams.
+   * Un format absent retombe sur `extra`. C'est ce qui permet de saisir les
+   * vrais tarifs tableaux, où la caisse américaine ne coûte pas le même écart
+   * sur un 80 × 80 que sur un 120 × 120.
+   */
+  extraBySize?: Record<string, number>;
 }
+
+/**
+ * Le rôle d'un choix sur la fiche. `size` : grille de formats, chacun avec son
+ * prix. `frame` : pastilles de couleur sous la photo, et la photo encadrée.
+ * Absent : de simples puces.
+ */
+export type ProductOptionKind = 'size' | 'frame';
 
 /**
  * Un choix offert sur la fiche : le cadre d'un tableau, ses dimensions.
@@ -36,6 +53,7 @@ export interface ProductOptionValue {
 export interface ProductOption {
   id: string;
   name: Localized;
+  kind?: ProductOptionKind;
   values: ProductOptionValue[];
 }
 

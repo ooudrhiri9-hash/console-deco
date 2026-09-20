@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import CheckoutPageView from '@/views/CheckoutPageView';
+import FavoritesPageView from '@/views/FavoritesPageView';
 import { buildMetadata } from '@/lib/seo';
 import { alternates, routes } from '@/lib/routes';
 
@@ -8,14 +8,14 @@ const LOCALE = 'fr' as const;
 export const metadata: Metadata = {
   ...buildMetadata({
     locale: LOCALE,
-    title: "Finaliser la commande | MAISON DÉCO",
-    description: "Paiement à la livraison partout au Maroc.",
-    path: routes.checkout(LOCALE),
-    alternates: alternates(LOCALE, 'checkout'),
+    title: "Vos favoris | MAISON DÉCO",
+    description: "Les pièces que vous avez mises de côté.",
+    path: routes.favorites(LOCALE),
+    alternates: alternates(LOCALE, 'favorites'),
   }),
   robots: { index: false, follow: true },
 };
 
 export default function Page() {
-  return <CheckoutPageView locale={LOCALE} />;
+  return <FavoritesPageView locale={LOCALE} />;
 }

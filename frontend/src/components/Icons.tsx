@@ -91,3 +91,52 @@ export const TiktokIcon = ({ size = 18 }: P) => (
     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
   </svg>
 );
+
+/** Favoris : `filled` quand la pièce est déjà gardée. */
+export const HeartIcon = ({ size = 20, filled = false }: P & { filled?: boolean }) => (
+  <svg {...base(size)} fill={filled ? 'currentColor' : 'none'}>
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8Z" />
+  </svg>
+);
+
+export const TruckIcon = ({ size = 18 }: P) => (
+  <svg {...base(size)}>
+    <path d="M1 4h13v12H1zM14 8h4l4 4v4h-8" />
+    <circle cx="5.5" cy="18.5" r="2" />
+    <circle cx="17.5" cy="18.5" r="2" />
+  </svg>
+);
+
+export const CashIcon = ({ size = 18 }: P) => (
+  <svg {...base(size)}>
+    <rect x="2" y="6" width="20" height="12" rx="2" />
+    <circle cx="12" cy="12" r="2.5" />
+    <path d="M6 12h.01M18 12h.01" />
+  </svg>
+);
+
+export const HandIcon = ({ size = 18 }: P) => (
+  <svg {...base(size)}>
+    <path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8" />
+    <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15" />
+  </svg>
+);
+
+export const RulerIcon = ({ size = 18 }: P) => (
+  <svg {...base(size)}>
+    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z" />
+    <path d="m14.5 12.5 2-2M11.5 9.5l2-2M8.5 6.5l2-2M17.5 15.5l2-2" />
+  </svg>
+);
+
+export const MinusIcon = ({ size = 16 }: P) => (
+  <svg {...base(size)}>
+    <path d="M5 12h14" />
+  </svg>
+);
+
+export const PlusIcon = ({ size = 16 }: P) => (
+  <svg {...base(size)}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);

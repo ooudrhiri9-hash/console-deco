@@ -21,14 +21,16 @@ Prix en dirhams, par tableau, selon le format et le type d'encadrement.
 
 ## Conséquence sur le catalogue
 
-`Product` (src/types.ts) n'a qu'un seul champ `price` : il ne sait pas porter
-6 combinaisons format × encadrement. Deux options au moment de l'intégration :
+Réglé : la fiche sait porter les 6 combinaisons. Saisie dans `/admin/`, fiche
+du tableau, section « Choix proposés » :
 
-1. **Une fiche par tableau, prix = le plus petit format** (350 DH), les autres
-   formats listés dans la description et repris dans le message WhatsApp.
-   Aucun changement de code, mais le panier ne connaît pas le format choisi.
-2. **Ajouter des variantes** au type `Product` (`variants: { size, frame, price }[]`),
-   plus un sélecteur sur la fiche produit et la variante retenue dans le panier.
-   C'est la bonne solution si le client vend vraiment les 6 déclinaisons.
+1. **Prix de la pièce** : `350` (le plus petit format, faux cadre).
+2. Bouton **Formats (3 tailles)**, affichage « Format », valeurs
+   `80 × 80 cm` +0, `100 × 100 cm` +110, `120 × 120 cm` +400.
+3. Bouton **Faux cadre / caisse américaine** (affichage « Cadre »). Dans le
+   tableau « Supplément selon le format » de la caisse américaine :
+   80 × 80 → 230, 100 × 100 → 290, 120 × 120 → 220.
 
-À trancher avec le client.
+La fiche affiche alors chaque format avec son prix (350 / 460 / 750, ou
+580 / 750 / 970 en caisse américaine), et l'API recalcule le même prix à la
+commande.

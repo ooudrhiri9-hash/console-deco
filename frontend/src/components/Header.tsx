@@ -9,13 +9,15 @@ import { getDict } from '@/i18n/dictionaries';
 import { localeLabel, locales, type Locale } from '@/i18n/config';
 import { routes, switchLocalePath } from '@/lib/routes';
 import { useCart } from './CartProvider';
-import { CartIcon, CloseIcon, MenuIcon } from './Icons';
+import { useFavorites } from './FavoritesProvider';
+import { CartIcon, CloseIcon, HeartIcon, MenuIcon } from './Icons';
 
 export default function Header({ locale }: { locale: Locale }) {
   const t = getDict(locale);
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = useState(false);
   const { count, ready } = useCart();
+  const favorites = useFavorites();
 
   // Close the drawer on navigation and lock the body scroll while it is open.
   useEffect(() => setOpen(false), [pathname]);
@@ -86,6 +88,15 @@ export default function Header({ locale }: { locale: Locale }) {
               ))}
             </div>
 
+            {/* Masqué sur les plus petits écrans, où la place manque : le lien
+                reste dans le menu. */}
+            <Link href={routes.favorites(locale)} className="icon-btn icon-btn--fav" aria-label={t.nav.favorites}>
+              <HeartIcon />
+              {favorites.ready && favorites.slugs.length > 0 && (
+                <span className="icon-btn__count">{favorites.slugs.length}</span>
+              )}
+            </Link>
+
             <Link href={routes.cart(locale)} className="icon-btn" aria-label={t.nav.cart}>
               <CartIcon />
               {ready && count > 0 && <span className="icon-btn__count">{count}</span>}
@@ -124,6 +135,7 @@ export default function Header({ locale }: { locale: Locale }) {
             </div>
             <Link href={routes.about(locale)}>{t.nav.about}</Link>
             <Link href={routes.contact(locale)}>{t.nav.contact}</Link>
+            <Link href={routes.favorites(locale)}>{t.nav.favorites}</Link>
             <Link href={routes.cart(locale)}>{t.nav.cart}</Link>
           </nav>
         </div>

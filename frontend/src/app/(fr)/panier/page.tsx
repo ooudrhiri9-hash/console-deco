@@ -8,7 +8,7 @@ const LOCALE = 'fr' as const;
 export const metadata: Metadata = {
   ...buildMetadata({
     locale: LOCALE,
-    title: "Votre panier | ATELIER OMAR",
+    title: "Votre panier | MAISON DÉCO",
     description: "Les pièces que vous avez sélectionnées.",
     path: routes.cart(LOCALE),
     alternates: alternates(LOCALE, 'cart'),

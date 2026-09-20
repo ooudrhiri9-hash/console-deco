@@ -8,7 +8,7 @@ const LOCALE = 'en' as const;
 export const metadata: Metadata = {
   ...buildMetadata({
     locale: LOCALE,
-    title: "Contact — quotes and orders | ATELIER OMAR",
+    title: "Contact — quotes and orders | MAISON DÉCO",
     description: "Get in touch with our workshop: bespoke quotes, availability, delivery times. Fast reply on WhatsApp, by phone or through the form.",
     path: routes.contact(LOCALE),
     alternates: alternates(LOCALE, 'contact'),

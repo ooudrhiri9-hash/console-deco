@@ -3,7 +3,7 @@ import type { Locale } from './config';
 /** Every user-facing UI string. Product/category copy lives in src/data. */
 export const dict = {
   fr: {
-    nav: { home: 'Accueil', products: 'Produits', contact: 'Contact', about: 'À propos', cart: 'Panier' },
+    nav: { home: 'Accueil', products: 'Produits', contact: 'Contact', about: 'À propos', cart: 'Panier', favorites: 'Favoris' },
     common: {
       menu: 'Menu', close: 'Fermer', from: 'À partir de', onRequest: 'Prix sur demande',
       inStock: 'En stock', madeToOrder: 'Fabriqué sur commande', leadTime: 'Délai',
@@ -101,6 +101,46 @@ export const dict = {
       quantity: 'Quantité',
       customNote:
         'Cette pièce peut être réalisée sur mesure (dimensions et teintes). Contactez-nous avant de commander.',
+      priceFor: (details: string) => 'Prix pour ' + details + '.',
+      freeDelivery: (a: string) => 'Livraison offerte dès ' + a + '.',
+      qtyTotal: (a: string) => a + ' au total',
+      less: 'Retirer un exemplaire',
+      more: 'Ajouter un exemplaire',
+      viewCart: 'Voir le panier',
+      addFavorite: 'Ajouter aux favoris',
+      removeFavorite: 'Retirer des favoris',
+      trust: [
+        { title: 'Paiement à la livraison', text: 'En espèces, rien à régler en ligne' },
+        { title: 'Fait main au Maroc', text: 'Dans notre atelier, en série limitée' },
+        { title: 'Sur mesure possible', text: 'Dimensions, teintes et finitions' },
+        { title: 'Livraison partout au Maroc', text: 'Emballage renforcé pour le transport' },
+      ],
+      sizeTitle: 'Dimensions',
+      sizeStandard: 'Dimensions standard',
+      customSize: 'Sur mesure',
+      customSizeShort: 'Vos dimensions',
+      quote: 'Prix sur devis',
+      width: 'Largeur',
+      height: 'Hauteur',
+      depth: 'Profondeur',
+      customSizeNote:
+        'Donnez vos dimensions : nous vous confirmons le prix, puis la fabrication est lancée. Rien n’est facturé avant votre accord.',
+      customSizeIncomplete: 'Indiquez la largeur et la hauteur, entre 10 et 500 cm.',
+      tabDescription: 'Description',
+      tabDetails: 'Caractéristiques',
+      tabCustom: 'Sur mesure',
+      tabSize: 'Quel format choisir ?',
+      tabDelivery: 'Livraison & paiement',
+      sizeGuide:
+        'Au-dessus d’une console ou d’un canapé, visez un tableau d’environ deux tiers de la largeur du meuble. Dans une entrée ou un couloir, un format plus petit suffit. Envoyez-nous une photo de votre mur avec ses mesures : nous vous conseillons le bon format avant de commander.',
+      delivery:
+        'Nous livrons dans tout le Maroc, avec un emballage renforcé pour le transport. Les frais et le délai vous sont confirmés au moment de la commande, selon la ville et le volume de la pièce. Le paiement se fait à la livraison, en dirhams : rien n’est réglé en ligne.',
+    },
+    favorites: {
+      title: 'Vos favoris',
+      intro: 'Les pièces que vous avez mises de côté, gardées sur cet appareil.',
+      empty: 'Aucun favori pour l’instant.',
+      emptyText: 'Touchez le cœur sur une fiche pour retrouver la pièce ici.',
     },
     cart: {
       title: 'Votre panier',
@@ -111,6 +151,8 @@ export const dict = {
       shipping: 'Livraison', shippingFree: 'Offerte', shippingQuote: 'Calculée à la confirmation',
       freeFrom: (a: string) => 'Livraison offerte à partir de ' + a,
       missingForFree: (a: string) => 'Plus que ' + a + ' pour la livraison offerte',
+      quoteNote:
+        'Les pièces sur devis ne sont pas comptées dans ce total : nous vous confirmons leur prix avant de lancer la fabrication.',
       checkout: 'Finaliser la commande',
       continue: 'Continuer mes achats',
     },
@@ -157,7 +199,7 @@ export const dict = {
   },
 
   en: {
-    nav: { home: 'Home', products: 'Products', contact: 'Contact', about: 'About', cart: 'Cart' },
+    nav: { home: 'Home', products: 'Products', contact: 'Contact', about: 'About', cart: 'Cart', favorites: 'Favorites' },
     common: {
       menu: 'Menu', close: 'Close', from: 'From', onRequest: 'Price on request',
       inStock: 'In stock', madeToOrder: 'Made to order', leadTime: 'Lead time',
@@ -254,6 +296,46 @@ export const dict = {
       askQuestion: 'Ask a question',
       quantity: 'Quantity',
       customNote: 'This piece can be made to measure (dimensions and tones). Contact us before ordering.',
+      priceFor: (details: string) => 'Price for ' + details + '.',
+      freeDelivery: (a: string) => 'Free delivery from ' + a + '.',
+      qtyTotal: (a: string) => a + ' in total',
+      less: 'Remove one',
+      more: 'Add one',
+      viewCart: 'View cart',
+      addFavorite: 'Add to favourites',
+      removeFavorite: 'Remove from favourites',
+      trust: [
+        { title: 'Cash on delivery', text: 'Nothing to pay online' },
+        { title: 'Handmade in Morocco', text: 'In our workshop, in limited runs' },
+        { title: 'Made to measure', text: 'Dimensions, tones and finishes' },
+        { title: 'Delivery across Morocco', text: 'Reinforced packaging for transport' },
+      ],
+      sizeTitle: 'Dimensions',
+      sizeStandard: 'Standard size',
+      customSize: 'Made to measure',
+      customSizeShort: 'Your dimensions',
+      quote: 'Price on quote',
+      width: 'Width',
+      height: 'Height',
+      depth: 'Depth',
+      customSizeNote:
+        'Give us your dimensions: we confirm the price, then production starts. Nothing is charged before you agree.',
+      customSizeIncomplete: 'Enter the width and the height, between 10 and 500 cm.',
+      tabDescription: 'Description',
+      tabDetails: 'Details',
+      tabCustom: 'Made to measure',
+      tabSize: 'Which size should I choose?',
+      tabDelivery: 'Delivery & payment',
+      sizeGuide:
+        'Above a console or a sofa, aim for an artwork about two thirds of the width of the furniture. In an entrance or a hallway, a smaller size is enough. Send us a photo of your wall with its measurements: we will recommend the right size before you order.',
+      delivery:
+        'We deliver across Morocco, with reinforced packaging for transport. Shipping cost and lead time are confirmed when you order, depending on the city and the size of the piece. Payment is cash on delivery, in dirhams: nothing is paid online.',
+    },
+    favorites: {
+      title: 'Your favourites',
+      intro: 'The pieces you have set aside, kept on this device.',
+      empty: 'No favourites yet.',
+      emptyText: 'Tap the heart on a product page to find the piece here.',
     },
     cart: {
       title: 'Your cart',
@@ -264,6 +346,8 @@ export const dict = {
       shipping: 'Shipping', shippingFree: 'Free', shippingQuote: 'Calculated on confirmation',
       freeFrom: (a: string) => 'Free shipping from ' + a,
       missingForFree: (a: string) => a + ' away from free shipping',
+      quoteNote:
+        'Pieces quoted on request are not included in this total: we confirm their price before production starts.',
       checkout: 'Checkout',
       continue: 'Continue shopping',
     },

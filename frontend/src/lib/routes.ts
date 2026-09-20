@@ -13,6 +13,7 @@ import type { Category, Product } from '@/types';
  *   /a-propos/                /en/about/
  *   /panier/                  /en/cart/
  *   /commande/                /en/checkout/
+ *   /favoris/                 /en/favorites/
  */
 const segment = {
   products: { fr: 'produits', en: 'products' },
@@ -22,6 +23,7 @@ const segment = {
   about: { fr: 'a-propos', en: 'about' },
   cart: { fr: 'panier', en: 'cart' },
   checkout: { fr: 'commande', en: 'checkout' },
+  favorites: { fr: 'favoris', en: 'favorites' },
 } as const;
 
 const base = (locale: Locale) => localePrefix[locale];
@@ -46,6 +48,7 @@ export const routes = {
   about: (l: Locale) => `${base(l)}/${segment.about[l]}/`,
   cart: (l: Locale) => `${base(l)}/${segment.cart[l]}/`,
   checkout: (l: Locale) => `${base(l)}/${segment.checkout[l]}/`,
+  favorites: (l: Locale) => `${base(l)}/${segment.favorites[l]}/`,
 };
 
 /** Category slug -> category, for a given locale (used by generateStaticParams). */
@@ -72,7 +75,7 @@ export function alternates(
 
 /* -------------------------------------------------------------------------- */
 
-const SEGMENT_KEYS = ['products', 'contact', 'about', 'cart', 'checkout'] as const;
+const SEGMENT_KEYS = ['products', 'contact', 'about', 'cart', 'checkout', 'favorites'] as const;
 type SegmentKey = (typeof SEGMENT_KEYS)[number];
 
 /** Reverse lookup: a URL segment in any locale -> its logical key. */

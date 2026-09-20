@@ -52,9 +52,9 @@ let payload;
 try {
   const res = await fetch(`${API}/api/catalogue`, {
     headers: { Accept: 'application/json' },
-    // Un service endormi (Render, plan gratuit) met ~50 s a repondre a la
-    // premiere requete : 15 s suffisaient en local et faisaient echouer
-    // `build:live` en production pour une simple mise en veille.
+    // Large de propos delibere : le build tourne sur le VPS, ou l'API repond
+    // en quelques millisecondes, mais un demarrage a froid juste apres un
+    // `pm2 reload` ne doit pas faire echouer `build:live`.
     signal: AbortSignal.timeout(90_000),
   });
   if (!res.ok) bail(`${API}/api/catalogue a répondu ${res.status}.`);

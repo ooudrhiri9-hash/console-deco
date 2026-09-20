@@ -7,7 +7,7 @@ const LOCALE = 'fr' as const;
 
 export const metadata: Metadata = buildMetadata({
   locale: LOCALE,
-  title: "Consoles, tables et tableaux | ATELIER OMAR",
+  title: "Consoles, tables et tableaux | MAISON DÉCO",
   description: "Toutes nos pièces : consoles, ensembles console + tableau, tables basses, tables d'appoint et tableaux. Fabrication artisanale au Maroc.",
   path: routes.products(LOCALE),
   alternates: alternates(LOCALE, 'products'),

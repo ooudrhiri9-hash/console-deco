@@ -17,7 +17,10 @@ export function productMessage(
   choice?: OptionChoice,
 ): string {
   const name = p.name[locale];
-  const price = p.price > 0 ? formatPrice(unitPrice(p, choice), locale) : '—';
+  const unit = unitPrice(p, choice);
+  // unitPrice() rend 0 sur une pièce sans prix comme sur des dimensions sur
+  // mesure : dans les deux cas c'est un devis, jamais « 0 DH ».
+  const price = unit > 0 ? formatPrice(unit, locale) : '—';
   // Le cadre et les dimensions font partie de la demande : sans eux, le premier
   // message de retour serait « laquelle, et en quelle taille ? ».
   const picked = choiceLabels(p, choice, locale).map((o) => `• ${o.name} : ${o.label}`);
