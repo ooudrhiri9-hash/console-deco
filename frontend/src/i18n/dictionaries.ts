@@ -109,6 +109,12 @@ export const dict = {
         },
       ],
     },
+    customDesign: {
+      title: 'Votre image, notre console',
+      text: "Un motif, une œuvre, une photo qui vous plaît ? Envoyez-nous l'image : nous réalisons n'importe quelle console d'après elle, dans le format de votre choix. Le prix vous est confirmé avant la fabrication.",
+      cta: 'Envoyer mon image sur WhatsApp',
+      message: "Bonjour, je voudrais une console réalisée d'après une image. Je vous l'envoie ici.",
+    },
     orderSteps: {
       eyebrow: 'En pratique',
       title: 'Comment se passe une commande',
@@ -355,6 +361,12 @@ export const dict = {
           a: 'Yes, anywhere in Morocco, and delivery is free whatever the city. Only the lead time is confirmed when you order, based on your city and the size of the piece.',
         },
       ],
+    },
+    customDesign: {
+      title: 'Your image, our console',
+      text: 'A pattern, an artwork, a photo you love? Send us the image and we will make any console from it, in the size of your choice. The price is confirmed before anything is made.',
+      cta: 'Send my image on WhatsApp',
+      message: "Hello, I would like a console made from an image. I'm sending it here.",
     },
     orderSteps: {
       eyebrow: 'How it works',

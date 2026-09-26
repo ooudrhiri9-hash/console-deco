@@ -6,6 +6,7 @@ import { listedCategories, productsInCategory } from '@/lib/catalogue';
 import { routes } from '@/lib/routes';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import CatalogueGrid from '@/components/CatalogueGrid';
+import CustomDesignNotice from '@/components/CustomDesignNotice';
 import OrderSteps from '@/components/OrderSteps';
 import { itemListJsonLd, JsonLd } from '@/lib/seo';
 
@@ -55,6 +56,10 @@ export default function CategoryView({
             </Link>
           ))}
         </div>
+
+        {/* Avant la grille : un visiteur qui cherche son motif doit savoir tout
+            de suite qu'il peut l'apporter, pas apres 28 pieces. */}
+        {category.id === 'consoles' && <CustomDesignNotice locale={locale} />}
 
         <CatalogueGrid products={items} locale={locale} categoryId={category.id} />
 
