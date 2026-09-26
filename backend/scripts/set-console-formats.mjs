@@ -12,8 +12,9 @@
  * sinon l'onglet Détails contredirait le format sélectionné. Pour les pièces
  * de COPY, il reprend aussi nom et textes, qui citaient une largeur fixe.
  * Tout le reste de la fiche — photos, stock, slug, mise en avant — reste où il
- * était. Une console absente de la base n'est pas créée : c'est le rôle de
- * `npm run seed`, qui la prendra avec ses formats.
+ * était. Une console absente de la base y est créée telle que dans le
+ * fichier : `npm run seed` ne le ferait pas, il ne touche plus aux pièces dès
+ * que la base en contient une seule.
  *
  * Il écrit dans la base que désigne MONGODB_URI (.env.local), celle que sert
  * l'API en ligne : les visiteurs voient les prix au prochain chargement de
@@ -41,12 +42,25 @@ async function main() {
 
   const source = (await readArray('products.ts', 'products')).filter((p) => p.options?.length);
   const known = new Set((await store.categories.all()).map((c) => c.id));
+  const ids = new Set((await store.products.all()).map((p) => p.id));
   let written = 0;
 
   for (const file of source) {
     const current = await store.products.get(file.slug);
     if (!current) {
-      console.log(`  · ${file.id} ${file.slug} : absente de la base — npm run seed la créera`);
+      // Même contrôle que POST /products : la référence est unique, comme le slug.
+      const { error, product } = normaliseProduct(file, null, known);
+      if (error || ids.has(product.id)) {
+        console.error(`  ✗ ${file.id} : ${error || 'référence déjà prise par une autre pièce'}`);
+        continue;
+      }
+      console.log(`  ${checkOnly ? '?' : '+'} ${file.id} ${file.slug} : créée`);
+      if (!checkOnly) {
+        const now = new Date().toISOString();
+        await store.products.create({ ...product, slug: file.slug, createdAt: now, updatedAt: now });
+        ids.add(product.id);
+        written++;
+      }
       continue;
     }
 
