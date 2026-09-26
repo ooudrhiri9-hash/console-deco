@@ -49,11 +49,14 @@ const CAT_OUT = resolve('public/media/categories');
 
 const wa = (t) => join(CONSOLES, `WhatsApp Image 2026-09-01 at ${t}.jpeg`);
 const wa4 = (t) => join(SRC, `WhatsApp Image 2026-09-04 at ${t}.jpeg`);
+// Envoi du 23/09 : surtout un renvoi du lot du 01/09. Seules les photos
+// nouvelles ont ete gardees — trois angles de pieces existantes, deux pieces.
+const wa23 = (t) => join(CONSOLES, `WhatsApp Image 2026-09-23 at ${t}.jpeg`);
 
 /** slug -> source files, in display order. The first one is the card thumbnail. */
 const MAP = {
   'console-visages-polychromes': [wa('21.45.44')],
-  'console-courbes-terre-et-sauge': [wa('21.45.44 (1)')],
+  'console-courbes-terre-et-sauge': [wa('21.45.44 (1)'), wa23('21.39.52 (7)')],
   'console-visages-au-trait': [wa('21.45.44 (2)')],
   'console-visages-sepia': [wa('21.45.45'), wa('21.45.45 (1)')],
   'console-arcs-camel-et-noir': [wa('21.45.45 (4)'), wa('21.45.45 (2)'), wa('21.45.45 (5)')],
@@ -62,8 +65,8 @@ const MAP = {
   'console-feuillage-beige-et-noir': [wa('21.45.46'), wa('21.45.46 (3)')],
   'console-calligraphie': [wa('21.45.46 (1)')],
   'console-patine-terracotta': [wa('21.45.46 (4)'), wa('21.45.46 (2)'), wa('21.45.46 (5)')],
-  'console-patine-or-et-noir': [wa('21.45.46 (6)')],
-  'console-arcades-vert-et-terracotta': [wa('21.45.46 (7)')],
+  'console-patine-or-et-noir': [wa('21.45.46 (6)'), wa23('21.39.52 (17)')],
+  'console-arcades-vert-et-terracotta': [wa('21.45.46 (7)'), wa23('21.39.52 (13)')],
   'console-petales-noir-et-craie': [wa('21.45.46 (8)')],
   'console-demi-lunes': [wa('21.45.47'), wa('21.45.47 (1)')],
   'console-arcades-bleu-et-craie': [wa('21.45.47 (2)'), wa('21.45.47 (4)')],
@@ -78,6 +81,8 @@ const MAP = {
   'console-damier-noir-et-blanc-140': [wa('21.46.54 (3)'), wa4('01.39.35')],
   'console-damier-noir-150': [wa4('01.39.38')],
   'console-damier-beige-160': [wa4('01.44.33')],
+  'console-pastilles-chene': [wa23('21.39.53 (2)')],
+  'console-pointilles-pieds-bois': [wa23('21.39.53 (3)')],
   'table-basse-damier': [join(SRC, 'Tables Basses.jpeg'), join(SRC, 'Tables Basses-1.jpeg')],
 };
 
@@ -113,6 +118,16 @@ const SHEETS = new Set([
   join(SRC, 'Tables Basses-1.jpeg'),
 ]);
 
+/**
+ * Captures d'ecran : la bordure noire du telephone et le bouton de l'appli
+ * passeraient tels quels dans la photo. On les coupe avant tout le reste.
+ */
+const TRIM = {
+  // Bandes noires de 11 px a gauche et a droite, bouton en bas a droite ;
+  // les pieds s'arretent vers y = 1175.
+  [wa23('21.39.53 (3)')]: { left: 12, top: 0, width: 1146, height: 1200 },
+};
+
 const checkOnly = process.argv.includes('--check');
 
 /** Paper / wall colour, read from a corner the subject never reaches. */
@@ -133,7 +148,8 @@ async function cornerColour(file) {
   return { r: Math.round(r / px), g: Math.round(g / px), b: Math.round(b / px) };
 }
 
-async function convert(file, dest, w = W, h = H) {
+async function convert(source, dest, w = W, h = H) {
+  const file = TRIM[source] ? await sharp(source).extract(TRIM[source]).toBuffer() : source;
   const meta = await sharp(file).metadata();
   const ratio = meta.width / meta.height;
   const wanted = w / h;
@@ -161,7 +177,7 @@ async function convert(file, dest, w = W, h = H) {
     return `crop      ${ratio.toFixed(2)}`;
   }
 
-  if (SHEETS.has(file)) {
+  if (SHEETS.has(source)) {
     const background = await cornerColour(file);
     if (!checkOnly) {
       await sharp(file)
@@ -180,8 +196,11 @@ async function convert(file, dest, w = W, h = H) {
   const fittedHeight = (await sharp(fitted).metadata()).height;
   const short = Math.max(0, h - fittedHeight);
   if (!checkOnly) {
-    await sharp(fitted)
-      .extend({ top: short, extendWith: 'copy' })
+    // Deux passes : dans une seule chaine, sharp redimensionne toujours avant
+    // d'etendre, quel que soit l'ordre d'appel — la photo etait zoomee et
+    // rognee sur les cotes, puis sortait en 800x1100 ou 800x1200.
+    const extended = await sharp(fitted).extend({ top: short, extendWith: 'copy' }).toBuffer();
+    await sharp(extended)
       .resize(w, h, { fit: 'cover' })
       .webp({ quality: 80, effort: 5 })
       .toFile(dest);
