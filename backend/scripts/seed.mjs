@@ -11,47 +11,16 @@
  * Safe to re-run: without --force it never touches an existing product, and it
  * never touches orders or messages at all.
  */
-import fs from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
 import bcrypt from 'bcryptjs';
 
-import { env, ROOT } from '../src/env.js';
+import { env } from '../src/env.js';
 import { connectStore, store } from '../src/store/index.js';
 import { normaliseProduct } from '../src/lib/product.js';
 import { normaliseCategory } from '../src/lib/category.js';
 import { DEFAULT_SETTINGS, normaliseSettings } from '../src/lib/settings.js';
+import { readArray } from './data-files.mjs';
 
-const DATA_DIR = path.resolve(ROOT, '..', 'frontend', 'src', 'data');
 const force = process.argv.includes('--force');
-
-/**
- * Reads one exported array out of a TypeScript data file.
- *
- * These files are plain object literals with a single type annotation, so
- * stripping the annotation and importing the result is enough — and it beats
- * adding a TypeScript toolchain to the API just to read two files once.
- */
-async function readArray(file, name) {
-  const source = await fs.readFile(path.join(DATA_DIR, file), 'utf8');
-  const start = source.indexOf(`export const ${name}`);
-  if (start === -1) throw new Error(`${file}: "export const ${name}" introuvable.`);
-
-  const open = source.indexOf('[', start);
-  const end = source.indexOf('\n];', open);
-  if (open === -1 || end === -1) throw new Error(`${file}: tableau ${name} mal formé.`);
-
-  const literal = `${source.slice(open, end)}\n];`;
-  const tmp = path.join(os.tmpdir(), `omar-seed-${name}-${process.pid}.mjs`);
-  await fs.writeFile(tmp, `export default ${literal}\n`, 'utf8');
-  try {
-    const mod = await import(pathToFileURL(tmp).href);
-    return mod.default;
-  } finally {
-    await fs.rm(tmp, { force: true });
-  }
-}
 
 async function seedCategories() {
   const source = await readArray('categories.ts', 'categories');

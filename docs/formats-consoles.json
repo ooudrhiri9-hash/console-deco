@@ -1,0 +1,9 @@
+{
+  "category": "consoles",
+  "option": { "id": "dimensions", "name": { "fr": "Format", "en": "Size" }, "kind": "size" },
+  "formats": [
+    { "id": "140-cm", "label": "140 × 38 × 100 cm", "price": 3550 },
+    { "id": "150-cm", "label": "150 × 38 × 100 cm", "price": 4450 },
+    { "id": "160-cm", "label": "160 × 38 × 100 cm", "price": 5350 }
+  ]
+}

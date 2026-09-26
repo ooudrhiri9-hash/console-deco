@@ -23,7 +23,7 @@ Le séparateur peut être `,` ou `;`.
 | `name_en` | non | Nom anglais. Vide → le nom français est réutilisé. |
 | `short_fr` / `short_en` | recommandé | Une phrase. Sert sur les cartes du catalogue, dans la meta description Google et dans le message WhatsApp. |
 | `description_fr` / `description_en` | recommandé | Description complète. **Laisser une ligne vide entre deux paragraphes** (dans Excel : Alt+Entrée deux fois). |
-| `price` | **oui** | En dirhams, nombre seul : `4900`. Mettre `0` affiche « Prix sur demande ». |
+| `price` | **oui** | En dirhams, nombre seul : `4900`. Mettre `0` affiche « Prix sur demande ». **Consoles : ignoré**, le prix et les formats viennent de `formats-consoles.json` (voir `PRIX-CONSOLES.md`). |
 | `compare_at_price` | non | Prix barré. Doit être **supérieur** au prix, sinon aucun badge promo n'apparaît. |
 | `images` | recommandé | Noms de fichiers séparés par `\|` : `console-1.webp\|console-2.webp`. Les fichiers vont dans `public/media/products/`. Un chemin commençant par `/` est pris tel quel. Vide → cadre de remplacement à la marque. |
 | `width` / `depth` / `height` | recommandé | En centimètres, nombres seuls. Affichés « 120 × 35 × 80 cm ». |

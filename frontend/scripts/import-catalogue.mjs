@@ -43,6 +43,24 @@ const CATEGORY_ALIASES = {
   tableaux: 'tableaux',
 };
 
+/**
+ * Grille de formats d'une famille (docs/formats-consoles.json) : chaque pièce
+ * de la famille la reçoit comme choix « Format ». Le prix de la pièce devient
+ * celui du plus petit format, et chaque format porte l'écart avec lui — la
+ * forme que lit lib/options.ts et que l'API recalcule à la commande.
+ */
+const GRID_FILE = new URL('../../docs/formats-consoles.json', import.meta.url);
+const grid = existsSync(GRID_FILE) ? JSON.parse(readFileSync(GRID_FILE, 'utf8')) : null;
+const gridBase = grid ? Math.min(...grid.formats.map((f) => f.price)) : 0;
+const gridOption = grid && {
+  ...grid.option,
+  values: grid.formats.map((f) => ({
+    id: f.id,
+    label: { fr: f.label, en: f.label },
+    extra: f.price - gridBase,
+  })),
+};
+
 // ------------------------------------------------------------------ CSV -----
 /** Minimal RFC-4180 parser: handles quotes, escaped quotes and embedded \n. */
 function parseCsv(text) {
@@ -154,7 +172,11 @@ records.forEach((r, i) => {
     return;
   }
 
-  const price = num(r.price ?? r.prix);
+  const gridded = grid?.category === categoryId;
+  const price = gridded ? gridBase : num(r.price ?? r.prix);
+  if (gridded && num(r.price ?? r.prix) !== gridBase) {
+    warnings.push(`${where}: price ${num(r.price ?? r.prix)} ignored — the ${categoryId} size grid sets ${gridBase}`);
+  }
   if (price === 0) warnings.push(`${where}: price 0 → the page will show "price on request"`);
 
   const compare = num(r.compare_at_price ?? r.prix_barre);
@@ -199,6 +221,7 @@ records.forEach((r, i) => {
     madeToOrder: bool(r.made_to_order ?? r.sur_commande, false),
     leadTimeDays: num(r.lead_time_days ?? r.delai_jours) || undefined,
     featured: bool(r.featured ?? r.mis_en_avant, false),
+    options: gridded ? [gridOption] : undefined,
   });
 });
 
@@ -251,6 +274,7 @@ const body = products
     if (p.madeToOrder) l.push('    madeToOrder: true,');
     if (p.leadTimeDays) l.push(`    leadTimeDays: ${p.leadTimeDays},`);
     if (p.featured) l.push('    featured: true,');
+    if (p.options) l.push(`    options: ${JSON.stringify(p.options)},`);
     l.push('  },');
     return l.join('\n');
   })
