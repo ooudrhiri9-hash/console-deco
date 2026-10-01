@@ -18,7 +18,7 @@ Le séparateur peut être `,` ou `;`.
 |---|---|---|
 | `id` | **oui** | Référence / SKU. Visible par le client sur la fiche et dans les commandes. **Ne jamais la réutiliser ni la changer** : elle identifie le produit dans le panier des visiteurs. Ex. `CNS-001`. |
 | `slug` | non | Fin de l'URL. Laisser vide : il est déduit du nom FR (accents retirés). À ne plus modifier une fois le produit en ligne, sinon le lien meurt. |
-| `category` | **oui** | `consoles`, `console-tableau`, `tables-basses`, `tables-appoint` ou `tableaux`. Les orthographes courantes sont acceptées (`table basse`, `tableau`, `console tableau`…). |
+| `category` | **oui** | `consoles`, `console-tableau`, `tables-basses`, `tables-appoint`, `tableaux`, `tableaux-duo`, `tableaux-trio` ou `tableaux-rectangulaires`. Les orthographes courantes sont acceptées (`table basse`, `tableau`, `console tableau`, `tableau rectangulaire`…). |
 | `name_fr` | **oui** | Nom affiché en français. |
 | `name_en` | non | Nom anglais. Vide → le nom français est réutilisé. |
 | `short_fr` / `short_en` | recommandé | Une phrase. Sert sur les cartes du catalogue, dans la meta description Google et dans le message WhatsApp. |

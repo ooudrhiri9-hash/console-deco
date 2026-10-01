@@ -1,11 +1,14 @@
 /**
- * Recopie dans la base les formats et les prix des consoles.
+ * Recopie dans la base les formats et les prix des consoles — et de toute
+ * pièce dont la famille a une grille docs/formats-*.json (tableaux
+ * rectangulaires compris).
  *
  *   node scripts/set-console-formats.mjs --check   # compare et affiche, n'écrit rien
  *   node scripts/set-console-formats.mjs           # écrit
  *
  * Source : frontend/src/data/products.ts, que `npm run import:catalogue`
- * génère à partir de docs/formats-consoles.json (voir docs/PRIX-CONSOLES.md).
+ * génère à partir de docs/formats-*.json (voir docs/PRIX-CONSOLES.md).
+ * La famille doit déjà être en base : lancer add-categories.mjs avant.
  *
  * Pour chaque console déjà en base, le script écrit le prix, le choix
  * « Format » et les dimensions — retirées quand la largeur devient un choix,
@@ -106,7 +109,7 @@ async function main() {
     written++;
   }
 
-  console.log(checkOnly ? '\nRien écrit (--check).\n' : `\n${written} console(s) mise(s) à jour.\n`);
+  console.log(checkOnly ? '\nRien écrit (--check).\n' : `\n${written} pièce(s) mise(s) à jour.\n`);
   process.exit(0);
 }
 

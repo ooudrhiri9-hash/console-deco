@@ -12,7 +12,7 @@
  * The importer is idempotent — running it twice on the same CSV produces a
  * byte-identical file.
  */
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const CATEGORY_IDS = [
@@ -21,6 +21,9 @@ const CATEGORY_IDS = [
   'tables-basses',
   'tables-appoint',
   'tableaux',
+  'tableaux-duo',
+  'tableaux-trio',
+  'tableaux-rectangulaires',
 ];
 
 /** Accepts the id, or a few human spellings the client is likely to type. */
@@ -41,25 +44,39 @@ const CATEGORY_ALIASES = {
   "tables d'appoint": 'tables-appoint',
   tableau: 'tableaux',
   tableaux: 'tableaux',
+  'tableaux-duo': 'tableaux-duo',
+  'tableau duo': 'tableaux-duo',
+  'tableaux-trio': 'tableaux-trio',
+  'tableau trio': 'tableaux-trio',
+  'tableaux-rectangulaires': 'tableaux-rectangulaires',
+  'tableau rectangulaire': 'tableaux-rectangulaires',
+  'tableaux rectangulaires': 'tableaux-rectangulaires',
 };
 
 /**
- * Grille de formats d'une famille (docs/formats-consoles.json) : chaque pièce
- * de la famille la reçoit comme choix « Format ». Le prix de la pièce devient
+ * Grilles de formats par famille (docs/formats-*.json) : chaque pièce de la
+ * famille reçoit sa grille comme choix « Format ». Le prix de la pièce devient
  * celui du plus petit format, et chaque format porte l'écart avec lui — la
  * forme que lit lib/options.ts et que l'API recalcule à la commande.
  */
-const GRID_FILE = new URL('../../docs/formats-consoles.json', import.meta.url);
-const grid = existsSync(GRID_FILE) ? JSON.parse(readFileSync(GRID_FILE, 'utf8')) : null;
-const gridBase = grid ? Math.min(...grid.formats.map((f) => f.price)) : 0;
-const gridOption = grid && {
-  ...grid.option,
-  values: grid.formats.map((f) => ({
-    id: f.id,
-    label: { fr: f.label, en: f.label },
-    extra: f.price - gridBase,
-  })),
-};
+const DOCS = new URL('../../docs/', import.meta.url);
+const grids = new Map(
+  readdirSync(DOCS)
+    .filter((f) => /^formats-.+\.json$/.test(f))
+    .map((f) => JSON.parse(readFileSync(new URL(f, DOCS), 'utf8')))
+    .map((grid) => {
+      const base = Math.min(...grid.formats.map((f) => f.price));
+      const option = {
+        ...grid.option,
+        values: grid.formats.map((f) => ({
+          id: f.id,
+          label: { fr: f.label, en: f.label },
+          extra: f.price - base,
+        })),
+      };
+      return [grid.category, { base, option }];
+    }),
+);
 
 // ------------------------------------------------------------------ CSV -----
 /** Minimal RFC-4180 parser: handles quotes, escaped quotes and embedded \n. */
@@ -172,10 +189,10 @@ records.forEach((r, i) => {
     return;
   }
 
-  const gridded = grid?.category === categoryId;
-  const price = gridded ? gridBase : num(r.price ?? r.prix);
-  if (gridded && num(r.price ?? r.prix) !== gridBase) {
-    warnings.push(`${where}: price ${num(r.price ?? r.prix)} ignored — the ${categoryId} size grid sets ${gridBase}`);
+  const grid = grids.get(categoryId);
+  const price = grid ? grid.base : num(r.price ?? r.prix);
+  if (grid && num(r.price ?? r.prix) !== grid.base) {
+    warnings.push(`${where}: price ${num(r.price ?? r.prix)} ignored — the ${categoryId} size grid sets ${grid.base}`);
   }
   if (price === 0) warnings.push(`${where}: price 0 → the page will show "price on request"`);
 
@@ -221,7 +238,7 @@ records.forEach((r, i) => {
     madeToOrder: bool(r.made_to_order ?? r.sur_commande, false),
     leadTimeDays: num(r.lead_time_days ?? r.delai_jours) || undefined,
     featured: bool(r.featured ?? r.mis_en_avant, false),
-    options: gridded ? [gridOption] : undefined,
+    options: grid ? [grid.option] : undefined,
   });
 });
 

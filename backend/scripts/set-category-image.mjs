@@ -30,6 +30,7 @@ import { connectStore, store } from '../src/store/index.js';
 const DEFAULTS = {
   'console-tableau': '/media/categories/console-tableau.webp',
   tableaux: '/media/categories/tableaux.webp',
+  'tableaux-rectangulaires': '/media/categories/tableaux-rectangulaires.webp',
 };
 
 const args = process.argv.slice(2).filter((a) => a !== '--check');

@@ -3,6 +3,7 @@ import type { Category } from '@/types';
 /**
  * The five families from the client brief:
  * console · console+tableau · table basse · table d'appoint · tableau
+ * then the artworks split by format: duo, trio, rectangulaire.
  *
  * `id` is permanent; `slug` is the URL and is translated per locale.
  * Changing a slug later breaks links — set redirects if you must.
@@ -67,6 +68,42 @@ export const categories: Category[] = [
       en: 'Decorative artworks, hand-painted and hand-finished: abstract, Moroccan art, calligraphy, textures and relief. Single formats, diptychs and triptychs, with or without a floating frame. We also produce made-to-measure dimensions for a specific wall.',
     },
     image: '/media/categories/tableaux.webp',
+  },
+  {
+    id: 'tableaux-duo',
+    order: 6,
+    slug: { fr: 'tableaux-duo', en: 'artwork-duos' },
+    name: { fr: 'Tableaux en duo', en: 'Artwork duos' },
+    tagline: { fr: 'Deux toiles, une seule composition', en: 'Two canvases, one composition' },
+    description: {
+      fr: "Deux toiles pensées comme une seule composition : mêmes teintes, mêmes matières, un dessin qui se poursuit de l'une à l'autre. Côte à côte, elles occupent un mur que la plupart des pièces seules laisseraient vide. Peintes à la main dans notre atelier au Maroc et livrées ensemble.",
+      en: 'Two canvases conceived as a single composition: shared tones, shared materials, a line that carries from one to the other. Side by side they fill a wall most single pieces would leave bare. Hand-painted in our Moroccan workshop and delivered together.',
+    },
+    image: '/media/categories/tableaux-duo.webp',
+  },
+  {
+    id: 'tableaux-trio',
+    order: 7,
+    slug: { fr: 'tableaux-trio', en: 'artwork-trios' },
+    name: { fr: 'Tableaux en trio', en: 'Artwork trios' },
+    tagline: { fr: 'Trois toiles, un mur entier', en: 'Three canvases, a whole wall' },
+    description: {
+      fr: "Trois toiles qui se lisent d'un bout à l'autre du mur. C'est le format le plus large de l'atelier, celui des grands pans de salon où une pièce unique se perdrait. Peintes à la main au Maroc, livrées ensemble et dans l'ordre prévu.",
+      en: "Three canvases that read across the whole wall. The workshop's widest format, made for the long living-room walls where a single piece would be lost. Hand-painted in Morocco, delivered together and in their intended order.",
+    },
+    image: '/media/categories/tableaux-trio.webp',
+  },
+  {
+    id: 'tableaux-rectangulaires',
+    order: 8,
+    slug: { fr: 'tableaux-rectangulaires', en: 'rectangular-artworks' },
+    name: { fr: 'Tableaux rectangulaires', en: 'Rectangular artworks' },
+    tagline: { fr: 'La toile qui suit la longueur du mur', en: 'A canvas that follows the length of the wall' },
+    description: {
+      fr: 'Des toiles en longueur, peintes à la main dans notre atelier au Maroc. Le format rectangulaire épouse le mur d’un salon, le dessus d’un canapé ou d’une console, là où un carré paraîtrait trop court. Cinq formats, du 50 × 75 au 80 × 150 cm, et le sur-mesure pour un mur précis.',
+      en: 'Wide canvases, hand-painted in our Moroccan workshop. The rectangular format follows a living-room wall, the space above a sofa or a console, where a square would feel too short. Five sizes, from 50 × 75 to 80 × 150 cm, and made to measure for a specific wall.',
+    },
+    image: '/media/categories/tableaux-rectangulaires.webp',
   },
 ];
 

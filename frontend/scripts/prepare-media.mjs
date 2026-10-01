@@ -52,6 +52,9 @@ const wa4 = (t) => join(SRC, `WhatsApp Image 2026-09-04 at ${t}.jpeg`);
 // Envoi du 23/09 : surtout un renvoi du lot du 01/09. Seules les photos
 // nouvelles ont ete gardees — trois angles de pieces existantes, deux pieces.
 const wa23 = (t) => join(CONSOLES, `WhatsApp Image 2026-09-23 at ${t}.jpeg`);
+const TABLEAUX = join(SRC, 'tableaux-products');
+// Envoi du 01/10 : les deux premiers tableaux rectangulaires.
+const wa1001 = (t) => join(TABLEAUX, `WhatsApp Image 2026-10-01 at ${t}.jpeg`);
 
 /** slug -> source files, in display order. The first one is the card thumbnail. */
 const MAP = {
@@ -84,6 +87,8 @@ const MAP = {
   'console-pastilles-chene': [wa23('21.39.53 (2)')],
   'console-pointilles-pieds-bois': [wa23('21.39.53 (3)')],
   'table-basse-damier': [join(SRC, 'Tables Basses.jpeg'), join(SRC, 'Tables Basses-1.jpeg')],
+  'tableau-bestiaire-vert-et-cuivre': [wa1001('10.38.27')],
+  'tableau-fete-au-chateau-bleu-cobalt': [wa1001('10.38.29')],
 };
 
 /**
@@ -108,6 +113,8 @@ const CATEGORY_MAP = {
   'tableaux-duo': join(SRC, 'Tableaux 2 pack.jpeg'),
   // Trois toiles alignees : le format qui tient un mur entier.
   'tableaux-trio': join(SRC, 'Tableau 3 pack.jpeg'),
+  // La toile bleue au-dessus du canape : la seule des deux sans cotes dessus.
+  'tableaux-rectangulaires': wa1001('10.38.29'),
 };
 
 /** Client drawings and product sheets: they carry text, so never copy-extend. */
@@ -126,6 +133,20 @@ const TRIM = {
   // Bandes noires de 11 px a gauche et a droite, bouton en bas a droite ;
   // les pieds s'arretent vers y = 1175.
   [wa23('21.39.53 (3)')]: { left: 12, top: 0, width: 1146, height: 1200 },
+  // Photo cotée « 120 cm × 120 cm » : la fiche propose cinq formats
+  // rectangulaires, la cote la contredirait. On coupe sous la flèche du haut
+  // et avant celle de droite ; le cadre reste entier.
+  [wa1001('10.38.27')]: { left: 60, top: 108, width: 983, height: 1228 },
+};
+
+/**
+ * Fenetre d'une photo de famille, quand le recadrage centre couperait le
+ * sujet. Par id de famille et non par fichier : la meme photo sert aussi de
+ * fiche produit, en 4:5, ou elle tient entiere.
+ */
+const CATEGORY_TRIM = {
+  // Portrait 1170x1600 : centre, le paysage 3:2.2 coupait le haut de la toile.
+  'tableaux-rectangulaires': { left: 0, top: 190, width: 1170, height: 858 },
 };
 
 const checkOnly = process.argv.includes('--check');
@@ -251,7 +272,8 @@ for (const [slug, files] of Object.entries(MAP)) {
 for (const [id, file] of Object.entries(CATEGORY_MAP)) {
   const name = `${id}.webp`;
   const dest = join(CAT_OUT, name);
-  const how = await convert(file, dest, CAT_W, CAT_H);
+  const source = CATEGORY_TRIM[id] ? await sharp(file).extract(CATEGORY_TRIM[id]).toBuffer() : file;
+  const how = await convert(source, dest, CAT_W, CAT_H);
   if (!checkOnly) bytes += statSync(dest).size;
   console.log(`  ${name.padEnd(44)} ${how} (famille)`);
   count++;
@@ -267,7 +289,7 @@ for (const [id, file] of Object.entries(CATEGORY_MAP)) {
 // Anything in the drop folder that no product or family claims.
 const claimed = new Set([...Object.values(MAP).flat(), ...Object.values(CATEGORY_MAP)]);
 const orphans = [];
-for (const dir of [SRC, CONSOLES]) {
+for (const dir of [SRC, CONSOLES, TABLEAUX]) {
   for (const f of readdirSync(dir)) {
     const fp = join(dir, f);
     if (statSync(fp).isFile() && !claimed.has(fp)) orphans.push(relative(resolve('.'), fp).replace(/\\/g, '/'));

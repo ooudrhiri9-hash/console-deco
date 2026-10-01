@@ -14,10 +14,26 @@ Prix en dirhams, par tableau, selon le format et le type d'encadrement.
 
 ## Formats rectangulaires
 
-⚠️ **Manquants.** Le message du client s'arrête sur
-« ---------------- les prix pour tableau rectangulaire » sans la suite.
-À réclamer avant de mettre les tableaux rectangulaires en ligne
-(`Tableau.jpeg`, `Tableau rectangulaire.jpeg`, les diptyques et triptyques).
+Source : capture envoyée le 29/09/2026 (`prix-tableaux-rectangulaires.jpeg`).
+Un prix par format, sans choix d'encadrement.
+
+| Format | Prix |
+|---|---:|
+| 50 × 75 cm | 430 DH |
+| 60 × 100 cm | 589 DH |
+| 80 × 120 cm | 750 DH |
+| 80 × 140 cm | 949 DH |
+| 80 × 150 cm | 1 350 DH |
+
+Ils valent pour la famille `tableaux-rectangulaires`. La grille vit dans
+**`formats-tableaux-rectangulaires.json`** et suit le même chemin que celle
+des consoles (voir `PRIX-CONSOLES.md`) : `npm run import:catalogue` la pose sur
+chaque pièce de la famille (430 DH, puis +159, +320, +519, +920), et
+`node scripts/set-console-formats.mjs` la recopie dans la base.
+
+Les deux premières pièces (TBR-001 Bestiaire, TBR-002 Fête au château) sont
+photographiées en carré ; l'atelier les peint au format choisi. La photo
+du Bestiaire portait la cote « 120 × 120 cm » : `prepare-media.mjs` la coupe.
 
 ## Conséquence sur le catalogue
 
