@@ -57,6 +57,8 @@ const TABLEAUX = join(SRC, 'tableaux-products');
 const wa1001 = (t) => join(TABLEAUX, `WhatsApp Image 2026-10-01 at ${t}.jpeg`);
 const TRIOS = join(SRC, 'trio-products');
 const trio = (n) => join(TRIOS, `WhatsApp Image 2026-10-01 at 10.40.11${n ? ` (${n})` : ''}.jpeg`);
+const DUOS = join(SRC, 'duo-products');
+const duo = (n) => join(DUOS, `image-duo-${n}.jpeg`);
 
 /** slug -> source files, in display order. The first one is the card thumbnail. */
 const MAP = {
@@ -100,6 +102,11 @@ const MAP = {
   'trio-abstrait-noir-et-sable': [trio(1)],
   'trio-feuillages-bordeaux-et-or': [trio(2)],
   'trio-arcs-geometriques-terracotta-et-noir': [trio(3)],
+  'duo-elle-et-lui-rayures-rouge-et-noir': [duo(1)],
+  'duo-cheval-d-apparat-brun-et-or': [duo(2)],
+  // duo(3) attend : une personne reconnaissable accroche la toile, et la
+  // toile est signee d'un autre artiste. Pas de recadrage qui garde les deux
+  // toiles sans elle.
 };
 
 /**
@@ -160,6 +167,9 @@ const TRIM = {
   // etiquettes « MODELE 1/2/3 — 60 × 80 cm », un format que l'atelier ne
   // propose pas. On ne garde que les trois toiles.
   [trio(3)]: { left: 140, top: 110, width: 1035, height: 390 },
+  // Photos presque carrees : une fenetre 4:5 tient les deux toiles entieres.
+  [duo(1)]: { left: 120, top: 0, width: 958, height: 1197 },
+  [duo(2)]: { left: 135, top: 0, width: 696, height: 870 },
 };
 
 /**
@@ -333,7 +343,7 @@ for (const [id, file] of Object.entries(CATEGORY_MAP)) {
 // Anything in the drop folder that no product or family claims.
 const claimed = new Set([...Object.values(MAP).flat(), ...Object.values(CATEGORY_MAP)]);
 const orphans = [];
-for (const dir of [SRC, CONSOLES, TABLEAUX, TRIOS]) {
+for (const dir of [SRC, CONSOLES, TABLEAUX, TRIOS, DUOS]) {
   for (const f of readdirSync(dir)) {
     const fp = join(dir, f);
     if (statSync(fp).isFile() && !claimed.has(fp)) orphans.push(relative(resolve('.'), fp).replace(/\\/g, '/'));

@@ -2,10 +2,9 @@
   "category": "tableaux-rectangulaires",
   "option": { "id": "dimensions", "name": { "fr": "Format", "en": "Size" }, "kind": "size" },
   "formats": [
-    { "id": "50x75", "label": "50 × 75 cm", "price": 430 },
-    { "id": "60x100", "label": "60 × 100 cm", "price": 589 },
-    { "id": "80x120", "label": "80 × 120 cm", "price": 750 },
-    { "id": "80x140", "label": "80 × 140 cm", "price": 949 },
-    { "id": "80x150", "label": "80 × 150 cm", "price": 1350 }
+    { "id": "60x60", "label": "60 × 60 cm", "price": 450 },
+    { "id": "80x80", "label": "80 × 80 cm", "price": 580 },
+    { "id": "100x100", "label": "100 × 100 cm", "price": 750 },
+    { "id": "120x120", "label": "120 × 120 cm", "price": 950 }
   ]
 }

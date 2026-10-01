@@ -100,8 +100,8 @@ export const categories: Category[] = [
     name: { fr: 'Tableaux rectangulaires', en: 'Rectangular artworks' },
     tagline: { fr: 'La toile qui suit la longueur du mur', en: 'A canvas that follows the length of the wall' },
     description: {
-      fr: 'Des toiles en longueur, peintes à la main dans notre atelier au Maroc. Le format rectangulaire épouse le mur d’un salon, le dessus d’un canapé ou d’une console, là où un carré paraîtrait trop court. Cinq formats, du 50 × 75 au 80 × 150 cm, et le sur-mesure pour un mur précis.',
-      en: 'Wide canvases, hand-painted in our Moroccan workshop. The rectangular format follows a living-room wall, the space above a sofa or a console, where a square would feel too short. Five sizes, from 50 × 75 to 80 × 150 cm, and made to measure for a specific wall.',
+      fr: 'Des toiles en longueur, peintes à la main dans notre atelier au Maroc. Le format rectangulaire épouse le mur d’un salon, le dessus d’un canapé ou d’une console, là où un carré paraîtrait trop court. Quatre formats, du 60 × 60 au 120 × 120 cm, et le sur-mesure pour un mur précis.',
+      en: 'Wide canvases, hand-painted in our Moroccan workshop. The rectangular format follows a living-room wall, the space above a sofa or a console, where a square would feel too short. Four sizes, from 60 × 60 to 120 × 120 cm, and made to measure for a specific wall.',
     },
     image: '/media/categories/tableaux-rectangulaires.webp',
   },
