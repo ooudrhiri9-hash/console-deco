@@ -55,6 +55,8 @@ const wa23 = (t) => join(CONSOLES, `WhatsApp Image 2026-09-23 at ${t}.jpeg`);
 const TABLEAUX = join(SRC, 'tableaux-products');
 // Envoi du 01/10 : deux tableaux rectangulaires (10.38.2x), cinq tableaux.
 const wa1001 = (t) => join(TABLEAUX, `WhatsApp Image 2026-10-01 at ${t}.jpeg`);
+const TRIOS = join(SRC, 'trio-products');
+const trio = (n) => join(TRIOS, `WhatsApp Image 2026-10-01 at 10.40.11${n ? ` (${n})` : ''}.jpeg`);
 
 /** slug -> source files, in display order. The first one is the card thumbnail. */
 const MAP = {
@@ -94,6 +96,10 @@ const MAP = {
   'tableau-leopard-roses-bordeaux': [wa1001('10.39.22')],
   'tableau-cavaliere-dressage': [wa1001('10.39.24')],
   'tableau-figure-cubiste-rouge-et-creme': [wa1001('10.39.25')],
+  'trio-femme-aux-arches-beige-et-or': [trio(0)],
+  'trio-abstrait-noir-et-sable': [trio(1)],
+  'trio-feuillages-bordeaux-et-or': [trio(2)],
+  'trio-arcs-geometriques-terracotta-et-noir': [trio(3)],
 };
 
 /**
@@ -148,7 +154,21 @@ const TRIM = {
   // Plus large que haute : etendre recopierait les spots du plafond en
   // trainees. Fenetre 4:5 centree sur la toile.
   [wa1001('10.39.24')]: { left: 77, top: 0, width: 1046, height: 1308 },
+  // Legende « 3. Art marocain moderne » incrustee en bas a gauche.
+  [trio(0)]: { left: 0, top: 0, width: 1320, height: 1052 },
+  // Visuel d'une autre enseigne : marque « INFINITY ART » sur le mur et
+  // etiquettes « MODELE 1/2/3 — 60 × 80 cm », un format que l'atelier ne
+  // propose pas. On ne garde que les trois toiles.
+  [trio(3)]: { left: 140, top: 110, width: 1035, height: 390 },
 };
+
+/**
+ * Trois toiles cote a cote : une photo bien plus large que le puits 4:5.
+ * Recadrer couperait les toiles des bords ; etendre recopierait les spots du
+ * plafond en trainees. La photo est donc posee entiere, au milieu d'un fond
+ * fait d'elle-meme, agrandie et floutee.
+ */
+const BLUR_FILL = new Set([trio(0), trio(1), trio(2), trio(3)]);
 
 /**
  * Fenetre d'une photo de famille, quand le recadrage centre couperait le
@@ -197,6 +217,19 @@ async function convert(source, dest, w = W, h = H) {
         .toFile(dest);
     }
     return `crop      ${ratio.toFixed(2)}`;
+  }
+
+  if (BLUR_FILL.has(source)) {
+    if (!checkOnly) {
+      const bg = await sharp(file).resize(w, h, { fit: 'cover' }).blur(30).modulate({ brightness: 0.92 }).toBuffer();
+      const fg = await sharp(file).resize({ width: w }).toBuffer();
+      const top = Math.round((h - (await sharp(fg).metadata()).height) / 2);
+      await sharp(bg)
+        .composite([{ input: fg, top, left: 0 }])
+        .webp({ quality: 80, effort: 5 })
+        .toFile(dest);
+    }
+    return `blur-fill ${ratio.toFixed(2)}`;
   }
 
   if (ratio <= MAX_CROP_RATIO) {
@@ -300,7 +333,7 @@ for (const [id, file] of Object.entries(CATEGORY_MAP)) {
 // Anything in the drop folder that no product or family claims.
 const claimed = new Set([...Object.values(MAP).flat(), ...Object.values(CATEGORY_MAP)]);
 const orphans = [];
-for (const dir of [SRC, CONSOLES, TABLEAUX]) {
+for (const dir of [SRC, CONSOLES, TABLEAUX, TRIOS]) {
   for (const f of readdirSync(dir)) {
     const fp = join(dir, f);
     if (statSync(fp).isFile() && !claimed.has(fp)) orphans.push(relative(resolve('.'), fp).replace(/\\/g, '/'));

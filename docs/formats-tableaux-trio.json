@@ -1,0 +1,25 @@
+{
+  "category": "tableaux-trio",
+  "option": { "id": "dimensions", "name": { "fr": "Format de chaque toile", "en": "Size of each canvas" }, "kind": "size" },
+  "formats": [
+    { "id": "3x50x75", "label": "3 × 50 × 75 cm", "price": 980 },
+    { "id": "3x60x100", "label": "3 × 60 × 100 cm", "price": 1604 },
+    { "id": "3x80x120", "label": "3 × 80 × 120 cm", "price": 1970 }
+  ],
+  "extraOptions": [
+    {
+      "id": "cadre",
+      "name": { "fr": "Couleur du cadre (caisse américaine)", "en": "Floater frame colour" },
+      "kind": "frame",
+      "values": [
+        { "id": "dore", "label": { "fr": "Doré", "en": "Gold" }, "swatch": "#c9a24d" },
+        { "id": "noir", "label": { "fr": "Noir", "en": "Black" }, "swatch": "#1c1917" },
+        { "id": "blanc", "label": { "fr": "Blanc", "en": "White" }, "swatch": "#f2eee6" },
+        { "id": "beige", "label": { "fr": "Beige", "en": "Beige" }, "swatch": "#d8c3a0" },
+        { "id": "argente", "label": { "fr": "Argenté", "en": "Silver" }, "swatch": "#b8b8b4" },
+        { "id": "marron", "label": { "fr": "Marron", "en": "Brown" }, "swatch": "#5b3a24" },
+        { "id": "bleu-marine", "label": { "fr": "Bleu marine", "en": "Navy blue" }, "swatch": "#1f2a44" }
+      ]
+    }
+  ]
+}

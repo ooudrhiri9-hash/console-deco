@@ -43,6 +43,20 @@ Les deux premières pièces (TBR-001 Bestiaire, TBR-002 Fête au château) sont
 photographiées en carré ; l'atelier les peint au format choisi. La photo
 du Bestiaire portait la cote « 120 × 120 cm » : `prepare-media.mjs` la coupe.
 
+## Trios (`tableaux-trio`)
+
+Source : capture du 01/10/2026 (`prix-tableaux-trio.jpeg`). Prix des trois
+toiles ensemble, selon le format de chacune :
+
+| Format de chaque toile | Prix du trio |
+|---|---:|
+| 50 × 75 cm | 980 DH |
+| 60 × 100 cm | 1 604 DH |
+| 80 × 120 cm | 1 970 DH |
+
+Grille dans **`formats-tableaux-trio.json`**, avec la même couleur de cadre
+caisse américaine que les tableaux, sans supplément. Pièces TRI-001 à TRI-004.
+
 ## Conséquence sur le catalogue
 
 Réglé : la fiche sait porter les 6 combinaisons. Saisie dans `/admin/`, fiche
