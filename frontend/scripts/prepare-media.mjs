@@ -53,7 +53,7 @@ const wa4 = (t) => join(SRC, `WhatsApp Image 2026-09-04 at ${t}.jpeg`);
 // nouvelles ont ete gardees — trois angles de pieces existantes, deux pieces.
 const wa23 = (t) => join(CONSOLES, `WhatsApp Image 2026-09-23 at ${t}.jpeg`);
 const TABLEAUX = join(SRC, 'tableaux-products');
-// Envoi du 01/10 : les deux premiers tableaux rectangulaires.
+// Envoi du 01/10 : deux tableaux rectangulaires (10.38.2x), cinq tableaux.
 const wa1001 = (t) => join(TABLEAUX, `WhatsApp Image 2026-10-01 at ${t}.jpeg`);
 
 /** slug -> source files, in display order. The first one is the card thumbnail. */
@@ -89,6 +89,11 @@ const MAP = {
   'table-basse-damier': [join(SRC, 'Tables Basses.jpeg'), join(SRC, 'Tables Basses-1.jpeg')],
   'tableau-bestiaire-vert-et-cuivre': [wa1001('10.38.27')],
   'tableau-fete-au-chateau-bleu-cobalt': [wa1001('10.38.29')],
+  'tableau-totem-abstrait-polychrome': [wa1001('10.38.56')],
+  'tableau-les-chasseurs-rouge-et-bleu': [wa1001('10.38.57')],
+  'tableau-leopard-roses-bordeaux': [wa1001('10.39.22')],
+  'tableau-cavaliere-dressage': [wa1001('10.39.24')],
+  'tableau-figure-cubiste-rouge-et-creme': [wa1001('10.39.25')],
 };
 
 /**
@@ -137,6 +142,12 @@ const TRIM = {
   // rectangulaires, la cote la contredirait. On coupe sous la flèche du haut
   // et avant celle de droite ; le cadre reste entier.
   [wa1001('10.38.27')]: { left: 60, top: 108, width: 983, height: 1228 },
+  // Capture d'ecran : bande grise a droite, et un livre a logo de marque sur
+  // la table basse. On garde le tableau et le canape, en 4:5.
+  [wa1001('10.39.22')]: { left: 68, top: 0, width: 1104, height: 1380 },
+  // Plus large que haute : etendre recopierait les spots du plafond en
+  // trainees. Fenetre 4:5 centree sur la toile.
+  [wa1001('10.39.24')]: { left: 77, top: 0, width: 1046, height: 1308 },
 };
 
 /**

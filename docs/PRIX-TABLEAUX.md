@@ -31,6 +31,14 @@ des consoles (voir `PRIX-CONSOLES.md`) : `npm run import:catalogue` la pose sur
 chaque pièce de la famille (430 DH, puis +159, +320, +519, +920), et
 `node scripts/set-console-formats.mjs` la recopie dans la base.
 
+### La famille `tableaux` aussi (01/10/2026)
+
+Sur demande, les tableaux de la famille générale prennent la même grille,
+dans **`formats-tableaux.json`**, plus un second choix sans effet sur le prix :
+**couleur du cadre caisse américaine** — doré, noir, blanc, beige, argenté,
+marron, bleu marine. Les pièces TAB-001 à TAB-005 la portent. La grille des
+formats carrés ci-dessus n'est donc plus appliquée sur le site.
+
 Les deux premières pièces (TBR-001 Bestiaire, TBR-002 Fête au château) sont
 photographiées en carré ; l'atelier les peint au format choisi. La photo
 du Bestiaire portait la cote « 120 × 120 cm » : `prepare-media.mjs` la coupe.

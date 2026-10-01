@@ -74,7 +74,13 @@ const grids = new Map(
           extra: f.price - base,
         })),
       };
-      return [grid.category, { base, option }];
+      // Les autres choix de la grille (couleur du cadre…) ne touchent pas au
+      // prix : leurs valeurs partent à +0.
+      const extra = (grid.extraOptions || []).map((o) => ({
+        ...o,
+        values: o.values.map((v) => ({ ...v, extra: 0 })),
+      }));
+      return [grid.category, { base, options: [option, ...extra] }];
     }),
 );
 
@@ -238,7 +244,7 @@ records.forEach((r, i) => {
     madeToOrder: bool(r.made_to_order ?? r.sur_commande, false),
     leadTimeDays: num(r.lead_time_days ?? r.delai_jours) || undefined,
     featured: bool(r.featured ?? r.mis_en_avant, false),
-    options: grid ? [grid.option] : undefined,
+    options: grid ? grid.options : undefined,
   });
 });
 

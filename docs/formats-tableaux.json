@@ -1,0 +1,27 @@
+{
+  "category": "tableaux",
+  "option": { "id": "dimensions", "name": { "fr": "Format", "en": "Size" }, "kind": "size" },
+  "formats": [
+    { "id": "50x75", "label": "50 × 75 cm", "price": 430 },
+    { "id": "60x100", "label": "60 × 100 cm", "price": 589 },
+    { "id": "80x120", "label": "80 × 120 cm", "price": 750 },
+    { "id": "80x140", "label": "80 × 140 cm", "price": 949 },
+    { "id": "80x150", "label": "80 × 150 cm", "price": 1350 }
+  ],
+  "extraOptions": [
+    {
+      "id": "cadre",
+      "name": { "fr": "Couleur du cadre (caisse américaine)", "en": "Floater frame colour" },
+      "kind": "frame",
+      "values": [
+        { "id": "dore", "label": { "fr": "Doré", "en": "Gold" }, "swatch": "#c9a24d" },
+        { "id": "noir", "label": { "fr": "Noir", "en": "Black" }, "swatch": "#1c1917" },
+        { "id": "blanc", "label": { "fr": "Blanc", "en": "White" }, "swatch": "#f2eee6" },
+        { "id": "beige", "label": { "fr": "Beige", "en": "Beige" }, "swatch": "#d8c3a0" },
+        { "id": "argente", "label": { "fr": "Argenté", "en": "Silver" }, "swatch": "#b8b8b4" },
+        { "id": "marron", "label": { "fr": "Marron", "en": "Brown" }, "swatch": "#5b3a24" },
+        { "id": "bleu-marine", "label": { "fr": "Bleu marine", "en": "Navy blue" }, "swatch": "#1f2a44" }
+      ]
+    }
+  ]
+}
