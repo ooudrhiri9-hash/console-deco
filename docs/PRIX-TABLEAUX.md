@@ -126,7 +126,7 @@ Faux cadre (05/10/2026, `prix-tableaux-duo-faux-cadre.jpeg`) :
 Comme pour les tableaux : choix **Encadrement**, faux cadre par défaut,
 caisse américaine en supplément par format (`extraBySize`), couleur du cadre
 toujours affichée. Vaut aussi pour les trios et les tableaux
-rectangulaires (ces derniers n'ont pas de choix de couleur).
+rectangulaires, qui reçoivent eux aussi la couleur du cadre le 05/10/2026.
 
 ## Conséquence sur le catalogue
 

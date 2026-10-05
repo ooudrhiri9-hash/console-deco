@@ -19,6 +19,20 @@
           "extraBySize": { "60x60": 200, "80x80": 190, "100x100": 260, "120x120": 180 }
         }
       ]
+    },
+    {
+      "id": "cadre",
+      "name": { "fr": "Couleur du cadre (caisse américaine)", "en": "Floater frame colour" },
+      "kind": "frame",
+      "values": [
+        { "id": "dore", "label": { "fr": "Doré", "en": "Gold" }, "swatch": "#c9a24d" },
+        { "id": "noir", "label": { "fr": "Noir", "en": "Black" }, "swatch": "#1c1917" },
+        { "id": "blanc", "label": { "fr": "Blanc", "en": "White" }, "swatch": "#f2eee6" },
+        { "id": "beige", "label": { "fr": "Beige", "en": "Beige" }, "swatch": "#d8c3a0" },
+        { "id": "argente", "label": { "fr": "Argenté", "en": "Silver" }, "swatch": "#b8b8b4" },
+        { "id": "marron", "label": { "fr": "Marron", "en": "Brown" }, "swatch": "#5b3a24" },
+        { "id": "bleu-marine", "label": { "fr": "Bleu marine", "en": "Navy blue" }, "swatch": "#1f2a44" }
+      ]
     }
   ]
 }
