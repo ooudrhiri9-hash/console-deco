@@ -15,7 +15,7 @@ export default function ProductsPage() {
   );
 }
 
-type Draft = AdminProduct & { colorsFr: string; colorsEn: string };
+type Draft = AdminProduct & { colorsFr: string; colorsEn: string; copyOf?: string };
 
 /** An empty sheet. Everything the API requires is either filled or defaulted. */
 const blankDraft = (categoryId: string): Draft => ({
@@ -43,6 +43,55 @@ const toDraft = (p: AdminProduct): Draft => ({
   colorsFr: (p.colors || []).map((c) => c.fr).join(', '),
   colorsEn: (p.colors || []).map((c) => c.en).join(', '),
 });
+
+/**
+ * La référence suivante de la même série : TAB-005 -> TAB-006, en sautant
+ * celles déjà prises. Vide si la référence ne finit pas par un numéro — l'API
+ * en fabrique alors une à partir du nom.
+ */
+function nextSku(sourceId: string, products: AdminProduct[]): string {
+  const m = sourceId.match(/^(.*?)(\d+)$/);
+  if (!m) return '';
+  const [, prefix, digits] = m;
+  const taken = products
+    .map((p) => p.id.match(/^(.*?)(\d+)$/))
+    .filter((x): x is RegExpMatchArray => !!x && x[1] === prefix)
+    .map((x) => Number(x[2]));
+  return `${prefix}${String(Math.max(...taken) + 1).padStart(digits.length, '0')}`;
+}
+
+/**
+ * Une nouvelle pièce qui part d'une autre : même famille, prix, formats,
+ * encadrement et couleurs de cadre — tout ce qui est long à ressaisir.
+ *
+ * Ce qui décrit l'œuvre elle-même repart à vide : photos, couleurs de la toile
+ * et textes anglais. Un anglais recopié afficherait la description de l'autre
+ * tableau sur /en/ ; vide, il reprend le nouveau texte français. Le slug est
+ * vide aussi : l'API le tire du nom à l'enregistrement, d'où le « (copie) » à
+ * remplacer.
+ */
+const copyDraft = (p: AdminProduct, products: AdminProduct[]): Draft => {
+  const { slug: _slug, createdAt: _c, updatedAt: _u, ...rest } = p as AdminProduct & {
+    createdAt?: string;
+    updatedAt?: string;
+  };
+  return {
+    ...rest,
+    slug: '',
+    id: nextSku(p.id, products),
+    name: { fr: `${p.name.fr} (copie)`, en: '' },
+    shortDescription: { fr: p.shortDescription.fr, en: '' },
+    description: { fr: p.description.fr, en: '' },
+    images: [],
+    colors: [],
+    colorsFr: '',
+    colorsEn: '',
+    featured: false,
+    bestSeller: false,
+    inStock: true,
+    copyOf: p.name.fr,
+  };
+};
 
 /**
  * Deux listes toutes faites, parce que personne n'a envie de taper huit cadres
@@ -275,6 +324,14 @@ function ProductsView() {
                       <button type="button" className="adm-btn adm-btn--sm" onClick={() => setDraft(toDraft(p))}>
                         Modifier
                       </button>
+                      <button
+                        type="button"
+                        className="adm-btn adm-btn--sm"
+                        onClick={() => setDraft(copyDraft(p, products))}
+                        title="Nouvelle pièce avec les mêmes prix, formats et cadres"
+                      >
+                        Dupliquer
+                      </button>
                       <button type="button" className="adm-btn adm-btn--sm adm-btn--danger" onClick={() => remove(p)}>
                         Supprimer
                       </button>
@@ -417,6 +474,7 @@ function ProductSheet({
     };
     delete (body as Partial<Draft>).colorsFr;
     delete (body as Partial<Draft>).colorsEn;
+    delete (body as Partial<Draft>).copyOf;
 
     try {
       if (isNew) {
@@ -451,6 +509,13 @@ function ProductSheet({
         </div>
 
         {error && <p className="adm-alert adm-alert--err">{error}</p>}
+
+        {draft.copyOf && (
+          <p className="adm-alert adm-alert--info">
+            Copie de « {draft.copyOf} » : prix, formats et cadres sont repris.
+            Changez le nom, les photos et les textes avant d’enregistrer.
+          </p>
+        )}
 
         <section>
           <h3 className="adm-legend">Identité</h3>
