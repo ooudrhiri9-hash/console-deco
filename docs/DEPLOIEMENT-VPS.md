@@ -221,6 +221,13 @@ n'est nécessaire que pour la page dédiée d'une pièce nouvelle, le référenc
 (titres, sitemap, données structurées) et les coordonnées de l'en-tête et du
 pied de page.
 
+Ce build-là, sans changement de code, se lance aussi depuis le back-office :
+bouton **Publier le site** en haut de `/admin` (`deploy/publish.sh`, 20 s à
+1 min). Il ne tire pas le code et ne redémarre pas l'API — pour une nouvelle
+version du code, c'est toujours `deploy.sh`. Les deux partagent un verrou :
+jamais deux builds à la fois. Journal du dernier lancement :
+`backend/.data/publish.log`.
+
 ---
 
 ## 8. Sauvegardes
