@@ -70,8 +70,8 @@ caisse américaine. Les prix ci-dessus restent ceux de la caisse américaine.
 Dans `formats-tableaux.json`, les formats portent les prix faux cadre et la
 caisse américaine un supplément par format (`extraBySize` : +200, +209,
 +290, +219, +400). Faux cadre est la valeur par défaut, la fiche s'ouvre
-donc à 230 DH. La couleur du cadre ne s'affiche — et ne part dans la
-commande — qu'en caisse américaine.
+donc à 230 DH. Les pastilles de couleur du cadre et la photo encadrée
+restent affichées quel que soit l'encadrement (demande du 05/10/2026).
 
 Les deux premières pièces (TBR-001 Bestiaire, TBR-002 Fête au château) sont
 photographiées en carré ; l'atelier les peint au format choisi. La photo
@@ -125,7 +125,7 @@ Faux cadre (05/10/2026, `prix-tableaux-duo-faux-cadre.jpeg`) :
 
 Comme pour les tableaux : choix **Encadrement**, faux cadre par défaut,
 caisse américaine en supplément par format (`extraBySize`), couleur du cadre
-seulement en caisse américaine. Vaut aussi pour les trios et les tableaux
+toujours affichée. Vaut aussi pour les trios et les tableaux
 rectangulaires (ces derniers n'ont pas de choix de couleur).
 
 ## Conséquence sur le catalogue

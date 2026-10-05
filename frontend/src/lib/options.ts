@@ -92,14 +92,6 @@ export const sizeOption = (product: Product): ProductOption | undefined =>
 export const frameOption = (product: Product): ProductOption | undefined =>
   optionsOf(product).find((o) => o.kind === 'frame');
 
-/**
- * Faux cadre retenu : la toile est tendue sur châssis, sans moulure. La
- * couleur du cadre ne s'applique pas — ni pastilles, ni photo encadrée, ni
- * ligne dans le panier.
- */
-export const isFrameless = (product: Product, choice?: OptionChoice): boolean =>
-  optionsOf(product).some((o) => o.id === 'encadrement' && pickedValue(o, choice).id === 'faux-cadre');
-
 /** La valeur retenue pour un choix : celle demandée si elle existe, sinon la première. */
 export function pickedValue(option: ProductOption, choice?: OptionChoice): ProductOptionValue {
   const wanted = choice?.[option.id];
@@ -176,13 +168,11 @@ export function choiceLabels(
   locale: Locale,
 ): Array<{ name: string; label: string }> {
   const custom = customSizeOf(choice);
-  const frameless = isFrameless(product, choice);
   return [
     // Des dimensions sur mesure remplacent le format : la pièce n'est plus
     // faite dans une des tailles proposées.
     ...optionsOf(product)
       .filter((option) => !(custom && option.kind === 'size'))
-      .filter((option) => !(frameless && option.kind === 'frame'))
       .map((option) => ({
         name: option.name[locale],
         label: pickedValue(option, choice).label[locale],
