@@ -11,6 +11,7 @@ import {
   CUSTOM_SIZE,
   defaultChoice,
   frameOption,
+  isFrameless,
   optionsOf,
   packCustomSize,
   parseCustomSize,
@@ -90,7 +91,8 @@ export default function ProductDetail({
   const frame = frameOption(product);
   const others = optionsOf(product).filter((o) => o !== size && o !== frame);
   const sizeId = size ? pickedValue(size, choice).id : undefined;
-  const frameValue = frame ? pickedValue(frame, choice) : undefined;
+  const showFrame = frame && !isFrameless(product, choice) ? frame : undefined;
+  const frameValue = showFrame ? pickedValue(showFrame, choice) : undefined;
 
   const price = unitPrice(product, choice);
   const was = compareAtFor(product, choice);
@@ -99,7 +101,7 @@ export default function ProductDetail({
   const liked = favorites.ready && favorites.has(product.slug);
 
   // « Prix pour 100 × 100 cm, caisse américaine. » — ce que couvre le montant.
-  const priceFor = [size, frame]
+  const priceFor = [size, ...others, showFrame]
     .filter((o): o is NonNullable<typeof o> => Boolean(o))
     .map((o) => pickedValue(o, choice).label[locale])
     .join(', ');
@@ -117,10 +119,10 @@ export default function ProductDetail({
     <div className="product">
       <div className="product__media">
         <ProductGallery product={product} locale={locale} frame={frameValue?.swatch} />
-        {frame && !removed && (
+        {showFrame && !removed && (
           <FramePicker
             product={product}
-            option={frame}
+            option={showFrame}
             locale={locale}
             choice={choice}
             onChange={pick}

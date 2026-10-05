@@ -74,11 +74,12 @@ const grids = new Map(
           extra: f.price - base,
         })),
       };
-      // Les autres choix de la grille (couleur du cadre…) ne touchent pas au
-      // prix : leurs valeurs partent à +0.
+      // Les autres choix de la grille : +0 sauf supplément écrit dans la
+      // grille (`extra`, ou `extraBySize` quand l'écart dépend du format —
+      // la caisse américaine des tableaux).
       const extra = (grid.extraOptions || []).map((o) => ({
         ...o,
-        values: o.values.map((v) => ({ ...v, extra: 0 })),
+        values: o.values.map((v) => ({ ...v, extra: v.extra ?? 0 })),
       }));
       return [grid.category, { base, options: [option, ...extra] }];
     }),

@@ -2,11 +2,23 @@
   "category": "tableaux-duo",
   "option": { "id": "dimensions", "name": { "fr": "Format de chaque toile", "en": "Size of each canvas" }, "kind": "size" },
   "formats": [
-    { "id": "2x50x75", "label": "2 × 50 × 75 cm", "price": 730 },
-    { "id": "2x60x100", "label": "2 × 60 × 100 cm", "price": 1050 },
-    { "id": "2x80x120", "label": "2 × 80 × 120 cm", "price": 1350 }
+    { "id": "2x50x75", "label": "2 × 50 × 75 cm", "price": 398 },
+    { "id": "2x60x100", "label": "2 × 60 × 100 cm", "price": 730 },
+    { "id": "2x80x120", "label": "2 × 80 × 120 cm", "price": 880 }
   ],
   "extraOptions": [
+    {
+      "id": "encadrement",
+      "name": { "fr": "Encadrement", "en": "Framing" },
+      "values": [
+        { "id": "faux-cadre", "label": { "fr": "Faux cadre", "en": "Stretched canvas" } },
+        {
+          "id": "caisse-americaine",
+          "label": { "fr": "Caisse américaine", "en": "Floater frame" },
+          "extraBySize": { "2x50x75": 332, "2x60x100": 320, "2x80x120": 470 }
+        }
+      ]
+    },
     {
       "id": "cadre",
       "name": { "fr": "Couleur du cadre (caisse américaine)", "en": "Floater frame colour" },

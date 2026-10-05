@@ -2,13 +2,25 @@
   "category": "tableaux",
   "option": { "id": "dimensions", "name": { "fr": "Format", "en": "Size" }, "kind": "size" },
   "formats": [
-    { "id": "50x75", "label": "50 × 75 cm", "price": 430 },
-    { "id": "60x100", "label": "60 × 100 cm", "price": 589 },
-    { "id": "80x120", "label": "80 × 120 cm", "price": 750 },
-    { "id": "80x140", "label": "80 × 140 cm", "price": 949 },
-    { "id": "80x150", "label": "80 × 150 cm", "price": 1350 }
+    { "id": "50x75", "label": "50 × 75 cm", "price": 230 },
+    { "id": "60x100", "label": "60 × 100 cm", "price": 380 },
+    { "id": "80x120", "label": "80 × 120 cm", "price": 460 },
+    { "id": "80x140", "label": "80 × 140 cm", "price": 730 },
+    { "id": "80x150", "label": "80 × 150 cm", "price": 950 }
   ],
   "extraOptions": [
+    {
+      "id": "encadrement",
+      "name": { "fr": "Encadrement", "en": "Framing" },
+      "values": [
+        { "id": "faux-cadre", "label": { "fr": "Faux cadre", "en": "Stretched canvas" } },
+        {
+          "id": "caisse-americaine",
+          "label": { "fr": "Caisse américaine", "en": "Floater frame" },
+          "extraBySize": { "50x75": 200, "60x100": 209, "80x120": 290, "80x140": 219, "80x150": 400 }
+        }
+      ]
+    },
     {
       "id": "cadre",
       "name": { "fr": "Couleur du cadre (caisse américaine)", "en": "Floater frame colour" },

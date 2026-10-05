@@ -2,9 +2,23 @@
   "category": "tableaux-rectangulaires",
   "option": { "id": "dimensions", "name": { "fr": "Format", "en": "Size" }, "kind": "size" },
   "formats": [
-    { "id": "60x60", "label": "60 × 60 cm", "price": 450 },
-    { "id": "80x80", "label": "80 × 80 cm", "price": 580 },
-    { "id": "100x100", "label": "100 × 100 cm", "price": 750 },
-    { "id": "120x120", "label": "120 × 120 cm", "price": 950 }
+    { "id": "60x60", "label": "60 × 60 cm", "price": 250 },
+    { "id": "80x80", "label": "80 × 80 cm", "price": 390 },
+    { "id": "100x100", "label": "100 × 100 cm", "price": 490 },
+    { "id": "120x120", "label": "120 × 120 cm", "price": 770 }
+  ],
+  "extraOptions": [
+    {
+      "id": "encadrement",
+      "name": { "fr": "Encadrement", "en": "Framing" },
+      "values": [
+        { "id": "faux-cadre", "label": { "fr": "Faux cadre", "en": "Stretched canvas" } },
+        {
+          "id": "caisse-americaine",
+          "label": { "fr": "Caisse américaine", "en": "Floater frame" },
+          "extraBySize": { "60x60": 200, "80x80": 190, "100x100": 260, "120x120": 180 }
+        }
+      ]
+    }
   ]
 }

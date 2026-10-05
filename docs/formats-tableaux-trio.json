@@ -2,11 +2,23 @@
   "category": "tableaux-trio",
   "option": { "id": "dimensions", "name": { "fr": "Format de chaque toile", "en": "Size of each canvas" }, "kind": "size" },
   "formats": [
-    { "id": "3x50x75", "label": "3 × 50 × 75 cm", "price": 980 },
-    { "id": "3x60x100", "label": "3 × 60 × 100 cm", "price": 1604 },
-    { "id": "3x80x120", "label": "3 × 80 × 120 cm", "price": 1970 }
+    { "id": "3x50x75", "label": "3 × 50 × 75 cm", "price": 630 },
+    { "id": "3x60x100", "label": "3 × 60 × 100 cm", "price": 1030 },
+    { "id": "3x80x120", "label": "3 × 80 × 120 cm", "price": 1250 }
   ],
   "extraOptions": [
+    {
+      "id": "encadrement",
+      "name": { "fr": "Encadrement", "en": "Framing" },
+      "values": [
+        { "id": "faux-cadre", "label": { "fr": "Faux cadre", "en": "Stretched canvas" } },
+        {
+          "id": "caisse-americaine",
+          "label": { "fr": "Caisse américaine", "en": "Floater frame" },
+          "extraBySize": { "3x50x75": 350, "3x60x100": 574, "3x80x120": 720 }
+        }
+      ]
+    },
     {
       "id": "cadre",
       "name": { "fr": "Couleur du cadre (caisse américaine)", "en": "Floater frame colour" },
