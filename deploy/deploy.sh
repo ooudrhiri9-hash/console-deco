@@ -12,6 +12,11 @@ WEB=/var/www/maisondeco
 
 cd "$APP"
 
+# Meme verrou que publish.sh (bouton « Publier le site » de /admin) : on
+# attend qu'une publication en cours se termine plutot que de builder a deux.
+exec 9>/tmp/maisondeco-build.lock
+flock 9
+
 echo "==> Code"
 # `sync-catalogue` reecrit frontend/src/data/catalogue.json a chaque build. Ce
 # fichier est suivi par git — il sert de repli quand l'API est injoignable —

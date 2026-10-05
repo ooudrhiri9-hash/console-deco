@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { api, ApiError, clearToken, getToken, onExpired, setToken } from './client';
 import { API_URL } from '@/config/api';
+import PublishButton from './PublishButton';
 
 type Admin = { email: string; name: string };
 type Phase = 'checking' | 'out' | 'in';
@@ -85,6 +86,7 @@ export default function AdminShell({ title, children }: { title: string; childre
           })}
         </nav>
         <div className="adm-top__right">
+          <PublishButton />
           <span className="adm-who">{admin?.email}</span>
           <button type="button" className="adm-btn adm-btn--ghost" onClick={signOut}>
             Se déconnecter

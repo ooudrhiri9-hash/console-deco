@@ -21,6 +21,7 @@ import { adminMessageRoutes, messageRoutes } from './routes/messages.js';
 import { settingsRoutes } from './routes/settings.js';
 import { dashboardRoutes } from './routes/dashboard.js';
 import { uploadRoutes, UPLOAD_DIR } from './routes/uploads.js';
+import { publishRoutes } from './routes/publish.js';
 
 const app = express();
 
@@ -90,6 +91,7 @@ app.use('/api/admin', dashboardRoutes);
 app.use('/api/admin', adminOrderRoutes);
 app.use('/api/admin', adminMessageRoutes);
 app.use('/api/admin', uploadRoutes);
+app.use('/api/admin', publishRoutes);
 
 app.use('/api', catalogueRoutes);
 app.use('/api', orderRoutes);
