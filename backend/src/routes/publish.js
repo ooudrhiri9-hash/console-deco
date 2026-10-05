@@ -47,7 +47,7 @@ publishRoutes.post('/publish', requireAdmin, (req, res) => {
     return;
   }
   if (state.status === 'running') {
-    res.status(409).json({ error: 'Une publication est déjà en cours.', ...state });
+    res.status(409).json({ ...state, error: 'Une publication est déjà en cours.' });
     return;
   }
 
