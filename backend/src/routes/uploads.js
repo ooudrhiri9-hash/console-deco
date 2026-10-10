@@ -59,14 +59,23 @@ uploadRoutes.post('/uploads', requireAdmin, (req, res) => {
         Date.now().toString(36),
       ].join('-');
 
-      // `cover` crops to the catalogue's portrait frame so cards never letterbox;
-      // `withoutEnlargement` keeps a small original from being upscaled into mush.
+      // `cover` crops to the catalogue's portrait frame so cards never letterbox.
+      // The crop is centred: `attention` chased the most colourful area, so in a
+      // room shot it kept the cushions and pushed the piece off to one side.
+      // A small original is not upscaled, but it is still cut to the 4:5 frame —
+      // `withoutEnlargement` alone would return it at the wrong ratio.
       const base = sharp(req.file.buffer).rotate();
+      const meta = await base.metadata();
+      const swap = (meta.orientation ?? 1) >= 5;
+      const srcW = (swap ? meta.height : meta.width) || WIDTH;
+      const srcH = (swap ? meta.width : meta.height) || HEIGHT;
+      const fullW = Math.min(WIDTH, srcW, Math.floor((srcH * WIDTH) / HEIGHT));
+      const fullH = Math.round((fullW * HEIGHT) / WIDTH);
       const full = base.clone()
-        .resize(WIDTH, HEIGHT, { fit: 'cover', position: 'attention', withoutEnlargement: true })
+        .resize(fullW, fullH, { fit: 'cover', position: 'centre' })
         .webp({ quality: 82 });
       const thumb = base.clone()
-        .resize(Math.round(WIDTH / 2), Math.round(HEIGHT / 2), { fit: 'cover', position: 'attention', withoutEnlargement: true })
+        .resize(Math.round(fullW / 2), Math.round(fullH / 2), { fit: 'cover', position: 'centre' })
         .webp({ quality: 74 });
 
       // Cloudinary when it is configured: the photo then survives a deploy on a
