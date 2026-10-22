@@ -376,6 +376,18 @@ p { text-wrap: pretty; }
 .grid--3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
 .grid--4 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
 
+/* Pages catalogue : colonnes fixes plutot qu'auto-fill — 2 par rangee sur
+   telephone, 4 sur ordinateur portable, a la demande du client. */
+.grid--catalogue { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 0.75rem; }
+@media (min-width: 720px) { .grid--catalogue { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2.2vw, 1.75rem); } }
+@media (min-width: 1024px) { .grid--catalogue { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 719px) {
+  .grid--catalogue .card__body { padding-top: 0.6rem; }
+  .grid--catalogue .card__title { font-size: 1rem; }
+  .grid--catalogue .card__price { flex-wrap: wrap; gap: 0.2rem 0.5rem; font-size: 0.88rem; }
+  .grid--catalogue .badge { top: 0.5rem; left: 0.5rem; font-size: 0.6rem; padding: 0.25rem 0.45rem; }
+}
+
 .card { display: flex; flex-direction: column; height: 100%; }
 .card__media {
   position: relative; overflow: hidden; background: var(--surface-deep);

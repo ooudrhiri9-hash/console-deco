@@ -56,9 +56,9 @@ export default function CatalogueGrid({
         </select>
       </div>
 
-      <div className="grid grid--3">
+      <div className="grid grid--catalogue">
         {sorted.map((p, i) => (
-          <ProductCard key={p.id} product={p} locale={locale} priority={i < 3} />
+          <ProductCard key={p.id} product={p} locale={locale} priority={i < 4} />
         ))}
       </div>
     </>
