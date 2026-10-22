@@ -18,6 +18,7 @@ import {
   sizeOption,
   unitPrice,
 } from '@/lib/options';
+import { track } from '@/lib/pixel';
 import { routes } from '@/lib/routes';
 import { productMessage, waLink } from '@/lib/whatsapp';
 import { useCart } from './CartProvider';
@@ -107,6 +108,12 @@ export default function ProductDetail({
   const onAdd = () => {
     add(product, qty, choice);
     setAdded(true);
+    track('AddToCart', {
+      content_ids: [product.id],
+      content_type: 'product',
+      content_name: product.name[locale],
+      value: custom ? 0 : price * qty,
+    });
   };
 
   const wa = waLink(
@@ -315,7 +322,13 @@ export default function ProductDetail({
                   {t.products.viewCart} <ArrowIcon />
                 </Link>
               )}
-              <a className="btn btn--whatsapp btn--block" href={wa} target="_blank" rel="noopener noreferrer">
+              <a
+                className="btn btn--whatsapp btn--block"
+                href={wa}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track('Contact', { content_ids: [product.id] })}
+              >
                 <WhatsappIcon size={18} />
                 {t.products.orderWhatsapp}
               </a>

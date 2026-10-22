@@ -9,6 +9,7 @@ import Header from './Header';
 import Footer from './Footer';
 import WhatsappFloat from './WhatsappFloat';
 import PhoneFloat from './PhoneFloat';
+import MetaPixel from './MetaPixel';
 import '@/styles/globals.css';
 
 /**
@@ -48,6 +49,7 @@ export default function RootShell({ locale, children }: { locale: Locale; childr
         </FavoritesProvider>
         </CartProvider>
         </LiveCatalogueProvider>
+        <MetaPixel />
       </body>
     </html>
   );

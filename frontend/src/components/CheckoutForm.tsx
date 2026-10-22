@@ -1,7 +1,7 @@
 'use client';
 
 import Link from '@/components/Link';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
 import { site } from '@/config/site';
@@ -10,6 +10,7 @@ import { routes } from '@/lib/routes';
 import { formatPrice } from '@/lib/format';
 import { choiceLabels } from '@/lib/options';
 import { orderMessage, waLink, type OrderCustomer } from '@/lib/whatsapp';
+import { track } from '@/lib/pixel';
 import { useCart } from './CartProvider';
 import { WhatsappIcon } from './Icons';
 
@@ -41,6 +42,22 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
 
   const wa = waLink(orderMessage(orderLines, customer, subtotal, locale));
 
+  // Pixel : ce que contient la commande, pour InitiateCheckout et Purchase.
+  const pixelOrder = () => ({
+    content_ids: lines.map((l) => l.product.id),
+    content_type: 'product',
+    num_items: lines.reduce((n, l) => n + l.qty, 0),
+    value: subtotal,
+  });
+
+  // Une seule fois par visite de la page, une fois le panier relu.
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (!ready || !lines.length || checkoutTracked.current) return;
+    checkoutTracked.current = true;
+    track('InitiateCheckout', pixelOrder());
+  }, [ready, lines.length]);
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setState('sending');
@@ -62,6 +79,8 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
       const data = (await res.json().catch(() => null)) as { reference?: string; error?: string } | null;
       if (!res.ok) throw new Error(data?.error || String(res.status));
       setReference(data?.reference || '');
+      // Avant clear() : le panier vidé enverrait une commande à 0.
+      track('Purchase', pixelOrder());
       setState('sent');
       clear();
     } catch {
@@ -160,7 +179,13 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
           <button type="submit" className="btn btn--primary" disabled={state === 'sending'}>
             {state === 'sending' ? t.checkout.submitting : t.checkout.submit}
           </button>
-          <a className="btn btn--whatsapp" href={wa} target="_blank" rel="noopener noreferrer">
+          <a
+            className="btn btn--whatsapp"
+            href={wa}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track('Contact', pixelOrder())}
+          >
             <WhatsappIcon size={18} />
             {t.checkout.viaWhatsapp}
           </a>
