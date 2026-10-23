@@ -2,15 +2,16 @@
 
 import Link from '@/components/Link';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
-import { site } from '@/config/site';
 import { apiUrl } from '@/config/api';
 import { routes } from '@/lib/routes';
 import { formatPrice } from '@/lib/format';
 import { choiceLabels } from '@/lib/options';
 import { orderMessage, waLink, type OrderCustomer } from '@/lib/whatsapp';
 import { track } from '@/lib/pixel';
+import { saveLastOrder } from '@/lib/lastOrder';
 import { useCart } from './CartProvider';
 import { WhatsappIcon } from './Icons';
 
@@ -23,8 +24,7 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
   const { lines, subtotal, clear, ready } = useCart();
   const [customer, setCustomer] = useState<OrderCustomer>(EMPTY);
   const [state, setState] = useState<State>('idle');
-  /** Order number the API assigned — shown on the thank-you screen. */
-  const [reference, setReference] = useState('');
+  const router = useRouter();
 
   const set = (k: keyof OrderCustomer) => (e: { target: { value: string } }) =>
     setCustomer((c) => ({ ...c, [k]: e.target.value }));
@@ -78,10 +78,18 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
       });
       const data = (await res.json().catch(() => null)) as { reference?: string; error?: string } | null;
       if (!res.ok) throw new Error(data?.error || String(res.status));
-      setReference(data?.reference || '');
       // Avant clear() : le panier vidé enverrait une commande à 0.
       track('Purchase', pixelOrder());
+      // /merci/ récapitule la commande alors que le panier est déjà vidé.
+      saveLastOrder({
+        reference: data?.reference || '',
+        customer: { name: customer.name, city: customer.city, address: customer.address },
+        lines: orderLines.map(({ name, qty, price, picked }) => ({ name, qty, price, picked })),
+        subtotal,
+      });
       setState('sent');
+      // replace : le bouton Retour ne ramène pas sur un formulaire au panier vide.
+      router.replace(routes.thanks(locale));
       clear();
     } catch {
       // API down, or the domain missing from ALLOWED_ORIGINS — the visitor
@@ -92,28 +100,8 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
 
   if (!ready) return <div className="empty-state">{t.common.loading}</div>;
 
-  if (state === 'sent') {
-    return (
-      <div className="empty-state stack">
-        <h2 className="h-2">{t.checkout.successTitle}</h2>
-        <p className="muted">{t.checkout.successText}</p>
-        {reference && (
-          <p className="small">
-            {locale === 'fr' ? 'Référence de votre commande' : 'Your order reference'} :{' '}
-            <strong>{reference}</strong>
-          </p>
-        )}
-        <div className="flex-center" style={{ gap: '.75rem', flexWrap: 'wrap' }}>
-          <Link href={routes.products(locale)} className="btn btn--primary">
-            {t.cart.continue}
-          </Link>
-          <a href={`tel:${site.phoneHref}`} className="btn btn--outline">
-            {site.phone}
-          </a>
-        </div>
-      </div>
-    );
-  }
+  // Le temps que /merci/ s'affiche, plutôt qu'un « panier vide » trompeur.
+  if (state === 'sent') return <div className="empty-state">{t.common.loading}</div>;
 
   if (!lines.length) {
     return (

@@ -14,6 +14,7 @@ import type { Category, Product } from '@/types';
  *   /panier/                  /en/cart/
  *   /commande/                /en/checkout/
  *   /favoris/                 /en/favorites/
+ *   /merci/                   /en/thank-you/
  */
 const segment = {
   products: { fr: 'produits', en: 'products' },
@@ -24,6 +25,8 @@ const segment = {
   cart: { fr: 'panier', en: 'cart' },
   checkout: { fr: 'commande', en: 'checkout' },
   favorites: { fr: 'favoris', en: 'favorites' },
+  /** Page de remerciement, après une commande envoyée. */
+  thanks: { fr: 'merci', en: 'thank-you' },
 } as const;
 
 const base = (locale: Locale) => localePrefix[locale];
@@ -49,6 +52,7 @@ export const routes = {
   cart: (l: Locale) => `${base(l)}/${segment.cart[l]}/`,
   checkout: (l: Locale) => `${base(l)}/${segment.checkout[l]}/`,
   favorites: (l: Locale) => `${base(l)}/${segment.favorites[l]}/`,
+  thanks: (l: Locale) => `${base(l)}/${segment.thanks[l]}/`,
 };
 
 /** Category slug -> category, for a given locale (used by generateStaticParams). */
@@ -75,7 +79,7 @@ export function alternates(
 
 /* -------------------------------------------------------------------------- */
 
-const SEGMENT_KEYS = ['products', 'contact', 'about', 'cart', 'checkout', 'favorites'] as const;
+const SEGMENT_KEYS = ['products', 'contact', 'about', 'cart', 'checkout', 'favorites', 'thanks'] as const;
 type SegmentKey = (typeof SEGMENT_KEYS)[number];
 
 /** Reverse lookup: a URL segment in any locale -> its logical key. */

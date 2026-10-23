@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
   // Transactional pages carry no SEO value and must not be indexed.
   const disallow = [
     '/panier/', '/commande/', '/en/cart/', '/en/checkout/', '/admin/',
-    '/favoris/', '/en/favorites/',
+    '/favoris/', '/en/favorites/', '/merci/', '/en/thank-you/',
     // Client-rendered fallback sheets: same piece as a real product page once
     // the site is rebuilt, so they must never compete with it in the index.
     '/produits/piece/', '/en/products/item/',

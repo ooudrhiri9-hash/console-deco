@@ -227,6 +227,21 @@ export const dict = {
       errorText: 'L’envoi a échoué. Contactez-nous directement par WhatsApp ou téléphone.',
       emptyCart: 'Votre panier est vide.',
     },
+    thanks: {
+      title: 'Merci pour votre commande',
+      lead: 'Votre commande est bien arrivée chez nous. Nous vous appelons très vite au numéro indiqué pour la confirmer.',
+      reference: 'Référence de votre commande',
+      recap: 'Ce que vous avez commandé',
+      deliverTo: 'Livraison',
+      nextTitle: 'Et maintenant ?',
+      next: [
+        { title: 'Nous vous appelons', text: 'Pour confirmer la commande, les finitions et le délai de livraison selon votre ville.' },
+        { title: 'L’atelier prépare votre pièce', text: 'Rien ne part en fabrication avant votre accord au téléphone.' },
+        { title: 'Vous payez à la livraison', text: 'En espèces, à la réception de la commande. Rien n’est payé en ligne.' },
+      ],
+      questions: 'Une question en attendant notre appel ?',
+      whatsappMessage: (ref: string) => 'Bonjour, je viens de passer la commande ' + ref + ' sur le site.',
+    },
     contact: {
       title: 'Contact',
       intro: 'Une question, un projet sur mesure, une commande en cours ? Nous répondons vite.',
@@ -478,6 +493,21 @@ export const dict = {
       successText: 'Thank you! We will call you shortly on the number provided to confirm.',
       errorText: 'Sending failed. Please reach us directly on WhatsApp or by phone.',
       emptyCart: 'Your cart is empty.',
+    },
+    thanks: {
+      title: 'Thank you for your order',
+      lead: 'Your order has reached us. We will call you shortly on the number provided to confirm it.',
+      reference: 'Your order reference',
+      recap: 'What you ordered',
+      deliverTo: 'Delivery',
+      nextTitle: 'What happens next?',
+      next: [
+        { title: 'We call you', text: 'To confirm the order, the finishes and the delivery time for your city.' },
+        { title: 'The workshop prepares your piece', text: 'Nothing goes into production before you agree on the phone.' },
+        { title: 'You pay on delivery', text: 'In cash, when the order arrives. Nothing is paid online.' },
+      ],
+      questions: 'A question before we call?',
+      whatsappMessage: (ref: string) => 'Hello, I have just placed order ' + ref + ' on the website.',
     },
     contact: {
       title: 'Contact',
