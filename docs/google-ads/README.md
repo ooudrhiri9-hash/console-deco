@@ -7,7 +7,7 @@ Landing page: https://maisondeco.ma/produits/consoles/
 | Item | Value |
 |---|---|
 | Campagne | `Search \| Consoles \| Casablanca \| FR`, Search only (no Display, no search partners) |
-| Zone | **Casablanca** (city) to start. Option: **Presence: people in or regularly in** (set it by hand). Extend to all of Morocco once the campaign is profitable |
+| Zone | **Casablanca, Bouskoura, Dar Bouazza, Mohammedia** to start. Option: **Presence: people in or regularly in** (set it by hand). Extend to all of Morocco once the campaign is profitable |
 | Horaires | Every day **07:00 → 00:00** (Casablanca time), set by hand in Editor (see below) |
 | Langues | Français + Arabe |
 | Budget | 150 MAD/day to start (change it in `build_ads.py`) |
@@ -25,8 +25,9 @@ Landing page: https://maisondeco.ma/produits/consoles/
 3. `5a/5b/5c` (assets): import them the same way. If Editor doesn't map a column,
    fix the mapping in the preview, or add them by hand under *Assets*.
 4. Check by hand in Editor:
-   - Campaign → *Locations*: **Casablanca, Casablanca-Settat, Morocco** (if the import fails:
-     *Add* → search "Casablanca" → choose the **City**), plus the **Presence** option
+   - Campaign → *Locations*: **Casablanca, Bouskoura, Dar Bouazza, Mohammedia** (if one is not
+     found: *Add* → search the name; if Google doesn't offer it, add a **radius** of 5 km
+     around it), plus the **Presence** option
    - Campaign → *Ad schedule* → *Add* → 7 rows, Monday to Sunday, **07:00 to 00:00**
      (in Editor, 00:00 at the end = midnight)
    - *Networks*: uncheck *Search partners* and *Display*

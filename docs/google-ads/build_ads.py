@@ -160,7 +160,8 @@ write("1-campagne-et-groupes.csv",
       + [[CAMP, "", "", "", "", "", "", "", "", g, "", "Enabled"] for g in groups])
 
 # 2. location
-write("2-ciblage-geographique.csv", ["Campaign", "Location"], [[CAMP, "Casablanca, Casablanca-Settat, Morocco"]])
+write("2-ciblage-geographique.csv", ["Campaign", "Location"], [[CAMP, f"{c}, Casablanca-Settat, Morocco"]
+       for c in ("Casablanca", "Bouskoura", "Dar Bouazza", "Mohammedia")])
 
 # 3. keywords (phrase + exact) and negatives
 rows = []
