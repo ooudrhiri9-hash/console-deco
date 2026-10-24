@@ -3,7 +3,7 @@ import csv, os, sys
 OUT = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(OUT, exist_ok=True)
 
-CAMP = "Search | Consoles | Maroc | FR"
+CAMP = "Search | Consoles | Casablanca | FR"
 URL = "https://maisondeco.ma/produits/consoles/"
 BUDGET = "150"      # MAD / jour
 CPC_CAP = "4"       # MAD, plafond du CPC en "Maximiser les clics"
@@ -34,12 +34,12 @@ groups = {
                             "meuble sur mesure maroc", "meuble sur mesure casablanca",
                             "console 140 cm", "console 150 cm", "console 160 cm",
                             "grande console", "console longue"], "consoles", "sur-mesure"),
-    "Console Achat Maroc": (["console maroc", "console casablanca", "console rabat",
-                             "console marrakech", "console tanger", "console agadir",
-                             "acheter console entree", "prix console entree",
-                             "console prix maroc", "meuble entree maroc",
-                             "meuble entree casablanca", "meuble entree rabat",
-                             "magasin meuble design casablanca", "console en ligne maroc"], "consoles", "maroc"),
+    "Console Casablanca": (["console casablanca", "console entree casablanca",
+                            "console design casablanca", "meuble entree casablanca",
+                            "meuble design casablanca", "magasin meuble design casablanca",
+                            "console maroc", "meuble entree maroc", "console prix maroc",
+                            "console en ligne maroc", "acheter console entree",
+                            "prix console entree"], "consoles", "casablanca"),
 }
 
 # ---------------------------------------------------------------- ad copy
@@ -71,9 +71,9 @@ specific_h = {
     "Console Sur Mesure": ["Console sur Mesure", "Adaptée à Vos Mesures",
                            "140, 150 ou 160 cm", "Devis Gratuit sur WhatsApp",
                            "Meuble sur Mesure Maroc"],
-    "Console Achat Maroc": ["Consoles Livrées au Maroc", "Console Design à Casablanca",
-                            "Livrée à Rabat et Marrakech", "Achetez Votre Console",
-                            "Consoles Artisanales Maroc"],
+    "Console Casablanca": ["Console Design à Casablanca", "Livraison Offerte à Casablanca",
+                           "Meuble d'Entrée Casablanca", "Achetez Votre Console",
+                           "Consoles Artisanales Maroc"],
 }
 descs = {
     "_common": [
@@ -86,7 +86,7 @@ descs = {
     "Console Artisanale": "Artisanat marocain contemporain : chaque façade est peinte pièce par pièce.",
     "Console Rangement": "Deux portes cachées dans le dessin : rangement discret, façade spectaculaire.",
     "Console Sur Mesure": "Une autre dimension ? Nous adaptons la console à votre mur. Devis WhatsApp.",
-    "Console Achat Maroc": "Casablanca, Rabat, Marrakech, Tanger, Agadir : livraison offerte dans toute ville.",
+    "Console Casablanca": "Livrée gratuitement chez vous à Casablanca. Vous payez à la réception.",
 }
 
 # ---------------------------------------------------------------- negatives
@@ -160,7 +160,7 @@ write("1-campagne-et-groupes.csv",
       + [[CAMP, "", "", "", "", "", "", "", "", g, "", "Enabled"] for g in groups])
 
 # 2. location
-write("2-ciblage-geographique.csv", ["Campaign", "Location", "Location ID"], [[CAMP, "Morocco", "2504"]])
+write("2-ciblage-geographique.csv", ["Campaign", "Location"], [[CAMP, "Casablanca, Casablanca-Settat, Morocco"]])
 
 # 3. keywords (phrase + exact) and negatives
 rows = []
