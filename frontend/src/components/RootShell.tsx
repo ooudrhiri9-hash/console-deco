@@ -10,6 +10,7 @@ import Footer from './Footer';
 import WhatsappFloat from './WhatsappFloat';
 import PhoneFloat from './PhoneFloat';
 import MetaPixel from './MetaPixel';
+import GoogleTag from './GoogleTag';
 import '@/styles/globals.css';
 
 /**
@@ -50,6 +51,7 @@ export default function RootShell({ locale, children }: { locale: Locale; childr
         </CartProvider>
         </LiveCatalogueProvider>
         <MetaPixel />
+        <GoogleTag />
       </body>
     </html>
   );

@@ -11,6 +11,7 @@ import { formatPrice } from '@/lib/format';
 import { choiceLabels } from '@/lib/options';
 import { orderMessage, waLink, type OrderCustomer } from '@/lib/whatsapp';
 import { track } from '@/lib/pixel';
+import { conversion } from '@/lib/gtag';
 import { saveLastOrder } from '@/lib/lastOrder';
 import { useCart } from './CartProvider';
 import { WhatsappIcon } from './Icons';
@@ -80,6 +81,7 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
       if (!res.ok) throw new Error(data?.error || String(res.status));
       // Avant clear() : le panier vidé enverrait une commande à 0.
       track('Purchase', pixelOrder());
+      conversion('purchase', { value: subtotal, transactionId: data?.reference });
       // /merci/ récapitule la commande alors que le panier est déjà vidé.
       saveLastOrder({
         reference: data?.reference || '',
