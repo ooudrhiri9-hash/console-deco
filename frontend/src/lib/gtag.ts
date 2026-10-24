@@ -16,7 +16,7 @@ export const GOOGLE_ADS_ID = 'AW-18535074117';
 
 export const CONVERSION_LABELS = {
   /** Commande envoyée depuis /commande/ — conversion principale. */
-  purchase: '',
+  purchase: '3X87CKStn6gdEMWSm4ZF',
   /** Clic sur un lien WhatsApp, n'importe où sur le site — secondaire. */
   whatsapp: '',
   /** Clic sur un numéro de téléphone (tel:) — secondaire. */
