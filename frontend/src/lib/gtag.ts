@@ -20,7 +20,7 @@ export const CONVERSION_LABELS = {
   /** Clic sur un lien WhatsApp, n'importe où sur le site — secondaire. */
   whatsapp: 'iLK5CKHfrKgdEMWSm4ZF',
   /** Clic sur un numéro de téléphone (tel:) — secondaire. */
-  phone: '',
+  phone: 'z2SSCK69qagdEMWSm4ZF',
 };
 
 export type ConversionKind = keyof typeof CONVERSION_LABELS;
