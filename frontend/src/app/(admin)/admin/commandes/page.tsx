@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import AdminShell from '@/admin/AdminShell';
 import { api, ApiError } from '@/admin/client';
 import { dateTime, dh } from '@/admin/format';
-import { STATUS_LABEL, type Order, type OrderStatus } from '@/admin/types';
+import { STATUS_LABEL, type AdminProduct, type Order, type OrderStatus } from '@/admin/types';
 
 export default function OrdersPage() {
   return (
@@ -53,6 +53,17 @@ function OrdersView() {
     load();
   }, [load]);
 
+  // La commande ne garde pas la photo : on la relit dans le catalogue, par
+  // référence. Une pièce supprimée depuis s'affiche simplement sans image.
+  const [images, setImages] = useState<Record<string, string>>({});
+  useEffect(() => {
+    api<{ products: AdminProduct[] }>('/api/admin/products')
+      .then(({ products }) => setImages(
+        Object.fromEntries(products.filter((p) => p.images?.[0]).map((p) => [p.id, p.images[0]])),
+      ))
+      .catch(() => {}); // sans photos, la page reste utilisable
+  }, []);
+
   async function setOrderStatus(order: Order, next: OrderStatus, adminNote?: string) {
     try {
       const { order: saved } = await api<{ order: Order }>(`/api/admin/orders/${order.reference}`, {
@@ -62,6 +73,16 @@ function OrdersView() {
       setOrders((list) => list.map((o) => (o.reference === saved.reference ? saved : o)));
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Modification impossible.');
+    }
+  }
+
+  async function removeOrder(order: Order) {
+    if (!window.confirm(`Supprimer la commande ${order.reference} ? Cette action est définitive.`)) return;
+    try {
+      await api(`/api/admin/orders/${order.reference}`, { method: 'DELETE' });
+      setOrders((list) => list.filter((o) => o.reference !== order.reference));
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Suppression impossible.');
     }
   }
 
@@ -120,6 +141,8 @@ function OrdersView() {
                     open={open === o.reference}
                     onToggle={() => setOpen(open === o.reference ? '' : o.reference)}
                     onStatus={setOrderStatus}
+                    onRemove={removeOrder}
+                    images={images}
                   />
                 ))}
                 {!orders.length && (
@@ -139,11 +162,15 @@ function Row({
   open,
   onToggle,
   onStatus,
+  onRemove,
+  images,
 }: {
   order: Order;
   open: boolean;
   onToggle: () => void;
   onStatus: (o: Order, s: OrderStatus, note?: string) => void;
+  onRemove: (o: Order) => void;
+  images: Record<string, string>;
 }) {
   const [note, setNote] = useState(order.adminNote || '');
 
@@ -206,6 +233,9 @@ function Row({
                     {/* Index in the key: the same piece can appear twice with two different frames. */}
                     {order.items.map((i, k) => (
                       <tr key={`${i.id}-${k}`}>
+                        <td style={{ width: '4.5rem' }}>
+                          {images[i.id] && <img className="adm-thumb" src={images[i.id]} alt="" loading="lazy" />}
+                        </td>
                         <td>
                           {i.name.fr}
                           <div className="adm-small adm-muted">{i.id}</div>
@@ -231,11 +261,11 @@ function Row({
                       </tr>
                     ))}
                     <tr>
-                      <td colSpan={2}>Livraison</td>
+                      <td colSpan={3}>Livraison</td>
                       <td className="adm-num">{order.shipping ? dh(order.shipping) : 'Offerte'}</td>
                     </tr>
                     <tr>
-                      <td colSpan={2}><strong>Total</strong></td>
+                      <td colSpan={3}><strong>Total</strong></td>
                       <td className="adm-num"><strong>{dh(order.total)}</strong></td>
                     </tr>
                   </tbody>
@@ -266,6 +296,14 @@ function Row({
                 onClick={() => onStatus(order, order.status, note)}
               >
                 Enregistrer la note
+              </button>
+              <button
+                type="button"
+                className="adm-btn adm-btn--danger"
+                style={{ alignSelf: 'end', marginLeft: 'auto' }}
+                onClick={() => onRemove(order)}
+              >
+                Supprimer
               </button>
             </div>
           </td>

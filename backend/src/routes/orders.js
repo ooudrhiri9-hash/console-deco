@@ -87,3 +87,18 @@ adminOrderRoutes.patch('/orders/:reference', requireAdmin, async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
+adminOrderRoutes.delete('/orders/:reference', requireAdmin, async (req, res) => {
+  try {
+    const done = await store.orders.remove(req.params.reference);
+    if (!done) {
+      res.status(404).json({ error: 'Commande introuvable' });
+      return;
+    }
+    console.log('[order] %s supprimée', req.params.reference);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[order DELETE]', e);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
