@@ -242,7 +242,6 @@ function Row({
                           {i.options?.map((o) => (
                             <div key={o.id} className="adm-small">
                               {o.name.fr} : <strong>{o.label.fr}</strong>
-                              {o.extra > 0 && ` (+${dh(o.extra)})`}
                               {o.requested && (
                                 <span className="adm-badge adm-badge--warn">
                                   demandé : {o.requested}
