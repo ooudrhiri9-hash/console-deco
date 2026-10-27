@@ -21,6 +21,18 @@ export type OrderLine = {
   lineTotal: number;
   /** Price the cart displayed, kept only when the catalogue disagreed. */
   quotedPrice?: number;
+  /** Choices resolved by the API (cadre, format, sur mesure…). */
+  options?: OrderLineOption[];
+};
+
+export type OrderLineOption = {
+  id: string;
+  name: { fr: string; en: string };
+  valueId: string;
+  label: { fr: string; en: string };
+  extra: number;
+  /** Value id the cart asked for, kept only when it no longer existed. */
+  requested?: string;
 };
 
 export type Order = {

@@ -203,11 +203,23 @@ function Row({
                 <h3 className="adm-legend">Articles</h3>
                 <table className="adm-table">
                   <tbody>
-                    {order.items.map((i) => (
-                      <tr key={i.id}>
+                    {/* Index in the key: the same piece can appear twice with two different frames. */}
+                    {order.items.map((i, k) => (
+                      <tr key={`${i.id}-${k}`}>
                         <td>
                           {i.name.fr}
                           <div className="adm-small adm-muted">{i.id}</div>
+                          {i.options?.map((o) => (
+                            <div key={o.id} className="adm-small">
+                              {o.name.fr} : <strong>{o.label.fr}</strong>
+                              {o.extra > 0 && ` (+${dh(o.extra)})`}
+                              {o.requested && (
+                                <span className="adm-badge adm-badge--warn">
+                                  demandé : {o.requested}
+                                </span>
+                              )}
+                            </div>
+                          ))}
                           {i.quotedPrice !== undefined && (
                             <div className="adm-small adm-badge adm-badge--warn">
                               Prix affiché au client : {dh(i.quotedPrice)}
