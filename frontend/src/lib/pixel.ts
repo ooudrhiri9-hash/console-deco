@@ -9,13 +9,21 @@ import { site } from '@/config/site';
 
 export const META_PIXEL_ID = '2497724073737141';
 
-type Fbq = (cmd: 'track', event: string, params?: Record<string, unknown>) => void;
+type Fbq = (
+  cmd: 'track',
+  event: string,
+  params?: Record<string, unknown>,
+  options?: { eventID: string },
+) => void;
 
 /**
  * Envoie un événement standard (AddToCart, Purchase…). Silencieux si le pixel
  * n'est pas chargé : bloqueur de pub, rendu statique, identifiant vide.
+ *
+ * `eventID` identifie l'événement chez Meta (dédoublonnage, et une future
+ * API Conversions côté serveur pourra réutiliser le même identifiant).
  */
-export function track(event: string, params?: Record<string, unknown>) {
+export function track(event: string, params?: Record<string, unknown>, eventID?: string) {
   if (typeof window === 'undefined') return;
   const fbq = (window as unknown as { fbq?: Fbq }).fbq;
   if (!fbq) return;
@@ -24,7 +32,8 @@ export function track(event: string, params?: Record<string, unknown>) {
   if (params && typeof params.value === 'number') {
     params = params.value > 0 ? { currency: site.currency, ...params } : omitValue(params);
   }
-  fbq('track', event, params);
+  if (eventID) fbq('track', event, params, { eventID });
+  else fbq('track', event, params);
 }
 
 function omitValue({ value: _value, ...rest }: Record<string, unknown>) {

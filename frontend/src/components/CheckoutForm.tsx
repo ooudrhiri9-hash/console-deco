@@ -80,7 +80,13 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
       const data = (await res.json().catch(() => null)) as { reference?: string; error?: string } | null;
       if (!res.ok) throw new Error(data?.error || String(res.status));
       // Avant clear() : le panier vidé enverrait une commande à 0.
-      track('Purchase', pixelOrder());
+      // La référence relie chaque achat vu dans Meta à sa commande dans /admin.
+      const reference = data?.reference;
+      track(
+        'Purchase',
+        reference ? { ...pixelOrder(), order_id: reference } : pixelOrder(),
+        reference ? `order-${reference}` : undefined,
+      );
       conversion('purchase', { value: subtotal, transactionId: data?.reference });
       // /merci/ récapitule la commande alors que le panier est déjà vidé.
       saveLastOrder({
