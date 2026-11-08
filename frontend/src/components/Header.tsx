@@ -10,7 +10,7 @@ import { localeLabel, locales, type Locale } from '@/i18n/config';
 import { routes, switchLocalePath } from '@/lib/routes';
 import { useCart } from './CartProvider';
 import { useFavorites } from './FavoritesProvider';
-import { CartIcon, CloseIcon, HeartIcon, MenuIcon } from './Icons';
+import { CartIcon, CloseIcon, HeartIcon, InstagramIcon, MenuIcon } from './Icons';
 
 export default function Header({ locale }: { locale: Locale }) {
   const t = getDict(locale);
@@ -47,7 +47,22 @@ export default function Header({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {announce && <div className="announce">{announce}</div>}
+      {(announce || site.social.instagram) && (
+        <div className="announce">
+          {announce}
+          {site.social.instagram && (
+            <a
+              className="announce__social"
+              href={site.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+            >
+              <InstagramIcon size={16} />
+            </a>
+          )}
+        </div>
+      )}
 
       <header className="header">
         <div className="container header__bar">

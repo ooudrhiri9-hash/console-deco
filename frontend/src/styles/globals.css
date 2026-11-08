@@ -326,7 +326,18 @@ p { text-wrap: pretty; }
   background: var(--ink); color: var(--surface-deep);
   font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase;
   text-align: center; padding: 0.6rem var(--gutter);
+  position: relative; min-height: 2.2rem;
 }
+/* L'icône sort du flux, calée à droite : le texte reste centré sur la page.
+   Le rembourrage réserve sa place des deux côtés pour qu'il ne passe jamais
+   dessous sur mobile. */
+.announce:has(.announce__social) { padding-inline: calc(var(--gutter) + 2rem); }
+.announce__social {
+  position: absolute; right: var(--gutter); top: 50%; transform: translateY(-50%);
+  display: grid; place-items: center; width: 28px; height: 28px;
+  color: inherit; opacity: 0.85;
+}
+.announce__social:hover { opacity: 1; color: var(--brass); }
 
 /* ============================================================================
    HERO
