@@ -28,7 +28,7 @@ export const DEFAULT_SETTINGS = {
     country: 'MA',
   },
   hours: { fr: 'Lundi – Samedi, 9h – 19h', en: 'Monday – Saturday, 9am – 7pm' },
-  social: { instagram: '', facebook: '', tiktok: '' },
+  social: { instagram: 'https://www.instagram.com/p/DfbHIZsorOA/', facebook: '', tiktok: '' },
   currency: 'MAD',
   currencyLabel: 'DH',
   freeShippingThreshold: 1500,
