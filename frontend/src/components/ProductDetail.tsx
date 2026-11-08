@@ -20,10 +20,9 @@ import {
 } from '@/lib/options';
 import { track } from '@/lib/pixel';
 import { routes } from '@/lib/routes';
-import { productMessage, waLink } from '@/lib/whatsapp';
 import { useCart } from './CartProvider';
 import { useFavorites } from './FavoritesProvider';
-import { ArrowIcon, CashIcon, HandIcon, HeartIcon, MinusIcon, PlusIcon, RulerIcon, TruckIcon, WhatsappIcon } from './Icons';
+import { ArrowIcon, CashIcon, HandIcon, HeartIcon, MinusIcon, PlusIcon, RulerIcon, TruckIcon } from './Icons';
 import { useLiveProduct } from './LiveCatalogue';
 import Link from './Link';
 import OptionPicker, { FramePicker, SizePicker } from './OptionPicker';
@@ -115,10 +114,6 @@ export default function ProductDetail({
       value: custom ? 0 : price * qty,
     });
   };
-
-  const wa = waLink(
-    productMessage(product, locale, qty, `${site.url}${routes.product(locale, product)}`, choice),
-  );
 
   return (
     <div className="product">
@@ -322,16 +317,6 @@ export default function ProductDetail({
                   {t.products.viewCart} <ArrowIcon />
                 </Link>
               )}
-              <a
-                className="btn btn--whatsapp btn--block"
-                href={wa}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => track('Contact', { content_ids: [product.id] })}
-              >
-                <WhatsappIcon size={18} />
-                {t.products.orderWhatsapp}
-              </a>
             </div>
           </>
         )}
