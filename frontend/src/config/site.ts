@@ -38,7 +38,7 @@ const DEFAULTS = {
   hours: { fr: 'Lundi – Samedi, 9h – 19h', en: 'Monday – Saturday, 9am – 7pm' } as Localized,
 
   /** '' hides the icon. */
-  social: { instagram: 'https://www.instagram.com/p/DfbHIZsorOA/', facebook: '', tiktok: '' },
+  social: { instagram: 'https://www.instagram.com/maison_deco.ma/', facebook: '', tiktok: '' },
 
   currency: 'MAD',
   currencyLabel: 'DH',
