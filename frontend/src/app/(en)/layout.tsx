@@ -16,7 +16,11 @@ export const metadata: Metadata = {
   // portefeuille Infinity Art (<meta name="facebook-domain-verification">).
   verification: {
     google: 'pZLGxVZ7GOqUKJdp7QVsPuPWNIDqAa3HYOFEvxlqOu4',
-    other: { 'facebook-domain-verification': '1r0jgftiqakkcdsax7g1cblm2zqgc4' },
+    // Deux codes : le 1er genere le 15/11 puis remplace par Meta, le 2e est
+    // celui affiche ensuite. Ne retirer l'un qu'une fois le domaine verifie.
+    other: {
+      'facebook-domain-verification': ['npc2xifylfznrt84pxee6hp1v5ygvg', '1r0jgftiqakkcdsax7g1cblm2zqgc4'],
+    },
   },
   // Le SVG d'abord, net a toute taille ; le .ico derriere, pour les navigateurs
   // qui ne le lisent pas et pour ceux qui demandent /favicon.ico sans regarder
