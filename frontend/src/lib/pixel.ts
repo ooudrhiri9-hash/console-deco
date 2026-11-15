@@ -7,7 +7,10 @@
  */
 import { site } from '@/config/site';
 
-export const META_PIXEL_ID = '2497724073737141';
+// Pixel « Maison Deco Pixel » (portefeuille Infinity Art, relié au compte
+// pub « Maison Deco » seulement). Ne pas remettre 2497724073737141 : c'est
+// le pixel d'infinityart.ma, les deux marques mélangeraient leurs audiences.
+export const META_PIXEL_ID = '1002544429577867';
 
 type Fbq = (
   cmd: 'track',

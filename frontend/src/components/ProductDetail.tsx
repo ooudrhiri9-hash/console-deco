@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Locale } from '@/i18n/config';
 import type { Category, OptionChoice, Product } from '@/types';
 import { getDict } from '@/i18n/dictionaries';
@@ -103,6 +103,18 @@ export default function ProductDetail({
     .filter((o): o is NonNullable<typeof o> => Boolean(o))
     .map((o) => pickedValue(o, choice).label[locale])
     .join(', ');
+
+  // « Produit vu » : une fois par fiche ouverte. Sert au reciblage Meta
+  // (visiteurs qui ont regardé une pièce sans l'acheter).
+  useEffect(() => {
+    track('ViewContent', {
+      content_ids: [product.id],
+      content_type: 'product',
+      content_name: product.name[locale],
+      value: price,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id]);
 
   const onAdd = () => {
     add(product, qty, choice);
