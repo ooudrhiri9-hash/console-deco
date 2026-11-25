@@ -32,6 +32,10 @@ interface CartApi {
   clear: () => void;
   /** False during the first render so SSR HTML and client HTML match. */
   ready: boolean;
+  /** Le panier qui glisse depuis la droite juste après un ajout (CartDrawer). */
+  drawerOpen: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
 }
 
 const CartContext = createContext<CartApi | null>(null);
@@ -48,6 +52,7 @@ const keyOf = (l: StoredLine) => lineKey(l.id, l.choice);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [stored, setStored] = useState<StoredLine[]>([]);
   const [ready, setReady] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Hydrate after mount — localStorage does not exist during the static build.
   useEffect(() => {
@@ -106,6 +111,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return {
       lines,
       ready,
+      drawerOpen,
+      openDrawer: () => setDrawerOpen(true),
+      closeDrawer: () => setDrawerOpen(false),
       count: lines.reduce((n, l) => n + l.qty, 0),
       subtotal: lines.reduce((n, l) => n + l.price * l.qty, 0),
       add: (product, qty = 1, choice) =>
@@ -132,7 +140,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       remove: (key) => setStored((prev) => prev.filter((l) => keyOf(l) !== key)),
       clear: () => setStored([]),
     };
-  }, [stored, ready]);
+  }, [stored, ready, drawerOpen]);
 
   return <CartContext.Provider value={api}>{children}</CartContext.Provider>;
 }

@@ -1,5 +1,8 @@
+'use client';
+
 import type { Locale } from '@/i18n/config';
 import { site } from '@/config/site';
+import { track } from '@/lib/pixel';
 import { PhoneIcon } from './Icons';
 
 /**
@@ -14,7 +17,14 @@ export default function PhoneFloat({ locale }: { locale: Locale }) {
   const label = locale === 'fr' ? `Appeler ${site.phone}` : `Call ${site.phone}`;
 
   return (
-    <a className="phone-float" href={`tel:${site.phoneHref}`} aria-label={label} title={label}>
+    <a
+      className="phone-float"
+      href={`tel:${site.phoneHref}`}
+      aria-label={label}
+      title={label}
+      // Un appel ne laisse aucune trace côté Meta sans cet événement.
+      onClick={() => track('Contact', { content_name: 'phone_float' })}
+    >
       <PhoneIcon size={24} />
     </a>
   );

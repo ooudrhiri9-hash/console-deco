@@ -7,8 +7,8 @@ import { FavoritesProvider } from './FavoritesProvider';
 import { LiveCatalogueProvider } from './LiveCatalogue';
 import Header from './Header';
 import Footer from './Footer';
-import WhatsappFloat from './WhatsappFloat';
-import PhoneFloat from './PhoneFloat';
+import Floats from './Floats';
+import CartDrawer from './CartDrawer';
 import MetaPixel from './MetaPixel';
 import GoogleTag from './GoogleTag';
 import '@/styles/globals.css';
@@ -41,12 +41,8 @@ export default function RootShell({ locale, children }: { locale: Locale; childr
           <Header locale={locale} />
           <main id="main">{children}</main>
           <Footer locale={locale} />
-          {/* Les deux raccourcis de contact, dans un seul bloc fixe : appeler
-              au-dessus, WhatsApp sous le pouce, là où l'oeil le cherche déjà. */}
-          <div className="floats">
-            <PhoneFloat locale={locale} />
-            <WhatsappFloat locale={locale} />
-          </div>
+          <Floats locale={locale} />
+          <CartDrawer locale={locale} />
         </FavoritesProvider>
         </CartProvider>
         </LiveCatalogueProvider>

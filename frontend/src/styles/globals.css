@@ -858,3 +858,66 @@ p { text-wrap: pretty; }
 .thanks__help { text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--line); }
 .thanks__help .btn { gap: 0.5rem; }
 .thanks__continue { margin-top: 1.5rem; }
+
+/* ============================================================================
+   CART DRAWER — s'ouvre après « Ajouter au panier » (CartDrawer.tsx)
+   ========================================================================== */
+.drawer { position: fixed; inset: 0; z-index: 120; }
+.drawer__backdrop {
+  position: absolute; inset: 0; width: 100%; border: 0; cursor: pointer;
+  background: rgba(20, 18, 15, 0.45); animation: drawer-fade var(--fast) var(--ease);
+}
+.drawer__panel {
+  position: absolute; top: 0; right: 0; bottom: 0; width: min(420px, 100%);
+  display: flex; flex-direction: column; background: var(--white);
+  box-shadow: -20px 0 50px -20px rgba(20, 18, 15, 0.35);
+  animation: drawer-in 260ms var(--ease);
+}
+.drawer__head {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1.1rem clamp(1rem, 4vw, 1.5rem); border-bottom: 1px solid var(--line);
+}
+.drawer__head h2 span { color: var(--success); }
+.drawer__close { display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink-soft); }
+.drawer__close:hover { color: var(--ink); }
+.drawer__lines { flex: 1 1 auto; overflow-y: auto; padding: 0.5rem clamp(1rem, 4vw, 1.5rem); }
+.drawer__line {
+  display: grid; grid-template-columns: 72px 1fr auto; gap: 0.9rem; align-items: start;
+  padding-block: 0.9rem; border-bottom: 1px solid var(--line);
+}
+.drawer__media { aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius); background: var(--surface-deep); }
+.drawer__media img, .drawer__media svg { width: 100%; height: 100%; object-fit: cover; }
+.drawer__info { display: grid; gap: 0.2rem; min-width: 0; font-size: 0.92rem; }
+.drawer__opt { font-size: 0.8rem; color: var(--ink-soft); }
+.drawer__price { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.drawer__foot {
+  display: grid; gap: 0.7rem; padding: 1rem clamp(1rem, 4vw, 1.5rem) calc(1rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+.drawer__foot .summary__row--total { margin: 0; border-top: 0; padding-top: 0; }
+.drawer__note { font-size: 0.82rem; color: var(--ink-soft); text-align: center; }
+.drawer__cart { justify-self: center; font-size: 0.85rem; }
+@keyframes drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes drawer-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .drawer__panel, .drawer__backdrop { animation: none; } }
+
+/* ============================================================================
+   BUY BAR — barre d'achat fixe sur téléphone, tant que le vrai bloc d'achat
+   n'est pas à l'écran (ProductDetail.tsx)
+   ========================================================================== */
+.buybar { display: none; }
+@media (max-width: 899px) {
+  .buybar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 80;
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.7rem calc(54px + clamp(1rem, 3vw, 2rem) + 0.6rem) calc(0.7rem + env(safe-area-inset-bottom)) clamp(1rem, 4vw, 1.5rem);
+    background: var(--white); border-top: 1px solid var(--line);
+    box-shadow: 0 -10px 30px -18px rgba(20, 18, 15, 0.35);
+    transform: translateY(110%); transition: transform var(--fast) var(--ease);
+  }
+  .buybar.is-on { transform: translateY(0); }
+  .buybar__price { display: grid; min-width: 0; flex: 1 1 auto; line-height: 1.2; }
+  .buybar__name { font-size: 0.75rem; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .buybar__price strong { font-family: var(--font-display); font-weight: 500; font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .buybar__add { flex: 0 0 auto; padding-inline: 1.1rem; }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '@/i18n/config';
 import type { Category, OptionChoice, Product } from '@/types';
 import { getDict } from '@/i18n/dictionaries';
@@ -52,7 +52,7 @@ export default function ProductDetail({
 }) {
   const t = getDict(locale);
   const { product, removed } = useLiveProduct(built);
-  const { add } = useCart();
+  const { add, openDrawer } = useCart();
   const favorites = useFavorites();
 
   // La sélection part de la fiche construite : le HTML statique affiche donc le
@@ -85,6 +85,19 @@ export default function ProductDetail({
 
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+
+  // Barre d'achat fixe sur téléphone : visible tant que le vrai bloc d'achat
+  // n'est pas à l'écran (il est sous la galerie et le choix du cadre, à
+  // ~950 px de haut sur un écran de 664 px).
+  const buyRef = useRef<HTMLDivElement>(null);
+  const [buyVisible, setBuyVisible] = useState(true);
+  useEffect(() => {
+    const el = buyRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => setBuyVisible(e.isIntersecting), { threshold: 0.4 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [removed]);
 
   const size = sizeOption(product);
   const frame = frameOption(product);
@@ -119,6 +132,10 @@ export default function ProductDetail({
   const onAdd = () => {
     add(product, qty, choice);
     setAdded(true);
+    // Le panier latéral s'ouvre avec « Commander maintenant » : avant, seul un
+    // petit lien « Voir le panier » suivait l'ajout et 9 paniers sur 10
+    // n'atteignaient jamais le formulaire de commande.
+    openDrawer();
     track('AddToCart', {
       content_ids: [product.id],
       content_type: 'product',
@@ -301,7 +318,7 @@ export default function ProductDetail({
               </div>
             </div>
 
-            <div className="buy">
+            <div className="buy" ref={buyRef}>
               <div className="buy__main">
                 {/* Des dimensions entamées mais incomplètes ne partent pas au
                     panier : la ligne serait une pièce standard, pas la vôtre. */}
@@ -329,6 +346,26 @@ export default function ProductDetail({
                   {t.products.viewCart} <ArrowIcon />
                 </Link>
               )}
+            </div>
+
+            {/* Même bouton, même action que le bloc d'achat, mais il reste sous
+                le pouce. Masqué au-delà de 899 px (CSS). */}
+            <div className={`buybar${buyVisible ? '' : ' is-on'}`} aria-hidden={buyVisible}>
+              <div className="buybar__price">
+                <span className="buybar__name">{product.name[locale]}</span>
+                <strong>
+                  {custom ? t.products.quote : product.price > 0 ? formatPrice(price, locale) : t.common.onRequest}
+                </strong>
+              </div>
+              <button
+                type="button"
+                className="btn btn--primary buybar__add"
+                onClick={onAdd}
+                disabled={custom && !wanted}
+                tabIndex={buyVisible ? -1 : 0}
+              >
+                {t.products.addToCart}
+              </button>
             </div>
           </>
         )}

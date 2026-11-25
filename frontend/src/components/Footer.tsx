@@ -82,7 +82,9 @@ export default function Footer({ locale }: { locale: Locale }) {
               <li style={{ display: 'flex', gap: '.6rem', alignItems: 'flex-start' }}>
                 <PinIcon />
                 <span>
-                  {site.address.street !== '—' && <>{site.address.street}, </>}
+                  {/* Rue vide dans /admin : sans ce test, le pied de page
+                      affichait « , Casablanca ». */}
+                  {site.address.street && site.address.street !== '—' && <>{site.address.street}, </>}
                   {site.address.city}
                 </span>
               </li>
