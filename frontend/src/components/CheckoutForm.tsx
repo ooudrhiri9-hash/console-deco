@@ -9,13 +9,13 @@ import { apiUrl } from '@/config/api';
 import { routes } from '@/lib/routes';
 import { formatPrice } from '@/lib/format';
 import { choiceLabels } from '@/lib/options';
-import { orderMessage, waLink, type OrderCustomer } from '@/lib/whatsapp';
+import type { OrderCustomer } from '@/lib/whatsapp';
+import { site } from '@/config/site';
 import { track } from '@/lib/pixel';
-import { metaIds, onWhatsappClick } from '@/lib/leads';
+import { metaIds } from '@/lib/leads';
 import { conversion } from '@/lib/gtag';
 import { saveLastOrder } from '@/lib/lastOrder';
 import { useCart } from './CartProvider';
-import { WhatsappIcon } from './Icons';
 
 type State = 'idle' | 'sending' | 'sent' | 'error';
 
@@ -37,13 +37,10 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
     qty: l.qty,
     price: l.price,
     // L'API ne reçoit que des identifiants et relit le supplément dans la fiche ;
-    // les libellés ne servent qu'au message WhatsApp, côté navigateur.
+    // les libellés ne servent qu'au récapitulatif de /merci/, côté navigateur.
     options: l.choice,
     picked: choiceLabels(l.product, l.choice, locale),
   }));
-
-  const waMessage = orderMessage(orderLines, customer, subtotal, locale);
-  const wa = waLink(waMessage);
 
   // Pixel : ce que contient la commande, pour InitiateCheckout et Purchase.
   const pixelOrder = () => ({
@@ -130,7 +127,16 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
   return (
     <div className="cart-layout">
       <form onSubmit={onSubmit} noValidate={false}>
-        {state === 'error' && <div className="alert alert--err">{t.checkout.errorText}</div>}
+        {/* Les bulles d'appel et de WhatsApp sont masquées sur cette page : le
+            numéro est donc donné ici, cliquable, si l'envoi échoue. */}
+        {state === 'error' && (
+          <div className="alert alert--err">
+            {t.checkout.errorText}{' '}
+            <a href={`tel:${site.phoneHref}`} style={{ whiteSpace: 'nowrap', textDecoration: 'underline' }}>
+              {site.phone}
+            </a>
+          </div>
+        )}
 
         <div className="field--row">
           <div className="field">
@@ -177,21 +183,13 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
         <p className="form-note">{t.checkout.payLabel}</p>
 
         <div className="buy-row">
+          {/* Une seule action ici. L'ancien bouton « Envoyer via WhatsApp »
+              (« le plus rapide ») détournait les acheteurs du formulaire, et
+              une commande partie sur WhatsApp n'arrive jamais dans /admin. */}
           <button type="submit" className="btn btn--primary" disabled={state === 'sending'}>
             {state === 'sending' ? t.checkout.submitting : t.checkout.submit}
           </button>
-          <a
-            className="btn btn--whatsapp"
-            href={wa}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={onWhatsappClick('whatsapp_checkout', waMessage, locale, pixelOrder())}
-          >
-            <WhatsappIcon size={18} />
-            {t.checkout.viaWhatsapp}
-          </a>
         </div>
-        <p className="form-note">{t.checkout.whatsappHint}</p>
       </form>
 
       <aside className="summary">
