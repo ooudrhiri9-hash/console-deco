@@ -39,6 +39,10 @@ function models(connection) {
     ]),
     Message: define('Message', 'messages', [[{ id: 1 }, { unique: true }]]),
     Admin: define('Admin', 'admins', [[{ email: 1 }, { unique: true }]]),
+    Lead: define('Lead', 'leads', [
+      [{ ref: 1 }, { unique: true }],
+      [{ createdAt: -1 }, {}],
+    ]),
     Settings: define('Settings', 'settings', []),
   };
 }
@@ -98,6 +102,8 @@ export function createMongoStore(uri, dbName) {
     orders: collection(M.Order, 'reference'),
     messages: collection(M.Message, 'id'),
     admins: collection(M.Admin, 'email'),
+    // WhatsApp clicks tagged « Réf. MD-XXXX » (routes/leads.js).
+    leads: collection(M.Lead, 'ref'),
     settings: {
       async read() {
         const doc = await M.Settings.findOne({ key: 'site' }).lean();

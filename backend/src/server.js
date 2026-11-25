@@ -22,6 +22,10 @@ import { settingsRoutes } from './routes/settings.js';
 import { dashboardRoutes } from './routes/dashboard.js';
 import { uploadRoutes, UPLOAD_DIR } from './routes/uploads.js';
 import { publishRoutes } from './routes/publish.js';
+import { whatsappRoutes } from './routes/whatsapp.js';
+import { whatsappEnabled } from './lib/whatsapp.js';
+import { adminLeadRoutes, leadRoutes } from './routes/leads.js';
+import { capiEnabled } from './lib/capi.js';
 
 const app = express();
 
@@ -53,7 +57,15 @@ app.use(cors({
   maxAge: 86400,
 }));
 
-app.use(express.json({ limit: '1mb' }));
+// The raw bytes are kept for the WhatsApp webhook, whose signature is an HMAC
+// of the body exactly as Meta sent it — re-serialising the parsed JSON would
+// not reproduce it.
+app.use(express.json({
+  limit: '1mb',
+  verify: (req, res, buf) => {
+    if (req.originalUrl.startsWith('/api/webhooks/')) req.rawBody = buf;
+  },
+}));
 
 // Uploaded photos. Long cache: the filename carries a timestamp, so a changed
 // photo is a new URL and never a stale one.
@@ -92,10 +104,13 @@ app.use('/api/admin', adminOrderRoutes);
 app.use('/api/admin', adminMessageRoutes);
 app.use('/api/admin', uploadRoutes);
 app.use('/api/admin', publishRoutes);
+app.use('/api/admin', adminLeadRoutes);
 
 app.use('/api', catalogueRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', messageRoutes);
+app.use('/api', whatsappRoutes);
+app.use('/api', leadRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'Route inconnue' }));
 
@@ -118,6 +133,12 @@ connectStore()
       console.log(allowed.length
         ? `Origines autorisées : ${allowed.join(', ')}`
         : 'Aucune origine déclarée : seuls les appels sans en-tête Origin passeront.');
+      console.log(whatsappEnabled()
+        ? 'WhatsApp : confirmation des commandes activée.'
+        : 'WhatsApp : non configuré (WHATSAPP_TOKEN / WHATSAPP_PHONE_NUMBER_ID vides).');
+      console.log(capiEnabled()
+        ? 'Meta Conversions API : activée.'
+        : 'Meta Conversions API : non configurée (META_CAPI_TOKEN vide).');
     });
   })
   .catch((e) => {

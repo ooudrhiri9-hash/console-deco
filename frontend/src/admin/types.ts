@@ -55,6 +55,30 @@ export type Order = {
   rejected: string[];
   status: OrderStatus;
   adminNote?: string;
+  /** Outcome of the WhatsApp confirmation message (absent on older orders). */
+  whatsapp?: {
+    status: 'disabled' | 'sent' | 'delivered' | 'read' | 'failed';
+    at: string;
+    to?: string;
+    messageId?: string;
+    error?: string;
+  };
+  /** Set when the customer answered the confirmation themselves. */
+  confirmation?: { by: 'whatsapp'; result: OrderStatus; at: string };
+  /** 'whatsapp' = sale closed in a chat and typed in by hand; absent = website order. */
+  channel?: 'whatsapp';
+  /** « MD-XXXX » reference from the chat, when the customer clicked a site button. */
+  leadRef?: string;
+  /** Outcome of the server-side Purchase sent to Meta (Conversions API). */
+  capi?: {
+    purchase?: {
+      status: 'disabled' | 'sent' | 'failed';
+      at: string;
+      eventId: string;
+      error?: string;
+      test?: boolean;
+    };
+  };
   createdAt: string;
   updatedAt: string;
 };

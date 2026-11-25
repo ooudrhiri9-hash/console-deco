@@ -6,15 +6,14 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import ContactForm from '@/components/ContactForm';
 import OrderSteps from '@/components/OrderSteps';
 import { MailIcon, PhoneIcon, PinIcon, WhatsappIcon } from '@/components/Icons';
-import { waLink } from '@/lib/whatsapp';
+import WhatsappLink from '@/components/WhatsappLink';
 
 export default function ContactView({ locale }: { locale: Locale }) {
   const t = getDict(locale);
-  const wa = waLink(
+  const waMessage =
     locale === 'fr'
       ? 'Bonjour, j’aimerais avoir des informations.'
-      : 'Hello, I would like some information.',
-  );
+      : 'Hello, I would like some information.';
 
   return (
     <>
@@ -41,16 +40,16 @@ export default function ContactView({ locale }: { locale: Locale }) {
               {t.contact.whatsappTitle}
             </h2>
             <p className="small muted">{t.contact.whatsappText}</p>
-            <a
+            <WhatsappLink
+              channel="whatsapp_contact"
+              message={waMessage}
+              locale={locale}
               className="btn btn--whatsapp btn--block"
-              href={wa}
-              target="_blank"
-              rel="noopener noreferrer"
               style={{ marginBlock: '1rem 2rem' }}
             >
               <WhatsappIcon size={18} />
               {t.contact.whatsappCta}
-            </a>
+            </WhatsappLink>
 
             <ul className="stack">
               <li style={{ display: 'flex', gap: '.75rem', alignItems: 'center' }}>

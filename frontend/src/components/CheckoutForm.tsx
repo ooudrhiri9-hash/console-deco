@@ -11,6 +11,7 @@ import { formatPrice } from '@/lib/format';
 import { choiceLabels } from '@/lib/options';
 import { orderMessage, waLink, type OrderCustomer } from '@/lib/whatsapp';
 import { track } from '@/lib/pixel';
+import { metaIds, onWhatsappClick } from '@/lib/leads';
 import { conversion } from '@/lib/gtag';
 import { saveLastOrder } from '@/lib/lastOrder';
 import { useCart } from './CartProvider';
@@ -41,7 +42,8 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
     picked: choiceLabels(l.product, l.choice, locale),
   }));
 
-  const wa = waLink(orderMessage(orderLines, customer, subtotal, locale));
+  const waMessage = orderMessage(orderLines, customer, subtotal, locale);
+  const wa = waLink(waMessage);
 
   // Pixel : ce que contient la commande, pour InitiateCheckout et Purchase.
   const pixelOrder = () => ({
@@ -75,6 +77,9 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
           // relit elle-même depuis la fiche à partir des identifiants.
           items: orderLines.map(({ picked, ...line }) => line),
           payment: 'cod',
+          // Les identifiants Meta du navigateur : l'API renvoie le même achat
+          // côté serveur (API Conversions), dédoublonné avec celui du pixel.
+          tracking: { ...metaIds(), pageUrl: window.location.href },
         }),
       });
       const data = (await res.json().catch(() => null)) as { reference?: string; error?: string } | null;
@@ -180,7 +185,7 @@ export default function CheckoutForm({ locale }: { locale: Locale }) {
             href={wa}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => track('Contact', pixelOrder())}
+            onClick={onWhatsappClick('whatsapp_checkout', waMessage, locale, pixelOrder())}
           >
             <WhatsappIcon size={18} />
             {t.checkout.viaWhatsapp}

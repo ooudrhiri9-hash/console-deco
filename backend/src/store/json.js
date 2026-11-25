@@ -14,7 +14,7 @@ import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 
-const EMPTY = { products: [], categories: [], orders: [], messages: [], admins: [], settings: {} };
+const EMPTY = { products: [], categories: [], orders: [], messages: [], admins: [], leads: [], settings: {} };
 
 export function createJsonStore(file) {
   let cache = null;
@@ -110,6 +110,8 @@ export function createJsonStore(file) {
     orders: collection('orders', 'reference'),
     messages: collection('messages', 'id'),
     admins: collection('admins', 'email'),
+    // WhatsApp clicks tagged « Réf. MD-XXXX » (routes/leads.js).
+    leads: collection('leads', 'ref'),
     settings: {
       async read() {
         return clone(load().settings);

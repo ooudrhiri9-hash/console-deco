@@ -2,7 +2,7 @@
 
 import type { Locale } from '@/i18n/config';
 import { waLink } from '@/lib/whatsapp';
-import { track } from '@/lib/pixel';
+import { onWhatsappClick } from '@/lib/leads';
 import { WhatsappIcon } from './Icons';
 
 export default function WhatsappFloat({ locale }: { locale: Locale }) {
@@ -18,9 +18,9 @@ export default function WhatsappFloat({ locale }: { locale: Locale }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="WhatsApp"
-      // Une commande passée sur WhatsApp ne déclenche jamais Purchase : sans
-      // ce Contact, Meta ne voit pas du tout ces clients.
-      onClick={() => track('Contact', { content_name: 'whatsapp_float' })}
+      // Contact pour le pixel + « [Réf. MD-XXXX] » dans le message : une vente
+      // conclue dans le chat peut alors être rattachée à la pub (lib/leads.ts).
+      onClick={onWhatsappClick('whatsapp_float', message, locale)}
     >
       <WhatsappIcon size={26} />
     </a>

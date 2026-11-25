@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import type { Locale } from '@/i18n/config';
 import { getDict } from '@/i18n/dictionaries';
 import { waLink } from '@/lib/whatsapp';
+import { onWhatsappClick } from '@/lib/leads';
 import { apiUrl } from '@/config/api';
 import { WhatsappIcon } from './Icons';
 
@@ -34,10 +35,10 @@ export default function ContactForm({ locale }: { locale: Locale }) {
     }
   }
 
-  const wa = waLink(
+  const waMessage =
     [form.subject, form.message].filter(Boolean).join('\n') ||
-      (locale === 'fr' ? 'Bonjour, j’aimerais avoir des informations.' : 'Hello, I would like some information.'),
-  );
+    (locale === 'fr' ? 'Bonjour, j’aimerais avoir des informations.' : 'Hello, I would like some information.');
+  const wa = waLink(waMessage);
 
   return (
     <form onSubmit={onSubmit}>
@@ -88,7 +89,13 @@ export default function ContactForm({ locale }: { locale: Locale }) {
         <button type="submit" className="btn btn--primary" disabled={state === 'sending'}>
           {state === 'sending' ? t.contact.sending : t.contact.send}
         </button>
-        <a className="btn btn--whatsapp" href={wa} target="_blank" rel="noopener noreferrer">
+        <a
+          className="btn btn--whatsapp"
+          href={wa}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onWhatsappClick('whatsapp_contact', waMessage, locale)}
+        >
           <WhatsappIcon size={18} />
           WhatsApp
         </a>
